@@ -1,5 +1,4 @@
-export default {
-  port:3000,
-  apiPrefix: 'http://localhost',
+import IConfig from "./iconfig";
+const config: IConfig = {};
 
-};
+export default config;
