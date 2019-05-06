@@ -6,7 +6,7 @@ const config: IConfig = {
   port: 3000,
 
   connectStr: "mongodb://118.31.11.29:27017",
-  dbName: "zst",
+  dbName: "pacong",
 
   wx: {
     appId: "wx76c2cfaf352e3a62",
