@@ -37,9 +37,11 @@ export default class Database {
   }
 
   async open() {
-    this.client = await mongodb.MongoClient.connect(this.connectStr, {
-      useNewUrlParser: true
-    });
+    // this.client = await mongodb.MongoClient.connect(this.connectStr, {
+    //   useNewUrlParser: true
+    // });
+    this.client = new mongodb.MongoClient(this.connectStr);
+    await this.client.connect();
     this.status = eStatus.open;
 
     // dbName

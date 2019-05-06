@@ -24,6 +24,6 @@ export interface IReqPicList {
   pageIndex: number;
 }
 
-export interface IResPicList {
-  list: { url: string; name: string; timestamp: number }[];
+export interface IResPicList extends IResErr {
+  list: { id: string; url: string; name: string; timestamp: number }[];
 }
