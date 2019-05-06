@@ -1,5 +1,4 @@
 import Database from "../db";
-import TokenService from "../service/tokenService";
 import axios from "axios";
 import config from "../config";
 
@@ -30,11 +29,8 @@ let close = async () => {
 
 let getAxios = async () => {
   // token service
-  let service = await TokenService.getIns();
-  let token = await service.bind(config.mockOpenId);
   return axios.create({
-    baseURL: `${config.protocol}://${config.host}:${config.port}`,
-    headers: { token }
+    baseURL: `${config.protocol}://${config.host}:${config.port}`
   });
 };
 

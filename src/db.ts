@@ -1,6 +1,5 @@
 import * as mongodb from "mongodb";
 import config from "./config/index";
-import * as Schema from "./schema";
 
 // 数据库状态
 enum eStatus {
@@ -11,7 +10,7 @@ enum eStatus {
 export default class Database {
   private connectStr: string;
   private dbName: string;
-  private db: mongodb.Db;
+  private client: mongodb.MongoClient;
   private currDb: mongodb.Db;
 
   private status: eStatus;
@@ -38,17 +37,19 @@ export default class Database {
   }
 
   async open() {
-    this.db = await mongodb.MongoClient.connect(this.connectStr);
+    this.client = await mongodb.MongoClient.connect(this.connectStr, {
+      useNewUrlParser: true
+    });
     this.status = eStatus.open;
 
     // dbName
-    let currDb = (this.currDb = this.db.db(this.dbName));
+    let currDb = (this.currDb = this.client.db(this.dbName));
     //[name]是
     // this.[name]Collection = currDb.collection([name]);
   }
 
   async close() {
-    await this.db.close();
+    await this.client.close();
     this.status = eStatus.close;
   }
 

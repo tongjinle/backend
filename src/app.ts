@@ -81,17 +81,7 @@ class Main {
       }
     };
 
-    if ("product" === process.env.NODE_ENV) {
-      // 启动https
-      let opts: Https.ServerOptions = {
-        key: fs.readFileSync("./cert/index.key"),
-        cert: fs.readFileSync("./cert/index.pem")
-      };
-      let httpsServer = Https.createServer(opts, app);
-      httpsServer.listen(port, cb);
-    } else {
-      app.listen(port, cb);
-    }
+    app.listen(port, cb);
   }
 }
 
