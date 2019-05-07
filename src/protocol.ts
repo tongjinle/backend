@@ -25,5 +25,19 @@ export interface IReqPicList {
 }
 
 export interface IResPicList extends IResErr {
-  list: { id: string; url: string; name: string; timestamp: number }[];
+  list: {
+    id: string;
+    url: string;
+    name: string;
+    timestamp: number;
+  }[];
+}
+
+export interface IReqPicCount {}
+
+export interface IResPicCount extends IResErr {
+  list: {
+    name: string;
+    count: number;
+  }[];
 }

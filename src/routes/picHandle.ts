@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as protocol from "../protocol";
-import { picList } from "../service/picService";
+import { picList, picCount } from "../service/picService";
 
 export default function handle(app: express.Express) {
   app.get("/picList", async (req, res) => {
@@ -11,11 +11,29 @@ export default function handle(app: express.Express) {
 
     console.log({ name, pageIndex, pageSize });
 
-    let list: any = await picList(name, pageIndex, pageSize);
+    let list = await picList(name, pageIndex, pageSize);
     resData = {
       code: 0,
-      list
+      list: list.map(n => ({
+        id: n.id,
+        name: n.name,
+        url: n.url,
+        timestamp: n.timestamp
+      }))
     };
     res.json(list);
+  });
+
+  app.get("/picCount", async (req, res) => {
+    let resData: protocol.IResPicCount;
+    let list = await picCount();
+    resData = {
+      code: 0,
+      list: list.map(n => ({
+        name: n.name,
+        count: n.count
+      }))
+    };
+    res.json(resData);
   });
 }
