@@ -21,7 +21,7 @@ export async function picList(
       id: n.name,
       name,
       timestamp: n.timestamp,
-      url: n.url
+      url: n.remoteUrl
     };
   });
   return rst;
