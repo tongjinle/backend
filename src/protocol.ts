@@ -38,6 +38,48 @@ export interface IReqPicCount {}
 export interface IResPicCount extends IResErr {
   list: {
     name: string;
+    logo: string;
     count: number;
   }[];
 }
+export interface IReqPicInfoBeforeCheck {
+  pageSize: number;
+  pageIndex: number;
+}
+
+export interface IResPicInfoBeforeCheck extends IResErr {
+  list: {
+    id: string;
+    url: string;
+    isPorn: boolean;
+    isPorn2: boolean;
+    isGirl: boolean;
+    isGirl2: boolean;
+  }[];
+}
+export interface IReqPicInfoAfterCheck {
+  pageSize: number;
+  pageIndex: number;
+}
+
+export interface IResPicInfoAfterCheck extends IResErr {
+  list: {
+    id: string;
+    url: string;
+    isPorn: boolean;
+    isPorn2: boolean;
+    isGirl: boolean;
+    isGirl2: boolean;
+  }[];
+}
+
+export interface IReqPicSetIsGirl {
+  nameList: string[];
+  isGirl: boolean;
+}
+export interface IResPicSetIsGirl {}
+export interface IReqPicSetIsPorn {
+  nameList: string[];
+  isPorn: boolean;
+}
+export interface IResPicSetIsPorn {}
