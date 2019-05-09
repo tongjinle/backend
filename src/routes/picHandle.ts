@@ -52,13 +52,13 @@ export default function handle(app: express.Express) {
   // 获取没有被人工确定过的列表总数
   app.get("/pic/admin/beforeCheckCount", async (req, res) => {
     let data = await picCountForCheck();
-    res.json(data);
+    res.json({ code: 0, count: data });
   });
 
   // 获取已经被人工确定过的列表总数
   app.get("/pic/admin/beforeCheckedCount", async (req, res) => {
     let data = await picCountForChecked();
-    res.json(data);
+    res.json({ code: 0, count: data });
   });
 
   // 获取没有被人工确定过的列表

@@ -8,7 +8,10 @@
       "ignore_watch": ["prod"],
       "node_args": "--harmony",
       "merge_logs": true,
-      "cwd": "./"
+      "cwd": "./",
+      "env": {
+        "NODE_ENV": "product"
+      }
     }
   ]
 }
