@@ -67,6 +67,30 @@ export async function picCount(): Promise<countInfo[]> {
   return rst;
 }
 
+// 获取需要check的总数
+export async function picCountForCheck(): Promise<number> {
+  let rst: number = 0;
+  let client = await db.getIns();
+  let data = await client.getCollection("twitter").count({
+    $or: [
+      { isGirl: true, isGirl2: { $exists: false } },
+      { isPorn: false, isPorn2: { $exists: false } }
+    ]
+  });
+  rst = data;
+  return rst;
+}
+// 获取checked的总数
+export async function picCountForChecked(): Promise<number> {
+  let rst: number = 0;
+  let client = await db.getIns();
+  let data = await client.getCollection("twitter").count({
+    $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
+  });
+  rst = data;
+  return rst;
+}
+
 // 获取需要check的列表
 export async function picListForCheck(
   pageIndex: number,

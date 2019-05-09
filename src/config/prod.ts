@@ -1,8 +1,8 @@
 import IConfig from "./iconfig";
 const config: IConfig = {
-  protocol: "https",
+  protocol: "http",
   host: "api.puman.xyz",
-  port: 443
+  port: 7001
 };
 
 export default config;

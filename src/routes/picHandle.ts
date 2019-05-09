@@ -6,7 +6,9 @@ import {
   picListForCheck,
   picListForChecked,
   setIsGirl,
-  setIsPorn
+  setIsPorn,
+  picCountForCheck,
+  picCountForChecked
 } from "../service/picService";
 import { url } from "inspector";
 
@@ -47,6 +49,18 @@ export default function handle(app: express.Express) {
   });
 
   // admin
+  // 获取没有被人工确定过的列表总数
+  app.get("/pic/admin/beforeCheckCount", async (req, res) => {
+    let data = await picCountForCheck();
+    res.json(data);
+  });
+
+  // 获取已经被人工确定过的列表总数
+  app.get("/pic/admin/beforeCheckedCount", async (req, res) => {
+    let data = await picCountForChecked();
+    res.json(data);
+  });
+
   // 获取没有被人工确定过的列表
   app.get("/pic/admin/beforeCheck", async (req, res) => {
     let resData: protocol.IResPicInfoBeforeCheck;
@@ -98,6 +112,7 @@ export default function handle(app: express.Express) {
     resData = { code: 0 };
     res.json(resData);
   });
+
   // 人工设置是否是女孩
   app.post("/pic/admin/setIsPorn", async (req, res) => {
     let resData: protocol.IResPicSetIsPorn;
