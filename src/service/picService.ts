@@ -160,7 +160,7 @@ export async function setIsGirl(
   // let db = client.db('twitter');
   await client
     .getCollection("twitter")
-    .update({ name: { $in: nameList } }, { $set: { isGirl2: isGirl } });
+    .updateMany({ name: { $in: nameList } }, { $set: { isGirl2: isGirl } });
 }
 
 // 人工设置是不是图片
@@ -171,7 +171,7 @@ export async function setIsPorn(
   let client = await db.getIns();
   await client
     .getCollection("twitter")
-    .update({ name: { $in: nameList } }, { $set: { isPorn2: isPorn } });
+    .updateMany({ name: { $in: nameList } }, { $set: { isPorn2: isPorn } });
 }
 
 function getValidGirls(): { name: string; logo: string }[] {
