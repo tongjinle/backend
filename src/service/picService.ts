@@ -14,6 +14,9 @@ type picCheckInfo = {
   isGirl2: boolean;
 };
 
+let validGirls = getValidGirls();
+let girlNames = validGirls.map(n => n.name);
+
 export async function picList(
   name: string,
   pageIndex: number,
@@ -23,8 +26,7 @@ export async function picList(
   let client = await db.getIns();
   let data = await client
     .getCollection("twitter")
-    // .find({})
-    .find({ ext: name })
+    .find({ ext: name, isGirl2: true, isPorn2: false })
     .sort({ timestamp: -1 })
     .skip(pageIndex * pageSize)
     .limit(pageSize)
@@ -44,19 +46,17 @@ export async function picList(
 export async function picCount(): Promise<countInfo[]> {
   let rst: countInfo[] = [];
 
-  let girls = getValidGirls();
-  let girlNames = girls.map(n => n.name);
   let client = await db.getIns();
   let data = await client
     .getCollection("twitter")
     .aggregate([
-      { $match: { ext: { $in: girlNames } } },
+      { $match: { ext: { $in: girlNames }, isGirl2: true, isPorn2: false } },
       { $group: { _id: "$ext", count: { $sum: 1 } } }
     ])
     .toArray();
 
   rst = data.map(n => {
-    let logo = girls.find(girl => girl.name === n._id).logo;
+    let logo = validGirls.find(girl => girl.name === n._id).logo;
     return {
       name: n._id,
       logo,
@@ -72,6 +72,7 @@ export async function picCountForCheck(): Promise<number> {
   let rst: number = 0;
   let client = await db.getIns();
   let data = await client.getCollection("twitter").count({
+    ext: { $in: girlNames },
     $or: [
       { isGirl: true, isGirl2: { $exists: false } },
       { isPorn: false, isPorn2: { $exists: false } }
@@ -85,6 +86,7 @@ export async function picCountForChecked(): Promise<number> {
   let rst: number = 0;
   let client = await db.getIns();
   let data = await client.getCollection("twitter").count({
+    ext: { $in: girlNames },
     $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
   });
   rst = data;
@@ -101,6 +103,7 @@ export async function picListForCheck(
   let data = await client
     .getCollection("twitter")
     .find({
+      ext: { $in: girlNames },
       $or: [
         { isGirl: true, isGirl2: { $exists: false } },
         { isPorn: false, isPorn2: { $exists: false } }
@@ -130,6 +133,7 @@ export async function picListForChecked(
   let data = await client
     .getCollection("twitter")
     .find({
+      ext: { $in: girlNames },
       $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
     })
     .skip(pageIndex * pageSize)
