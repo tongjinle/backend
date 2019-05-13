@@ -1,19 +1,10 @@
 import * as express from "express";
 import * as protocol from "../protocol";
-import {
-  picList,
-  picCount,
-  picListForCheck,
-  picListForChecked,
-  setIsGirl,
-  setIsPorn,
-  picCountForCheck,
-  picCountForChecked
-} from "../service/picService";
+import { getComicList, getContent } from "../service/comicService";
 import { url } from "inspector";
 
 export default function handle(app: express.Express) {
-  app.get("/picList", async (req, res) => {
+  app.get("/comicList", async (req, res) => {
     let resData: protocol.IResPicList;
     let name = req.query["name"];
     let pageIndex = req.query["pageIndex"] - 0;
