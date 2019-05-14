@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "girlday",
+      "name": "comic",
       "script": "./dist/app.js",
       "args": [],
       "watch": ["dist"],
