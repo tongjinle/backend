@@ -8,15 +8,16 @@ import Database from "../db";
 // 路由
 import testHandle from "./testHandle";
 
-import picHandle from "./picHandle";
+import comicRouter from "./comicRouter";
 
 // 错误
 import errCode from "../errCode";
+import router from "./comicRouter";
 
 export default function handler(app: express.Express) {
   // 测试
   testHandle(app);
 
   // 图片资源
-  picHandle(app);
+  app.use(router);
 }

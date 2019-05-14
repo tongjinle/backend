@@ -1,5 +1,3 @@
-import { Timestamp } from "bson";
-
 // *** 基础response格式
 // *** 带有code[错误码]和msg[错误信息]
 // *** 当code===undefined的时候,表示正确
@@ -18,68 +16,18 @@ export interface IResToken {
   token: string;
 }
 
-export interface IReqPicList {
-  name: string;
-  pageSize: number;
-  pageIndex: number;
-}
+export interface IReqComicList {}
 
-export interface IResPicList extends IResErr {
+export interface IResComicList extends IResErr {
   list: {
-    id: string;
-    url: string;
-    name: string;
-    timestamp: number;
-  }[];
-}
-
-export interface IReqPicCount {}
-
-export interface IResPicCount extends IResErr {
-  list: {
-    name: string;
-    logo: string;
+    title: string;
     count: number;
-  }[];
-}
-export interface IReqPicInfoBeforeCheck {
-  pageSize: number;
-  pageIndex: number;
-}
-
-export interface IResPicInfoBeforeCheck extends IResErr {
-  list: {
-    id: string;
-    url: string;
-    isPorn: boolean;
-    isPorn2: boolean;
-    isGirl: boolean;
-    isGirl2: boolean;
-  }[];
-}
-export interface IReqPicInfoAfterCheck {
-  pageSize: number;
-  pageIndex: number;
-}
-
-export interface IResPicInfoAfterCheck extends IResErr {
-  list: {
-    id: string;
-    url: string;
-    isPorn: boolean;
-    isPorn2: boolean;
-    isGirl: boolean;
-    isGirl2: boolean;
+    logo: string;
   }[];
 }
 
-export interface IReqPicSetIsGirl {
-  nameList: string[];
-  isGirl: boolean;
+export interface IReqContent {}
+
+export interface IResContent extends IResErr {
+  list: { index: number; url: string }[];
 }
-export interface IResPicSetIsGirl {}
-export interface IReqPicSetIsPorn {
-  nameList: string[];
-  isPorn: boolean;
-}
-export interface IResPicSetIsPorn {}
