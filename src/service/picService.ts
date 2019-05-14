@@ -51,15 +51,20 @@ export async function picCount(): Promise<countInfo[]> {
     .getCollection("twitter")
     .aggregate([
       { $match: { ext: { $in: girlNames }, isGirl2: true, isPorn2: false } },
-      { $group: { _id: "$ext", count: { $sum: 1 } } }
+      {
+        $group: {
+          _id: "$ext",
+          count: { $sum: 1 },
+          logo: { $first: "$remoteUrl" }
+        }
+      }
     ])
     .toArray();
 
   rst = data.map(n => {
-    let logo = validGirls.find(girl => girl.name === n._id).logo;
     return {
       name: n._id,
-      logo,
+      logo: n.logo,
       count: n.count
     };
   });
