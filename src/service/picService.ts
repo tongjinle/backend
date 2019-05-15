@@ -1,6 +1,6 @@
 import db from "../db";
-let collectionName = "girlday";
-// let collectionName = "girldayMock";
+// let collectionName = "girlday";
+let collectionName = "girldayMock";
 
 // 此处的id是数据库中的name,name为ext
 type picInfo = { id: string; url: string; name: string; timestamp: number };
