@@ -1,4 +1,6 @@
 import db from "../db";
+let collectionName = "girlday";
+// let collectionName = "girldayMock";
 
 // 此处的id是数据库中的name,name为ext
 type picInfo = { id: string; url: string; name: string; timestamp: number };
@@ -25,8 +27,8 @@ export async function picList(
   let rst: picInfo[];
   let client = await db.getIns();
   let data = await client
-    .getCollection("twitter")
-    .find({ ext: name, isGirl2: true, isPorn2: false })
+    .getCollection(collectionName)
+    .find({ name })
     .sort({ timestamp: -1 })
     .skip(pageIndex * pageSize)
     .limit(pageSize)
@@ -36,7 +38,7 @@ export async function picList(
       id: n.name,
       name,
       timestamp: n.timestamp,
-      url: n.remoteUrl
+      url: n.url
     };
   });
   return rst;
@@ -48,14 +50,14 @@ export async function picCount(): Promise<countInfo[]> {
 
   let client = await db.getIns();
   let data = await client
-    .getCollection("twitter")
+    .getCollection(collectionName)
     .aggregate([
-      { $match: { ext: { $in: girlNames }, isGirl2: true, isPorn2: false } },
+      // { $match: { name: { $in: girlNames } } },
       {
         $group: {
-          _id: "$ext",
+          _id: "$name",
           count: { $sum: 1 },
-          logo: { $first: "$remoteUrl" }
+          logo: { $first: "$url" }
         }
       }
     ])
@@ -76,7 +78,7 @@ export async function picCount(): Promise<countInfo[]> {
 export async function picCountForCheck(): Promise<number> {
   let rst: number = 0;
   let client = await db.getIns();
-  let data = await client.getCollection("twitter").count({
+  let data = await client.getCollection(collectionName).count({
     ext: { $in: girlNames },
     $or: [
       { isGirl: true, isGirl2: { $exists: false } },
@@ -90,7 +92,7 @@ export async function picCountForCheck(): Promise<number> {
 export async function picCountForChecked(): Promise<number> {
   let rst: number = 0;
   let client = await db.getIns();
-  let data = await client.getCollection("twitter").count({
+  let data = await client.getCollection(collectionName).count({
     ext: { $in: girlNames },
     $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
   });
@@ -106,7 +108,7 @@ export async function picListForCheck(
   let rst: picCheckInfo[] = [];
   let client = await db.getIns();
   let data = await client
-    .getCollection("twitter")
+    .getCollection(collectionName)
     .find({
       ext: { $in: girlNames },
       $or: [
@@ -136,7 +138,7 @@ export async function picListForChecked(
   let rst: picCheckInfo[] = [];
   let client = await db.getIns();
   let data = await client
-    .getCollection("twitter")
+    .getCollection(collectionName)
     .find({
       ext: { $in: girlNames },
       $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
@@ -164,7 +166,7 @@ export async function setIsGirl(
   let client = await db.getIns();
   // let db = client.db('twitter');
   await client
-    .getCollection("twitter")
+    .getCollection(collectionName)
     .updateMany({ name: { $in: nameList } }, { $set: { isGirl2: isGirl } });
 }
 
@@ -175,7 +177,7 @@ export async function setIsPorn(
 ): Promise<void> {
   let client = await db.getIns();
   await client
-    .getCollection("twitter")
+    .getCollection(collectionName)
     .updateMany({ name: { $in: nameList } }, { $set: { isPorn2: isPorn } });
 }
 
