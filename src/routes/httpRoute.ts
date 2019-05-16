@@ -7,6 +7,7 @@ import Database from "../db";
 
 // 路由
 import testHandle from "./testHandle";
+import adminRouter from "./adminPicRouter";
 
 import picHandle from "./picHandle";
 
@@ -19,4 +20,7 @@ export default function handler(app: express.Express) {
 
   // 图片资源
   picHandle(app);
+
+  // amdin
+  app.use("/admin", adminRouter);
 }
