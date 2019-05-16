@@ -1,15 +1,6 @@
 import * as express from "express";
 import * as protocol from "../protocol";
-import {
-  picList,
-  picCount,
-  picListForCheck,
-  picListForChecked,
-  setIsGirl,
-  setIsPorn,
-  picCountForCheck,
-  picCountForChecked
-} from "../service/picService";
+import { picList, picCount } from "../service/picService";
 import { url } from "inspector";
 
 export default function handle(app: express.Express) {
@@ -45,81 +36,6 @@ export default function handle(app: express.Express) {
         count: n.count
       }))
     };
-    res.json(resData);
-  });
-
-  // admin
-  // 获取没有被人工确定过的列表总数
-  app.get("/pic/admin/beforeCheckCount", async (req, res) => {
-    let data = await picCountForCheck();
-    res.json({ code: 0, count: data });
-  });
-
-  // 获取已经被人工确定过的列表总数
-  app.get("/pic/admin/beforeCheckedCount", async (req, res) => {
-    let data = await picCountForChecked();
-    res.json({ code: 0, count: data });
-  });
-
-  // 获取没有被人工确定过的列表
-  app.get("/pic/admin/beforeCheck", async (req, res) => {
-    let resData: protocol.IResPicInfoBeforeCheck;
-    let pageIndex = req.query["pageIndex"] - 0;
-    let pageSize = req.query["pageSize"] - 0;
-
-    let list = await picListForCheck(pageIndex, pageSize);
-    resData = {
-      code: 0,
-      list: list.map(n => ({
-        id: n.id,
-        url: n.url,
-        isPorn: n.isPorn,
-        isPorn2: n.isPorn2,
-        isGirl: n.isGirl,
-        isGirl2: n.isGirl2
-      }))
-    };
-    res.json(resData);
-  });
-
-  // 获取被人工确定过的列表
-  app.get("/pic/admin/afterCheck", async (req, res) => {
-    let resData: protocol.IResPicInfoAfterCheck;
-    let pageIndex = req.query["pageIndex"] - 0;
-    let pageSize = req.query["pageSize"] - 0;
-
-    let list = await picListForChecked(pageIndex, pageSize);
-    resData = {
-      code: 0,
-      list: list.map(n => ({
-        id: n.id,
-        url: n.url,
-        isPorn: n.isPorn,
-        isPorn2: n.isPorn2,
-        isGirl: n.isGirl,
-        isGirl2: n.isGirl2
-      }))
-    };
-    res.json(resData);
-  });
-
-  // 人工设置是否是女孩
-  app.post("/pic/admin/setIsGirl", async (req, res) => {
-    let resData: protocol.IResPicSetIsGirl;
-    let data = req.body as protocol.IReqPicSetIsGirl;
-
-    await setIsGirl(data.nameList, data.isGirl);
-    resData = { code: 0 };
-    res.json(resData);
-  });
-
-  // 人工设置是否是女孩
-  app.post("/pic/admin/setIsPorn", async (req, res) => {
-    let resData: protocol.IResPicSetIsPorn;
-    let data = req.body as protocol.IReqPicSetIsPorn;
-
-    await setIsPorn(data.nameList, data.isPorn);
-    resData = { code: 0 };
     res.json(resData);
   });
 }

@@ -1,34 +1,28 @@
-import db from "../db";
+import getMongoClient from "../getMongoClient";
+import config from "../config";
+import { number } from "joi";
+
+let dbName = config.dbName;
 let collectionName = "girlday";
 // let collectionName = "girldayMock";
 
 // 此处的id是数据库中的name,name为ext
-type picInfo = { id: string; url: string; name: string; timestamp: number };
+type PicInfo = { id: string; url: string; name: string; timestamp: number };
 
-type countInfo = { name: string; logo: string; count: number };
-
-type picCheckInfo = {
-  id: string;
-  url: string;
-  isPorn: boolean;
-  isPorn2: boolean;
-  isGirl: boolean;
-  isGirl2: boolean;
-};
-
-let validGirls = getValidGirls();
-let girlNames = validGirls.map(n => n.name);
+type CountInfo = { name: string; logo: string; count: number };
 
 export async function picList(
   name: string,
   pageIndex: number,
   pageSize: number
-): Promise<picInfo[]> {
-  let rst: picInfo[];
-  let client = await db.getIns();
+): Promise<PicInfo[]> {
+  let rst: PicInfo[];
+  let client = await getMongoClient();
+  await client.connect();
   let data = await client
-    .getCollection(collectionName)
-    .find({ name })
+    .db(dbName)
+    .collection(collectionName)
+    .find({ name, status: 1 })
     .sort({ timestamp: -1 })
     .skip(pageIndex * pageSize)
     .limit(pageSize)
@@ -41,18 +35,22 @@ export async function picList(
       url: n.url
     };
   });
+  await client.close();
   return rst;
 }
 
 // 统计图片信息
-export async function picCount(): Promise<countInfo[]> {
-  let rst: countInfo[] = [];
+export async function picCount(): Promise<CountInfo[]> {
+  let rst: CountInfo[] = [];
 
-  let client = await db.getIns();
+  let client = await getMongoClient();
+  await client.connect();
   let data = await client
-    .getCollection(collectionName)
+    .db(dbName)
+    .collection(collectionName)
     .aggregate([
       // { $match: { name: { $in: girlNames } } },
+      { $match: { status: 1 } },
       {
         $group: {
           _id: "$name",
@@ -70,161 +68,99 @@ export async function picCount(): Promise<countInfo[]> {
       count: n.count
     };
   });
-
+  await client.close();
   return rst;
 }
 
-// 获取需要check的总数
-export async function picCountForCheck(): Promise<number> {
+// -1 不确定;0表示冻结;1表示使用
+type PicStatus = -1 | 0 | 1;
+// 设置图片状态
+export async function setStatus(id: string, status: PicStatus): Promise<void> {
+  let client = await getMongoClient();
+  await client.connect();
+  await client
+    .db(dbName)
+    .collection(collectionName)
+    .updateOne({ id }, { $set: { status } });
+  await client.close();
+}
+
+// 0表示不建议,1表示建议
+type Suggest = 0 | 1;
+type PicInfoPro = {
+  id: string;
+  url: string;
+  name: string;
+  timestamp: number;
+  suggest: Suggest;
+};
+
+// 根据状态获取图片总量
+export async function picListWithStatusCount(
+  status: PicStatus
+): Promise<number> {
   let rst: number = 0;
-  let client = await db.getIns();
-  let data = await client.getCollection(collectionName).count({
-    ext: { $in: girlNames },
-    $or: [
-      { isGirl: true, isGirl2: { $exists: false } },
-      { isPorn: false, isPorn2: { $exists: false } }
-    ]
-  });
+  let client = await getMongoClient();
+  await client.connect();
+
+  let query = {};
+  if (status === -1) {
+    query = {
+      status: { $exists: false }
+    };
+  } else {
+    query = { status };
+  }
+
+  let data: number = await client
+    .db(dbName)
+    .collection(collectionName)
+    .countDocuments(query);
+
+  await client.close();
   rst = data;
   return rst;
 }
-// 获取checked的总数
-export async function picCountForChecked(): Promise<number> {
-  let rst: number = 0;
-  let client = await db.getIns();
-  let data = await client.getCollection(collectionName).count({
-    ext: { $in: girlNames },
-    $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
+
+// 根据状态获取图片
+export async function picListWithStatus(
+  status: PicStatus,
+  pageIndex: number,
+  pageSize: number
+): Promise<PicInfoPro[]> {
+  let rst: PicInfoPro[] = [];
+  let client = await getMongoClient();
+  await client.connect();
+
+  let query = {};
+  if (status === -1) {
+    query = {
+      status: { $exists: false }
+    };
+  } else {
+    query = { status };
+  }
+
+  let data: any[] = await client
+    .db(dbName)
+    .collection(collectionName)
+    .find(query)
+    .skip(pageIndex * pageSize)
+    .limit(pageSize)
+    .toArray();
+  // 处理suggest
+  rst = data.map(n => {
+    // let suggest: Suggest = n.isGirl && !n.isPorn ? 1 : 0;
+    let suggest: Suggest = 1;
+    return {
+      id: n.id,
+      url: n.url,
+      name: n.name,
+      timestamp: n.timestamp,
+      suggest
+    };
   });
-  rst = data;
+
+  await client.close();
   return rst;
-}
-
-// 获取需要check的列表
-export async function picListForCheck(
-  pageIndex: number,
-  pageSize: number
-): Promise<picCheckInfo[]> {
-  let rst: picCheckInfo[] = [];
-  let client = await db.getIns();
-  let data = await client
-    .getCollection(collectionName)
-    .find({
-      ext: { $in: girlNames },
-      $or: [
-        { isGirl: true, isGirl2: { $exists: false } },
-        { isPorn: false, isPorn2: { $exists: false } }
-      ]
-    })
-    .skip(pageIndex * pageSize)
-    .limit(pageSize)
-    .toArray();
-  rst = data.map(n => ({
-    id: n.name,
-    url: n.remoteUrl,
-    isPorn: n.isPorn,
-    isPorn2: n.isPorn2,
-    isGirl: n.isGirl,
-    isGirl2: n.isGirl2
-  }));
-
-  return rst;
-}
-// 获取checked的列表
-export async function picListForChecked(
-  pageIndex: number,
-  pageSize: number
-): Promise<picCheckInfo[]> {
-  let rst: picCheckInfo[] = [];
-  let client = await db.getIns();
-  let data = await client
-    .getCollection(collectionName)
-    .find({
-      ext: { $in: girlNames },
-      $or: [{ isGirl2: { $exists: true } }, { isPorn2: { $exists: true } }]
-    })
-    .skip(pageIndex * pageSize)
-    .limit(pageSize)
-    .toArray();
-  rst = data.map(n => ({
-    id: n.name,
-    url: n.remoteUrl,
-    isPorn: n.isPorn,
-    isPorn2: n.isPorn2,
-    isGirl: n.isGirl,
-    isGirl2: n.isGirl2
-  }));
-
-  return rst;
-}
-
-// 人工设置是不是女孩
-export async function setIsGirl(
-  nameList: string[],
-  isGirl: boolean
-): Promise<void> {
-  let client = await db.getIns();
-  // let db = client.db('twitter');
-  await client
-    .getCollection(collectionName)
-    .updateMany({ name: { $in: nameList } }, { $set: { isGirl2: isGirl } });
-}
-
-// 人工设置是不是图片
-export async function setIsPorn(
-  nameList: string[],
-  isPorn: boolean
-): Promise<void> {
-  let client = await db.getIns();
-  await client
-    .getCollection(collectionName)
-    .updateMany({ name: { $in: nameList } }, { $set: { isPorn2: isPorn } });
-}
-
-function getValidGirls(): { name: string; logo: string }[] {
-  return [
-    {
-      name: "小鹿豬比",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E5%B0%8F%E9%B9%BF%E8%B1%AC%E6%AF%94/034b8d45c2140f1a4697cf1d9c4b4a34.jpg"
-    },
-    {
-      name: "二佐Nisa",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E4%BA%8C%E4%BD%90Nisa/3e81b6cea41f8b2319d19a02f90875eb.jpg"
-    },
-    {
-      name: "雪琪SAMA",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E9%9B%AA%E7%90%AASAMA/06934292f9e7c40a8494be9453e1b4e3.jpg"
-    },
-    {
-      name: "yami",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/yami/084ac6c05e89d50c75e7b76034bce16f.jpg"
-    },
-    {
-      name: "Liyuu",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/Liyuu/07e6c2ed02b5eb2decafcf142a658c3a.jpg"
-    },
-    {
-      name: "千葉",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E5%8D%83%E8%91%89/47fb923a547879a136b3b87e6af459c1.jpg"
-    },
-    {
-      name: "娇娇萝莉要努力！",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E5%A8%87%E5%A8%87%E8%90%9D%E8%8E%89%E8%A6%81%E5%8A%AA%E5%8A%9B%EF%BC%81/ab9ccf87ed944d1fb5d31b6b7d86d945.jpg"
-    },
-    // { name: "肉肉_niku", logo: "" },
-    {
-      name: "童颜",
-      logo:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E7%AB%A5%E9%A2%9C/b28bd8774ab88ad907070772e2d013b3.jpg"
-    }
-    // { name: "小姐姐", logo: "" },
-    // { name: "小鸡腿", logo: "" }
-  ];
 }
