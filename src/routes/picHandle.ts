@@ -22,7 +22,7 @@ export default function handle(app: express.Express) {
         timestamp: n.timestamp
       }))
     };
-    res.json(list);
+    res.json(resData);
   });
 
   app.get("/picCount", async (req, res) => {
