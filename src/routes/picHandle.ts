@@ -1,7 +1,6 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import { picList, picCount } from "../service/picService";
-import { url } from "inspector";
 
 export default function handle(app: express.Express) {
   app.get("/picList", async (req, res) => {
