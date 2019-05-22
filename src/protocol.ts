@@ -15,3 +15,78 @@ export interface IReqToken {
 export interface IResToken {
   token: string;
 }
+
+export interface IReqScore {
+  url: string;
+}
+
+export interface IResScore extends IResErr {
+  id: string;
+  // userId
+  userId: string;
+  // 微信昵称
+  nickname: string;
+  // 远程url
+  url: string;
+  // 得分
+  score: number;
+}
+export interface IReqSort {}
+
+export interface IResSort extends IResErr {
+  list: {
+    id: string;
+    // userId
+    userId: string;
+    // 微信昵称
+    nickname: string;
+    // 远程url
+    url: string;
+    // 得分
+    score: number;
+  }[];
+}
+export interface IReqHistory {}
+
+export interface IResHistory extends IResErr {
+  list: {
+    id: string;
+    // userId
+    userId: string;
+    // 微信昵称
+    nickname: string;
+    // 远程url
+    url: string;
+    // 得分
+    score: number;
+  }[];
+}
+export interface IReqRemovePhoto {
+  id: string;
+}
+
+export interface IResRemovePhoto extends IResErr {}
+export interface IReqSearchPhoto {
+  id: string;
+}
+
+export interface IResSearchPhoto extends IResErr {
+  id: string;
+  // userId
+  userId: string;
+  // 微信昵称
+  nickname: string;
+  // 远程url
+  url: string;
+  // 得分
+  score: number;
+}
+
+export interface IReqLogin {
+  code: string;
+  nickname: string;
+}
+
+export interface IResLogin extends IResErr {
+  openId: string;
+}

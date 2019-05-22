@@ -1,17 +1,23 @@
 import * as express from "express";
-import ErrCode from "../errCode";
-
-import config from "../config";
-import loger from "../logIns";
-import Database from "../db";
 
 // 路由
 import testHandle from "./testHandle";
+import wxRouter from "./wxRouter";
+import guestRouter from "./guestRouter";
+import userRouter from "./userRouter";
 
 // 错误
-import errCode from "../errCode";
 
 export default function handler(app: express.Express) {
   // 测试
   testHandle(app);
+
+  // 微信登录
+  app.use(wxRouter);
+
+  // 访客路由
+  app.use(guestRouter);
+
+  // 用户路由
+  app.use(userRouter);
 }
