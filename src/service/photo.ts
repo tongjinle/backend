@@ -19,7 +19,7 @@ export async function sort(): Promise<Photo[]> {
     .db("cute")
     .collection("photo")
     .find({})
-    .sort({ score: 1 })
+    .sort({ score: -1 })
     .limit(limit)
     .toArray();
 
