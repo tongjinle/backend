@@ -19,7 +19,7 @@ export async function sort(): Promise<Photo[]> {
 
   const limit = 10;
   let data = await client
-    .db("cute")
+    .db(config.dbName)
     .collection("photo")
     .find({})
     .sort({ score: -1 })
@@ -45,7 +45,7 @@ export async function search(id: string): Promise<Photo> {
   await client.connect();
 
   let data = await client
-    .db("cute")
+    .db(config.dbName)
     .collection("photo")
     .findOne({ id });
 
@@ -86,7 +86,7 @@ export async function save(
   await client.connect();
   let id: string = md5(url);
   await client
-    .db("cute")
+    .db(config.dbName)
     .collection("photo")
     .insertOne({ id, userId, url, score, nickname });
   await client.close();
@@ -103,7 +103,7 @@ export async function history(userId: string): Promise<Photo[]> {
   await client.connect();
 
   let data = await client
-    .db("cute")
+    .db(config.dbName)
     .collection("photo")
     .find({ userId })
     .toArray();
@@ -120,5 +120,33 @@ export async function history(userId: string): Promise<Photo[]> {
 
   await client.close();
 
+  return rst;
+}
+
+// 删除照片
+export async function remove(id: string): Promise<void> {
+  let client = await getMongoClient();
+  await client.connect();
+  await client
+    .db(config.dbName)
+    .collection("photo")
+    .deleteOne({ id });
+  await client.close();
+}
+
+// 照片id和userId是否匹配
+// userId是不是照片的主人
+export async function checkOwner(userId: string, id: string): Promise<boolean> {
+  let rst: boolean;
+
+  let client = await getMongoClient();
+  await client.connect();
+  let flag = !!(await client
+    .db(config.dbName)
+    .collection("photo")
+    .findOne({ userId, id }));
+  await client.close();
+
+  rst = flag;
   return rst;
 }

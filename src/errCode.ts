@@ -12,7 +12,8 @@ let errs = {
     saveFail: {
       code: 102,
       message: "保存图片失败"
-    }
+    },
+    notOwner: { code: 103, message: "不是照片所有人" }
   }
 };
 

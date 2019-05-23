@@ -54,8 +54,29 @@ router.get("/history/", async (req, res) => {
 });
 
 // 删除我的照片
-router.post("/remove/", (req, res) => {
+router.post("/remove/", async (req, res) => {
   let resData: protocol.IResRemovePhoto;
+  let body: protocol.IReqRemovePhoto = req.body;
+
+  let result = joi.validate(body, { id: joi.string().required() });
+
+  if (result.error) {
+    res.json(errs.common.invalidParams);
+    return;
+  }
+
+  let userId: string = req.header["userId"];
+  let id: string = body.id;
+
+  // 判断是不是照片所有人
+  let flag = await photoService.checkOwner(userId, id);
+  if (!flag) {
+    res.json(errs.photo.notOwner);
+    return;
+  }
+
+  await photoService.remove(id);
+
   resData = { code: 0 };
   res.json(resData);
 });

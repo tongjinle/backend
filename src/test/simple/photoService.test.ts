@@ -2,7 +2,7 @@ import assert = require("assert");
 import getMongoClient from "../../getMongoClient";
 import { MongoClient, Collection } from "mongodb";
 import * as photoService from "../../service/photo";
-import { func } from "@hapi/joi";
+import config from "../../config";
 
 describe("photo service", async function() {
   let client: MongoClient;
@@ -10,7 +10,7 @@ describe("photo service", async function() {
   before(async function() {
     client = await getMongoClient();
     await client.connect();
-    collection = client.db("cute").collection("photo");
+    collection = client.db(config.dbName).collection("photo");
   });
 
   afterEach(async function() {
@@ -68,6 +68,60 @@ describe("photo service", async function() {
     ]);
 
     let data = await photoService.history("sannian");
+    assert(data.length === 2);
+  });
+
+  it("checkOwner", async function() {
+    await collection.insertMany([
+      {
+        id: "1",
+        score: 49,
+        url: "url1",
+        nickname: "小松鼠",
+        userId: "sannian"
+      },
+      {
+        id: "2",
+        score: 99,
+        url: "url2",
+        nickname: "大老虎",
+        userId: "sannian"
+      },
+      { id: "3", score: 49, url: "url1", nickname: "小松鼠", userId: "zst" }
+    ]);
+    // sannian是id为2的照片的所有者
+    {
+      let flag = await photoService.checkOwner("sannian", "2");
+      assert(flag);
+    }
+    // sannian"不"是id为3的照片的所有者
+    {
+      let flag = await photoService.checkOwner("sannian", "3");
+      assert(!flag);
+    }
+  });
+
+  it("remove", async function() {
+    await collection.insertMany([
+      {
+        id: "1",
+        score: 49,
+        url: "url1",
+        nickname: "小松鼠",
+        userId: "sannian"
+      },
+      {
+        id: "2",
+        score: 99,
+        url: "url2",
+        nickname: "大老虎",
+        userId: "sannian"
+      },
+      { id: "3", score: 49, url: "url1", nickname: "小松鼠", userId: "zst" }
+    ]);
+    await photoService.remove("2");
+
+    let data = await collection.find({}).toArray();
     assert(data.length === 2);
   });
 });
