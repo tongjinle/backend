@@ -3,7 +3,7 @@ import axios from "axios";
 import config from "../config";
 import md5 = require("md5");
 
-type Photo = {
+export type Photo = {
   id: string;
   userId: string;
   url: string;
@@ -92,5 +92,33 @@ export async function save(
   await client.close();
 
   rst = { id, userId, nickname, url, score };
+  return rst;
+}
+
+// 历史照片
+export async function history(userId: string): Promise<Photo[]> {
+  let rst: Photo[] = [];
+
+  let client = await getMongoClient();
+  await client.connect();
+
+  let data = await client
+    .db("cute")
+    .collection("photo")
+    .find({ userId })
+    .toArray();
+
+  rst = data.map(n => {
+    return {
+      id: n.id,
+      userId: n.userId,
+      nickname: n.nickname,
+      url: n.url,
+      score: n.score
+    };
+  });
+
+  await client.close();
+
   return rst;
 }

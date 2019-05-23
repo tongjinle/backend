@@ -45,4 +45,29 @@ describe("photo service", async function() {
     let data = await collection.findOne({ userId: "sannian" });
     assert(!!data);
   });
+
+  it("history", async function() {
+    this.timeout(10 * 1000);
+
+    await collection.insertMany([
+      {
+        id: "1",
+        score: 49,
+        url: "url1",
+        nickname: "小松鼠",
+        userId: "sannian"
+      },
+      {
+        id: "2",
+        score: 99,
+        url: "url2",
+        nickname: "大老虎",
+        userId: "sannian"
+      },
+      { id: "3", score: 49, url: "url1", nickname: "小松鼠", userId: "zst" }
+    ]);
+
+    let data = await photoService.history("sannian");
+    assert(data.length === 2);
+  });
 });

@@ -45,24 +45,10 @@ router.post("/score/", async (req, res) => {
 });
 
 // 我的历史照片
-router.get("/history/", (req, res) => {
+router.get("/history/", async (req, res) => {
   let resData: protocol.IResHistory;
-  let list = [
-    {
-      id: "#123abc",
-      userId: "tongjinle",
-      url: "http://www.baid",
-      score: 88,
-      nickname: "小松鼠"
-    },
-    {
-      id: "#123abc2",
-      userId: "tongjinle2",
-      url: "http://www.baid2",
-      score: 87,
-      nickname: "小松鼠2"
-    }
-  ];
+  let userId: string = req.header["userId"];
+  let list = await photoService.history(userId);
   resData = { code: 0, list };
   res.json(resData);
 });
