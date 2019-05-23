@@ -81,10 +81,12 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/joi@^14.3.3":
-  version "14.3.3"
-  resolved "https://registry.yarnpkg.com/@types/joi/-/joi-14.3.3.tgz#f251aa8150fc0b6a7ce9feab21802a28473de335"
-  integrity sha512-6gAT/UkIzYb7zZulAbcof3lFxpiD5EI6xBeTvkL1wYN12pnFQ+y/+xl9BvnVgxkmaIDN89xWhGZLD9CvuOtZ9g==
+"@types/hapi__joi@*", "@types/hapi__joi@^15.0.1":
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/@types/hapi__joi/-/hapi__joi-15.0.1.tgz#6038375074af792b765e34dc799c83d30a406fbe"
+  integrity sha512-uqH3kTO1nrhe+Pbq+dQKrulrfscRPjFZNv9UWA3FupJZBHw+miT7yiV6C8A80YLnn0o6zbgTProncBb3d7QohA==
+  dependencies:
+    "@types/hapi__joi" "*"
 
 "@types/log4js@0.0.32":
   version "0.0.32"
@@ -92,6 +94,13 @@
   integrity sha1-wVYhz6lvkuxrDPtJCWvdI82JPHw=
   dependencies:
     "@types/express" "*"
+
+"@types/md5@^2.1.33":
+  version "2.1.33"
+  resolved "https://registry.yarnpkg.com/@types/md5/-/md5-2.1.33.tgz#8c8dba30df4ad0e92296424f08c4898dd808e8df"
+  integrity sha512-8+X960EtKLoSblhauxLKy3zzotagjoj3Jt1Tx9oaxUdZEPIBl+mkrUz6PNKpzJgkrKSN9YgkWTA29c0KnLshmA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/mime@*":
   version "2.0.1"
@@ -260,6 +269,11 @@ chance@^1.0.13:
   resolved "https://registry.yarnpkg.com/chance/-/chance-1.0.18.tgz#79788fe6fca4c338bf404321c347eecc80f969ee"
   integrity sha512-g9YLQVHVZS/3F+zIicfB58vjcxopvYQRp7xHzvyDFDhXH1aRZI/JhwSAO0X5qYiQluoGnaNAU6wByD2KTxJN1A==
 
+charenc@~0.0.1:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
+  integrity sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
+
 color-convert@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
@@ -339,6 +353,11 @@ cross-spawn@^6.0.5:
     semver "^5.5.0"
     shebang-command "^1.2.0"
     which "^1.2.9"
+
+crypt@~0.0.1:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
+  integrity sha1-iNf/fsDfuG9xPch7u0LQRNPmxBs=
 
 d@1:
   version "1.0.0"
@@ -815,7 +834,7 @@ ipaddr.js@1.9.0:
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.0.tgz#37df74e430a0e47550fe54a2defe30d8acd95f65"
   integrity sha512-M4Sjn6N/+O6/IXSJseKqHoFc+5FdGJ22sXqnjTpdZweHK64MzEPAyQZyEU3R/KRv2GLoa7nNtg/C2Ev6m7z+eA==
 
-is-buffer@^1.1.5:
+is-buffer@^1.1.5, is-buffer@~1.1.1:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
@@ -856,6 +875,15 @@ log4js@^1.1.0:
     debug "^2.2.0"
     semver "^5.3.0"
     streamroller "^0.4.0"
+
+md5@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/md5/-/md5-2.2.1.tgz#53ab38d5fe3c8891ba465329ea23fac0540126f9"
+  integrity sha1-U6s41f48iJG6RlMp6iP6wFQBJvk=
+  dependencies:
+    charenc "~0.0.1"
+    crypt "~0.0.1"
+    is-buffer "~1.1.1"
 
 media-typer@0.3.0:
   version "0.3.0"

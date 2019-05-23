@@ -16,12 +16,14 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "^15.0.3",
-    "@types/joi": "^14.3.3",
+    "@types/hapi__joi": "^15.0.1",
+    "@types/md5": "^2.1.33",
     "@types/mocha": "^5.2.6",
     "axios": "^0.17.1",
     "cross-env": "^5.2.0",
     "express": "^4.14.0",
     "log4js": "^1.1.0",
+    "md5": "^2.2.1",
     "mongodb": "^3.0.1"
   },
   "devDependencies": {

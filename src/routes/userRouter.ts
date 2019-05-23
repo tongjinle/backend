@@ -1,5 +1,8 @@
 import * as express from "express";
 import * as protocol from "../protocol";
+import * as joi from "@hapi/joi";
+import errs from "../errCode";
+import * as photoService from "../service/photo";
 let router = express.Router();
 
 // check user role
@@ -15,16 +18,29 @@ router.use((req, res, next) => {
 });
 
 // 颜值评分
-router.post("/score/", (req, res) => {
+router.post("/score/", async (req, res) => {
   let resData: protocol.IResScore;
-  resData = {
-    code: 0,
-    id: "#123abc",
-    userId: "tongjinle",
-    url: "http://www.baid",
-    score: 88,
-    nickname: "小松鼠"
-  };
+  let body: protocol.IReqScore;
+
+  let result = joi.validate(body, { url: joi.string().uri() });
+  if (result.error) {
+    res.json(errs.common.invalidParams);
+    return;
+  }
+
+  let userId: string = req.header["userId"];
+  let url: string = body.url;
+  // todo
+  // 在redis中查找
+  let nickname = "小松鼠";
+  let photo = await photoService.save(userId, url, nickname);
+
+  if (!photo) {
+    res.json(errs.photo.saveFail);
+    return;
+  }
+
+  resData = Object.assign({ code: 0 }, photo);
   res.json(resData);
 });
 

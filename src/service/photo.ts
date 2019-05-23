@@ -1,4 +1,7 @@
 import getMongoClient from "../getMongoClient";
+import axios from "axios";
+import config from "../config";
+import md5 = require("md5");
 
 type Photo = {
   id: string;
@@ -35,6 +38,7 @@ export async function sort(): Promise<Photo[]> {
   return rst;
 }
 
+// 查找照片
 export async function search(id: string): Promise<Photo> {
   let rst: Photo;
   let client = await getMongoClient();
@@ -56,5 +60,37 @@ export async function search(id: string): Promise<Photo> {
   }
 
   await client.close();
+  return rst;
+}
+
+// 保存照片
+export async function save(
+  userId: string,
+  url: string,
+  nickname: string
+): Promise<Photo> {
+  let rst: Photo;
+
+  // 评分
+  let aiUrl = "https://api.puman.xyz/commonApi/ai/faceScore";
+  console.log({ url });
+  let score: number = 0;
+  let res = await axios.post(aiUrl, { url });
+  score = res.data.result;
+  if (score === -1) {
+    return undefined;
+  }
+
+  // 保存
+  let client = await getMongoClient();
+  await client.connect();
+  let id: string = md5(url);
+  await client
+    .db("cute")
+    .collection("photo")
+    .insertOne({ id, userId, url, score, nickname });
+  await client.close();
+
+  rst = { id, userId, nickname, url, score };
   return rst;
 }
