@@ -84,9 +84,15 @@ export interface IResSearchPhoto extends IResErr {
 
 export interface IReqLogin {
   code: string;
-  nickname: string;
 }
 
 export interface IResLogin extends IResErr {
-  openId: string;
+  userId: string;
+  token: string;
 }
+
+export interface IReqUpdateUser {
+  nickname: string;
+}
+
+export interface IResUpdateUser extends IResErr {}
