@@ -2,6 +2,7 @@ import getMongoClient from "../getMongoClient";
 import axios from "axios";
 import config from "../config";
 import md5 = require("md5");
+import * as request from "request";
 
 export type Photo = {
   id: string;
@@ -73,13 +74,28 @@ export async function save(
 
   // 评分
   let aiUrl = "https://api.puman.xyz/commonApi/ai/faceScore";
-  console.log({ url });
   let score: number = 0;
-  let res = await axios.post(aiUrl, { url });
-  score = res.data.result;
-  if (score === -1) {
-    return undefined;
-  }
+  score = await new Promise(resolve => {
+    request.post(aiUrl, { json: { url } }, (err, res) => {
+      if (err) {
+        resolve(-1);
+        return;
+      }
+      let data = typeof res.body === "string" ? JSON.parse(res.body) : res.body;
+      if (data.code === 0) {
+        resolve(data.result);
+      } else {
+        resolve(-1);
+      }
+    });
+  });
+
+  // let res = await axios.post(aiUrl, { url });
+  // score = res.data.result;
+  // if (score === -1) {
+  //   return undefined;
+  // }
+  console.log({ aiUrl, url, score });
 
   // 保存
   let client = await getMongoClient();

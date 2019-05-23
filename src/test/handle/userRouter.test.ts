@@ -80,7 +80,7 @@ describe("user router", async function() {
     assert(res.data.code === 0);
   });
 
-  xit("score", async function() {
+  it("score", async function() {
     this.timeout(30 * 1000);
     let res = await request.post("/user/score/", {
       url:
