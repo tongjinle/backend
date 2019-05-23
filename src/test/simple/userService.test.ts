@@ -13,7 +13,7 @@ describe("user service", async function() {
     collection = client.db(config.dbName).collection("user");
   });
 
-  afterEach(async function() {
+  beforeEach(async function() {
     // 清理所有数据
     await collection.deleteMany({});
   });

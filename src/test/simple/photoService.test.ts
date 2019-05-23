@@ -13,7 +13,7 @@ describe("photo service", async function() {
     collection = client.db(config.dbName).collection("photo");
   });
 
-  afterEach(async function() {
+  beforeEach(async function() {
     // 清理所有数据
     await collection.deleteMany({});
   });

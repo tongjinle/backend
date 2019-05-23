@@ -12,9 +12,9 @@ router.use(async (req, res, next) => {
   let flag: boolean;
   flag = true;
 
-  let userId: string = req.header["userId"];
-  let token: string = req.header["token"];
-
+  let userId: string = req.header("userId");
+  let token: string = req.header("token");
+  console.log({ userId, token });
   let result = joi.validate(
     { userId, token },
     {
@@ -38,11 +38,11 @@ router.use(async (req, res, next) => {
 });
 
 // 更新个人信息
-router.post("/updateUser/", async (req, res) => {
+router.post("/update/", async (req, res) => {
   let resData: protocol.IResUpdateUser;
   let body: protocol.IReqUpdateUser = req.body;
 
-  let userId: string = req.header["userId"];
+  let userId: string = req.header("userId");
   let nickname = body.nickname;
   let flag = await userService.updateUser(userId, { nickname });
 
@@ -54,7 +54,7 @@ router.post("/updateUser/", async (req, res) => {
 // 颜值评分
 router.post("/score/", async (req, res) => {
   let resData: protocol.IResScore;
-  let body: protocol.IReqScore;
+  let body: protocol.IReqScore = req.body;
 
   let result = joi.validate(body, { url: joi.string().uri() });
   if (result.error) {
@@ -62,10 +62,9 @@ router.post("/score/", async (req, res) => {
     return;
   }
 
-  let userId: string = req.header["userId"];
+  let userId: string = req.header("userId");
   let url: string = body.url;
-  // todo
-  // 在redis中查找
+
   let user = await userService.getUser(userId);
   let nickname = user.nickname;
   let photo = await photoService.save(userId, url, nickname);
@@ -82,7 +81,7 @@ router.post("/score/", async (req, res) => {
 // 我的历史照片
 router.get("/history/", async (req, res) => {
   let resData: protocol.IResHistory;
-  let userId: string = req.header["userId"];
+  let userId: string = req.header("userId");
   let list = await photoService.history(userId);
   resData = { code: 0, list };
   res.json(resData);
@@ -100,7 +99,7 @@ router.post("/remove/", async (req, res) => {
     return;
   }
 
-  let userId: string = req.header["userId"];
+  let userId: string = req.header("userId");
   let id: string = body.id;
 
   // 判断是不是照片所有人

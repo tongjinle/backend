@@ -19,5 +19,5 @@ export default function handler(app: express.Express) {
   app.use(guestRouter);
 
   // 用户路由
-  app.use(userRouter);
+  app.use("/user", userRouter);
 }

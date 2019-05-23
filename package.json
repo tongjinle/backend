@@ -10,7 +10,8 @@
     "start-test-server": "cross-env NODE_ENV=test node ./dist/app",
     "test": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/*.test.js",
     "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/userService.test.js",
-    "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js"
+    "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js",
+    "test-handle:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/userRouter.test.js"
   },
   "keywords": [],
   "author": "",
