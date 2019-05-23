@@ -46,7 +46,7 @@ export async function updateUser(userId: string, info: {}): Promise<boolean> {
 
 // 获取用户的信息
 export async function getUser(userId: string): Promise<User> {
-  let rst: User;
+  let rst: User = undefined;
 
   let client = await getMongoClient();
   await client.connect();
@@ -54,12 +54,12 @@ export async function getUser(userId: string): Promise<User> {
   let collection = client.db(config.dbName).collection("user");
   let data = await collection.findOne({ userId });
 
-  rst = data.map(n => {
-    return {
-      userId: n.userId,
-      nickname: n.nickname
+  if (data) {
+    rst = {
+      userId: data.userId,
+      nickname: data.nickname
     };
-  });
+  }
 
   await client.close();
 
