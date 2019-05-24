@@ -13,7 +13,7 @@ export default function handler(app: express.Express) {
   testHandle(app);
 
   // 微信登录
-  app.use(wxRouter);
+  app.use("/wx", wxRouter);
 
   // 访客路由
   app.use(guestRouter);

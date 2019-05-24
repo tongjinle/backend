@@ -21,6 +21,9 @@ describe("guest router", async function() {
   });
 
   beforeEach(async function() {
+    // 清理所有数据
+    await collection.deleteMany({});
+
     await collection.insertMany([
       { id: "1", score: 100, url: "url1", nickname: "三年", userId: "sannian" },
       { id: "2", score: 90, url: "url2", nickname: "三年", userId: "sannian" },
@@ -28,10 +31,7 @@ describe("guest router", async function() {
     ]);
   });
 
-  afterEach(async function() {
-    // 清理所有数据
-    await collection.deleteMany({});
-  });
+  afterEach(async function() {});
 
   after(async function() {
     await client.close();
