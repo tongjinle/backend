@@ -3,11 +3,12 @@ import * as protocol from "../protocol";
 import "@hapi/joi";
 import axios from "axios";
 import * as userService from "../service/user";
+import config from "../config";
 
 let router = express.Router();
 
-let appId: string;
-let appSecret: string;
+let appId: string = config.wx.appId;
+let appSecret: string = config.wx.appSecret;
 
 let wxUrl = "https://api.puman.xyz/commonApi/wx/";
 // 登录

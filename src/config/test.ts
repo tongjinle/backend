@@ -1,6 +1,6 @@
 import IConfig from "./iconfig";
 const config: IConfig = {
-  dbName: "test",
+  dbName: "testCute",
   mockToken: "sannian.zst",
   mockOpenId: "sannian.zst"
 };
