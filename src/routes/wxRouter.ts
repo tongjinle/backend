@@ -4,23 +4,49 @@ import "@hapi/joi";
 import axios from "axios";
 import * as userService from "../service/user";
 import config from "../config";
+import * as request from "request";
 
 let router = express.Router();
 
 let appId: string = config.wx.appId;
 let appSecret: string = config.wx.appSecret;
 
-let wxUrl = "https://api.puman.xyz/commonApi/wx/";
+let wxUrl = "https://api.puman.xyz/commonApi/wx/openId";
 // 登录
-router.post("/login/", async (req, res) => {
+router.get("/login/", async (req, res) => {
   let resData: protocol.IResLogin;
-  let body: protocol.IReqLogin = req.body;
-  let { code } = body;
+  let query: protocol.IReqLogin = req.query;
+  let { code } = query;
+  let url =
+    wxUrl +
+    "?" +
+    "appId=" +
+    appId +
+    "&" +
+    "appSecret=" +
+    appSecret +
+    "&" +
+    "code=" +
+    code;
   try {
-    let wxRes = await axios.get(wxUrl, {
-      data: { appId, appSecret, code }
+    let openId: string = await new Promise(resolve => {
+      request.get(url, (err, res) => {
+        console.log(url);
+        if (err) {
+          console.log(err);
+          resolve("");
+          return;
+        }
+        let data =
+          typeof res.body === "string" ? JSON.parse(res.body) : res.body;
+        resolve(data.openId);
+      });
     });
-    let openId = wxRes.data.openId;
+    console.log({ openId });
+    if (openId === "") {
+      res.json({ code: 800 });
+      return;
+    }
     let token = await userService.getToken(openId);
     // 直接在数据库addUser
     await userService.addUser(openId);
