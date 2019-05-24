@@ -18,6 +18,8 @@ export interface IResToken {
 
 export interface IReqScore {
   url: string;
+  nickname: string;
+  logoUrl: string;
 }
 
 export interface IResScore extends IResErr {

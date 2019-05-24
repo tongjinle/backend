@@ -56,7 +56,17 @@ router.post("/score/", async (req, res) => {
   let resData: protocol.IResScore;
   let body: protocol.IReqScore = req.body;
 
-  let result = joi.validate(body, { url: joi.string().uri() });
+  let result = joi.validate(body, {
+    url: joi
+      .string()
+      .uri()
+      .required(),
+    nickname: joi.string().required(),
+    logoUrl: joi
+      .string()
+      .uri()
+      .required()
+  });
   if (result.error) {
     res.json(errs.common.invalidParams);
     return;
@@ -64,10 +74,10 @@ router.post("/score/", async (req, res) => {
 
   let userId: string = req.header("userId");
   let url: string = body.url;
+  let nickname: string = body.nickname;
+  let logoUrl: string = body.logoUrl;
 
-  let user = await userService.getUser(userId);
-  let nickname = user.nickname;
-  let photo = await photoService.save(userId, url, nickname);
+  let photo = await photoService.save(userId, url, nickname, logoUrl);
 
   if (!photo) {
     res.json(errs.photo.saveFail);

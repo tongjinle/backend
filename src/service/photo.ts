@@ -10,6 +10,7 @@ export type Photo = {
   url: string;
   score: number;
   nickname: string;
+  logoUrl: string;
 };
 
 // 获取排行榜
@@ -32,7 +33,8 @@ export async function sort(): Promise<Photo[]> {
     userId: n.userId,
     url: n.url,
     score: n.score,
-    nickname: n.nickname
+    nickname: n.nickname,
+    logoUrl: n.logoUrl
   }));
 
   await client.close();
@@ -56,7 +58,8 @@ export async function search(id: string): Promise<Photo> {
       userId: data.userId,
       url: data.url,
       score: data.score,
-      nickname: data.nickname
+      nickname: data.nickname,
+      logoUrl: data.logoUrl
     };
   }
 
@@ -68,7 +71,8 @@ export async function search(id: string): Promise<Photo> {
 export async function save(
   userId: string,
   url: string,
-  nickname: string
+  nickname: string,
+  logoUrl: string
 ): Promise<Photo> {
   let rst: Photo;
 
@@ -104,10 +108,10 @@ export async function save(
   await client
     .db(config.dbName)
     .collection("photo")
-    .insertOne({ id, userId, url, score, nickname });
+    .insertOne({ id, userId, url, score, nickname, logoUrl });
   await client.close();
 
-  rst = { id, userId, nickname, url, score };
+  rst = { id, userId, nickname, url, score, logoUrl };
   return rst;
 }
 
@@ -130,7 +134,8 @@ export async function history(userId: string): Promise<Photo[]> {
       userId: n.userId,
       nickname: n.nickname,
       url: n.url,
-      score: n.score
+      score: n.score,
+      logoUrl: n.logoUrl
     };
   });
 

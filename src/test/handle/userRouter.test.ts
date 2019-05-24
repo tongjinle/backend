@@ -84,6 +84,9 @@ describe("user router", async function() {
     this.timeout(30 * 1000);
     let res = await request.post("/user/score/", {
       url:
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/faceScore/034b8d45c2140f1a4697cf1d9c4b4a34.jpg",
+      nickname: "三年",
+      logoUrl:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/faceScore/034b8d45c2140f1a4697cf1d9c4b4a34.jpg"
     });
 

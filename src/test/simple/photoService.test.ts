@@ -37,7 +37,7 @@ describe("photo service", async function() {
     // 图片是童颜
     let url =
       "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/faceScore/034b8d45c2140f1a4697cf1d9c4b4a34.jpg";
-    let photo = await photoService.save("sannian", url, "小松鼠");
+    let photo = await photoService.save("sannian", url, "小松鼠", "");
 
     assert(photo.score !== -1);
 
