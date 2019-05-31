@@ -9,8 +9,8 @@ const config: IConfig = {
   dbName: "zst",
 
   wx: {
-    appId: "wx70b1a409c7292feb",
-    appSecret: "befb5c145897d423f8c25282204292b4",
+    appId: "wx09bbbd445c8b772f",
+    appSecret: "10dbfe2215c799c60bd113f69a3f6ebc",
     // 信息模版Id
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },
