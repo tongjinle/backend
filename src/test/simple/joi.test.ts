@@ -9,14 +9,18 @@ describe("demo", () => {
 
     let schema = {
       name: joi.string().required(),
-      age: joi.number().max(100)
+      age: joi
+        .number()
+        .max(100)
+        .required()
     };
 
     let expects = [true, false, false];
     [tong, monster, wang].forEach((n, i) => {
-      let rst = joi.validate(tong, schema);
-      // assert((rst.error === null) === expects[i]);
-      console.log(i, rst.error);
+      let rst = joi.validate(n, schema);
+      assert((rst.error === null) === expects[i]);
+
+      // console.log(i, rst.error, rst.value);
     });
   });
 });

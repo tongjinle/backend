@@ -1,6 +1,5 @@
 import * as handyRedis from "handy-redis";
 import config from "./config/index";
-import { resolve } from "url";
 
 let client: handyRedis.IHandyRedis;
 async function getRedisClient(): Promise<handyRedis.IHandyRedis> {
