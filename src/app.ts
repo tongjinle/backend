@@ -6,7 +6,6 @@ import * as path from "path";
 // https://www.jianshu.com/p/cd3de110b4b6
 import * as bodyParser from "body-parser";
 
-import loger from "./logIns";
 import config from "./config";
 
 import httpRouteHandle from "./routes/httpRoute";
@@ -34,7 +33,6 @@ class Main {
 
     // 过滤掉option
     app.use((req, res, next) => {
-      loger.info("req.path", req.path, req.method);
       // 在跨域的请求发生的时候,post请求之前会产生一个option请求
       if (req.method == "OPTIONS") {
         next();

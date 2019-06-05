@@ -1,7 +1,6 @@
 import IConfig from "./iconfig";
 const config: IConfig = {
-  mockToken: "sannian.zst",
-  mockOpenId: "sannian.zst"
+  port: 7100
 };
 
 export default config;

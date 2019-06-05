@@ -2,7 +2,6 @@ import * as express from "express";
 import ErrCode from "../errCode";
 
 import config from "../config";
-import loger from "../logIns";
 import Database from "../db";
 
 // 路由
