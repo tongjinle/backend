@@ -5,7 +5,7 @@ const config: IConfig = {
   host: "localhost",
   port: 3000,
 
-  connectStr: "mongodb:tea@sannian//118.31.11.29:27017",
+  connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
   dbName: "zst",
 
   redis: {
