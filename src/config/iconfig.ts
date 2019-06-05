@@ -10,6 +10,13 @@ interface IConfigBase {
   // 数据库连接字符串
   connectStr: string;
 
+  // redis
+  redis: {
+    port: number;
+    host: string;
+    pass: string;
+  };
+
   // 微信
   wx: {
     appId: string;
@@ -18,10 +25,6 @@ interface IConfigBase {
   };
   // token过期时间
   tokenExpires: number;
-
-  // mock
-  mockToken: string;
-  mockOpenId: string;
 }
 
 // 根据项目需求而定的接口
