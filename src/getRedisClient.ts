@@ -17,3 +17,5 @@ async function getRedisClient(): Promise<handyRedis.IHandyRedis> {
   }
   return client;
 }
+
+export default getRedisClient;

@@ -18,9 +18,10 @@ const config: IConfig = {
     appSecret: "",
     // 信息模版Id
     templateId: ""
-  }
+  },
 
   // ******** special for project ********
+  defaultCoin: 20
 };
 
 export default config;

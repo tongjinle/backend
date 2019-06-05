@@ -15,3 +15,11 @@ export interface IReqToken {
 export interface IResToken {
   token: string;
 }
+
+export interface IReqReg {}
+export interface IResReg extends IResErr {
+  token: string;
+}
+
+// export interface IReqReg {}
+// export interface IResReg extends IResErr {}

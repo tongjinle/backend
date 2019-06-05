@@ -28,7 +28,14 @@ interface IConfigBase {
 }
 
 // 根据项目需求而定的接口
-interface IConfigDynamic {}
+interface IConfigDynamic {
+  // 注册赠送的金币
+  defaultCoin: number;
+  // 打捞金币的最小值
+  fetchCoinMin: number;
+  // 打捞金币的最大值
+  fetchCoinMax: number;
+}
 
 interface IConfig extends Partial<IConfigBase>, Partial<IConfigDynamic> {}
 
