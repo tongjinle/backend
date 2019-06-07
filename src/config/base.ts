@@ -9,7 +9,7 @@ const config: IConfig = {
   dbName: "zst",
 
   redis: {
-    host: "localhost",
+    host: "118.31.11.29",
     port: 6379,
     pass: "sannian"
   },
@@ -21,7 +21,9 @@ const config: IConfig = {
   },
 
   // ******** special for project ********
-  defaultCoin: 20
+  defaultCoin: 20,
+  fetchCoinMax: 100,
+  fetchCoinMin: 10
 };
 
 export default config;

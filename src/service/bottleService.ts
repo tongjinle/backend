@@ -12,8 +12,10 @@ type Bottle = {
   preview?: string[];
   // 资源链接
   url?: string;
+  // 瓶子里的金币
+  coin?: number;
   // 价格
-  coin: number;
+  price?: number;
 };
 const cacheCount: number = 1000;
 
@@ -39,6 +41,7 @@ export async function fetch(token: string, time: Date): Promise<Bottle> {
     };
     await logFetchCoin(token, coin, time);
   } else {
+    // 最多尝试20次
     let count = 20;
     while (count--) {
       let id = await redis.srandmember("bottle");
@@ -49,7 +52,7 @@ export async function fetch(token: string, time: Date): Promise<Bottle> {
           id,
           preview: item.preview,
           url: item.url,
-          coin: item.coin
+          price: item.coin
         };
         await logFetchResource(token, id, time);
       }
@@ -75,12 +78,13 @@ export async function password(id: string): Promise<string> {
   return rst;
 }
 
+// 缓存
 async function cache() {
   let redis = await getRedisClient();
   let mongo = await getMongoClient();
 
   // 缓存数据
-  if (!(await redis.smembers("bottle"))) {
+  if (!(await redis.exists("bottle"))) {
     let co = await mongo.db(dbName).collection("bottle");
 
     let query = { isFrozen: false };
@@ -101,7 +105,7 @@ async function cache() {
   }
 }
 
-// 今天是否已经挖到了金币
+// 某天是否已经挖到了金币
 async function isFetchCoin(
   token: string,
   year: number,
