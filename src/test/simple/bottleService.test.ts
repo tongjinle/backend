@@ -28,6 +28,8 @@ describe("bottle service", () => {
       })
     );
 
+    await redis.flushall();
+
     // 插入数据
     let count = 2000;
     let arr = [];

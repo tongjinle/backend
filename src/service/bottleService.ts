@@ -2,6 +2,7 @@ import * as md5 from "md5";
 import getMongoClient from "../getMongoClient";
 import getRedisClient from "../getRedisClient";
 import config from "../config";
+import { DAY } from "../constant";
 
 let dbName = config.dbName;
 
@@ -102,6 +103,8 @@ async function cache() {
       await redis.sadd("bottle", di.id);
       await redis.set("bottle#" + di.id, JSON.stringify(di));
     }
+
+    await redis.expire("bottle", DAY);
   }
 }
 
