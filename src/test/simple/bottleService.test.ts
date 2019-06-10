@@ -6,7 +6,7 @@ import { getMongoClient, closeMongoClient } from "../../getMongoClient";
 import config from "../../config";
 import { beforeEach } from "mocha";
 import { ICreateHandyClient, IHandyRedis } from "handy-redis";
-import getRedisClient from "../../getRedisClient";
+import { getRedisClient, closeRedisClient } from "../../getRedisClient";
 
 let dbName = config.dbName;
 
@@ -52,7 +52,7 @@ describe("bottle service", () => {
 
   after(async function() {
     await closeMongoClient();
-    await redis.redis.quit();
+    await closeRedisClient();
   });
 
   // tong第一次fetch拿到金币

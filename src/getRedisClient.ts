@@ -1,8 +1,9 @@
 import * as handyRedis from "handy-redis";
 import config from "./config/index";
+import { executionAsyncId } from "async_hooks";
 
 let client: handyRedis.IHandyRedis;
-async function getRedisClient(): Promise<handyRedis.IHandyRedis> {
+export async function getRedisClient(): Promise<handyRedis.IHandyRedis> {
   if (!client) {
     return new Promise(resolve => {
       let { port, host, pass } = config.redis;
@@ -18,4 +19,9 @@ async function getRedisClient(): Promise<handyRedis.IHandyRedis> {
   return client;
 }
 
-export default getRedisClient;
+export async function closeRedisClient(): Promise<void> {
+  if (client) {
+    await client.redis.quit();
+  }
+  client = undefined;
+}

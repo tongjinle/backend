@@ -1,6 +1,6 @@
 import * as md5 from "md5";
 import { getMongoClient } from "../getMongoClient";
-import getRedisClient from "../getRedisClient";
+import { getRedisClient } from "../getRedisClient";
 import config from "../config";
 import { DAY } from "../constant";
 

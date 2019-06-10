@@ -19,6 +19,7 @@ export async function reg(): Promise<string> {
     .db(dbName)
     .collection("user")
     .insertOne({ token, coin: defaultCoin });
+  rst = token;
   return rst;
 }
 
@@ -40,7 +41,7 @@ export async function contribute(token: string, url: string): Promise<void> {
   await mongo
     .db(dbName)
     .collection("contribute")
-    .insertOne({ token, url });
+    .insertOne({ token, url, isCheck: false });
 }
 
 // 转发
