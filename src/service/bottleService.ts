@@ -83,7 +83,6 @@ export async function password(id: string): Promise<string> {
 async function cache() {
   let redis = await getRedisClient();
   let mongo = await getMongoClient();
-
   // 缓存数据
   if (!(await redis.exists("bottle"))) {
     let co = await mongo.db(dbName).collection("bottle");
@@ -97,12 +96,13 @@ async function cache() {
       .skip(start)
       .limit(cacheCount)
       .toArray();
-
+    let arr = [];
     for (let i = 0; i < data.length; i++) {
       const di = data[i];
-      await redis.sadd("bottle", di.id);
-      await redis.set("bottle#" + di.id, JSON.stringify(di));
+      arr.push(redis.sadd("bottle", di.id));
+      arr.push(redis.set("bottle#" + di.id, JSON.stringify(di)));
     }
+    await Promise.all(arr);
 
     await redis.expire("bottle", DAY);
   }
