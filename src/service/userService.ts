@@ -23,6 +23,16 @@ export async function reg(): Promise<string> {
   return rst;
 }
 
+export async function isReged(token: string): Promise<boolean> {
+  let rst: boolean;
+  let mongo = await getMongoClient();
+  rst = !!(await mongo
+    .db(dbName)
+    .collection("user")
+    .findOne({ token }));
+  return rst;
+}
+
 export async function coin(token: string): Promise<number> {
   let rst: number = 0;
   let mongo = await getMongoClient();

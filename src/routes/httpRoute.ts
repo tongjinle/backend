@@ -1,16 +1,13 @@
 import * as express from "express";
-import ErrCode from "../errCode";
-
-import config from "../config";
-import Database from "../db";
+import bottleRouter from "./bottleRouter";
 
 // 路由
 import testHandle from "./testHandle";
 
-// 错误
-import errCode from "../errCode";
-
 export default function handler(app: express.Express) {
+  // 瓶子
+  app.use("/bottle", bottleRouter);
+
   // 测试
   testHandle(app);
 }

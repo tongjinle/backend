@@ -21,5 +21,28 @@ export interface IResReg extends IResErr {
   token: string;
 }
 
+export interface IReqFetch {}
+export interface IResFetch extends IResErr {
+  id?: string;
+  type: "resource" | "coin";
+  // 预览
+  preview?: string[];
+  // 资源链接
+  url?: string;
+  // 价格
+  coin: number;
+}
+
+export interface IReqPassword {
+  // 瓶子的id
+  id: string;
+}
+export interface IResPassword extends IResErr {
+  password: string;
+}
+
+// export interface IReqReg {}
+// export interface IResReg extends IResErr {}
+
 // export interface IReqReg {}
 // export interface IResReg extends IResErr {}
