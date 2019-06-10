@@ -4,19 +4,11 @@ import * as userService from "../service/userService";
 import * as bottleService from "../service/bottleService";
 import * as protocol from "../protocol";
 import errs from "../errCode";
+import tokenMw from "./tokenMw";
 
 let router = express.Router();
 
-router.use(async (req, res, next) => {
-  console.log("bottle router");
-
-  let token: string = req.header("token");
-  if (!token || (await userService.isReged(token))) {
-    res.json(errs.common.invalidToken);
-    return;
-  }
-  next();
-});
+router.use(tokenMw);
 
 router.post("/fetch", async (req, res) => {
   let resData: protocol.IResFetch;

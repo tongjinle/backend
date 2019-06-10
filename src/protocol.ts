@@ -41,8 +41,10 @@ export interface IResPassword extends IResErr {
   password: string;
 }
 
-// export interface IReqReg {}
-// export interface IResReg extends IResErr {}
+export interface IReqCoin {}
+export interface IResCoin extends IResErr {
+  coin: number;
+}
 
 // export interface IReqReg {}
 // export interface IResReg extends IResErr {}
