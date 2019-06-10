@@ -1,5 +1,5 @@
 // 官方通知
-import getMongoClient from "../getMongoClient";
+import { getMongoClient } from "../getMongoClient";
 import config from "../config";
 import { isMainThread } from "worker_threads";
 import md5 = require("md5");

@@ -1,5 +1,5 @@
 import * as md5 from "md5";
-import getMongoClient from "../getMongoClient";
+import { getMongoClient } from "../getMongoClient";
 import config from "../config";
 
 let dbName = config.dbName;

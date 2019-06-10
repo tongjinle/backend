@@ -1,7 +1,7 @@
 import assert = require("assert");
 import * as noticeService from "../../service/noticeService";
 import { MongoClient } from "mongodb";
-import getMongoClient from "../../getMongoClient";
+import { getMongoClient, closeMongoClient } from "../../getMongoClient";
 import config from "../../config";
 import { beforeEach } from "mocha";
 
@@ -21,7 +21,7 @@ describe("notice service", () => {
   });
 
   after(async function() {
-    await mongo.close();
+    await closeMongoClient();
   });
 
   it("add", async function() {
