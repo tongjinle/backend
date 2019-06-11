@@ -9,7 +9,7 @@ async function tokenMw(
   next: express.NextFunction
 ) {
   let token: string = req.header("token");
-  if (!token || (await userService.isReged(token))) {
+  if (!token || !(await userService.isReged(token))) {
     res.json(errs.common.invalidToken);
     return;
   }

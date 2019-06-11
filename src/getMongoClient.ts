@@ -20,5 +20,3 @@ export async function closeMongoClient() {
   }
   client = undefined;
 }
-
-export default { getMongoClient, closeMongoClient };

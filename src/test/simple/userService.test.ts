@@ -19,7 +19,7 @@ describe("user service", () => {
 
   beforeEach(async function() {
     await Promise.all(
-      ["user", "contribute"].map(coName => {
+      ["user", "contribute", "bottle"].map(coName => {
         return mongo
           .db(dbName)
           .collection(coName)

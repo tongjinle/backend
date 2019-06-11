@@ -45,6 +45,14 @@ export async function coin(token: string): Promise<number> {
   return rst;
 }
 
+export async function addCoin(token: string, coin: number): Promise<void> {
+  let mongo = await getMongoClient();
+  await mongo
+    .db(dbName)
+    .collection("user")
+    .updateOne({ token }, { $inc: { coin } });
+}
+
 // 贡献(上传)
 export async function contribute(token: string, url: string): Promise<void> {
   let mongo = await getMongoClient();

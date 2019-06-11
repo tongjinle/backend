@@ -6,22 +6,32 @@ import { DAY } from "../constant";
 
 let dbName = config.dbName;
 
-type Bottle = {
-  id?: string;
-  type: "resource" | "coin";
-  // 预览
-  preview?: string[];
-  // 资源链接
-  url?: string;
+type CoinBottle = {
+  type: "coin";
   // 瓶子里的金币
-  coin?: number;
-  // 价格
-  price?: number;
+  coin: number;
 };
+
+type ResourceBottle = {
+  id: string;
+  type: "resource";
+  // 预览
+  preview: string[];
+  // 资源链接
+  url: string;
+  // 价格
+  price: number;
+  // 密码
+  password?: string;
+};
+
 const cacheCount: number = 1000;
 
-export async function fetch(token: string, time: Date): Promise<Bottle> {
-  let rst: Bottle;
+export async function fetch(
+  token: string,
+  time: Date
+): Promise<CoinBottle | ResourceBottle> {
+  let rst: CoinBottle | ResourceBottle;
   let redis = await getRedisClient();
   let mongo = await getMongoClient();
 
@@ -46,8 +56,13 @@ export async function fetch(token: string, time: Date): Promise<Bottle> {
     let count = 20;
     while (count--) {
       let id = await redis.srandmember("bottle");
+      if (id === null) {
+        break;
+      }
       if (!(await isSameResource(token, id))) {
-        let item = JSON.parse(await redis.get("bottle#" + id));
+        let data = await redis.get("bottle#" + id);
+        console.log({ id, data });
+        let item = JSON.parse(data);
         rst = {
           type: "resource",
           id,
@@ -63,15 +78,28 @@ export async function fetch(token: string, time: Date): Promise<Bottle> {
   return rst;
 }
 
-export async function password(id: string): Promise<string> {
-  let rst: string;
-
+export async function getResourceBottle(id: string): Promise<ResourceBottle> {
+  let rst: ResourceBottle;
   let mongo = await getMongoClient();
   let data = await mongo
     .db(dbName)
     .collection("bottle")
     .findOne({ id });
+  rst = {
+    id,
+    type: "resource",
+    price: data.price,
+    url: data.url,
+    preview: data.preview,
+    password: data.password
+  };
+  return rst;
+}
 
+export async function password(id: string): Promise<string> {
+  let rst: string;
+
+  let data = await getResourceBottle(id);
   if (data) {
     rst = data.password;
   }
@@ -96,6 +124,7 @@ async function cache() {
       .skip(start)
       .limit(cacheCount)
       .toArray();
+    console.log(count, maxStart, start);
     let arr = [];
     for (let i = 0; i < data.length; i++) {
       const di = data[i];

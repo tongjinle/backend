@@ -15,6 +15,12 @@ let errs = {
   common: {
     invalidToken: { code: 800, message: "非法token" },
     invalidParams: { code: 801, message: "非法参数" }
+  },
+  user: {
+    notEnoughCoin: { code: 900, message: "金币不足" }
+  },
+  bottle: {
+    noBottle: { code: 1000, message: "海中没有漂流瓶了" }
   }
 };
 export default errs;

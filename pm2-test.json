@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "bottle-product",
+      "name": "bottle-test",
       "script": "./dist/app.js",
       "args": [],
       "watch": ["dist"],
@@ -10,7 +10,7 @@
       "merge_logs": true,
       "cwd": "./",
       "env": {
-        "NODE_ENV": "product"
+        "NODE_ENV": "test"
       }
     }
   ]
