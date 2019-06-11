@@ -3,6 +3,7 @@ import { getMongoClient } from "../getMongoClient";
 import { getRedisClient } from "../getRedisClient";
 import config from "../config";
 import { DAY } from "../constant";
+import { bottleDetail, bottleSet } from "../redisKeys";
 
 let dbName = config.dbName;
 
@@ -55,12 +56,12 @@ export async function fetch(
     // 最多尝试20次
     let count = 20;
     while (count--) {
-      let id = await redis.srandmember("bottle");
+      let id = await redis.srandmember(bottleSet());
       if (id === null) {
         break;
       }
       if (!(await isSameResource(token, id))) {
-        let data = await redis.get("bottle#" + id);
+        let data = await redis.get(bottleDetail(id));
         console.log({ id, data });
         let item = JSON.parse(data);
         rst = {
@@ -112,7 +113,7 @@ async function cache() {
   let redis = await getRedisClient();
   let mongo = await getMongoClient();
   // 缓存数据
-  if (!(await redis.exists("bottle"))) {
+  if (!(await redis.exists(bottleSet()))) {
     let co = await mongo.db(dbName).collection("bottle");
 
     let query = { isFrozen: false };
@@ -128,12 +129,12 @@ async function cache() {
     let arr = [];
     for (let i = 0; i < data.length; i++) {
       const di = data[i];
-      arr.push(redis.sadd("bottle", di.id));
-      arr.push(redis.set("bottle#" + di.id, JSON.stringify(di)));
+      arr.push(redis.sadd(bottleSet(), di.id));
+      arr.push(redis.set(bottleDetail(di.id), JSON.stringify(di)));
     }
     await Promise.all(arr);
 
-    await redis.expire("bottle", DAY);
+    await redis.expire(bottleSet(), DAY);
   }
 }
 
