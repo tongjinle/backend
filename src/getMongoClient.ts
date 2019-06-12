@@ -3,12 +3,20 @@ import config from "./config/index";
 
 let client: mongodb.MongoClient;
 
-async function getMongoClient(): Promise<mongodb.MongoClient> {
+export async function getMongoClient(): Promise<mongodb.MongoClient> {
   if (!client) {
-    client = new mongodb.MongoClient(config.connectStr);
+    client = new mongodb.MongoClient(config.connectStr, {
+      useNewUrlParser: true
+    });
     await client.connect();
   }
+
   return client;
 }
 
-export default getMongoClient;
+export async function closeMongoClient() {
+  if (client) {
+    await client.close(true);
+  }
+  client = undefined;
+}
