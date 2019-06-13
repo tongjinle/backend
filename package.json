@@ -28,7 +28,8 @@
     "handy-redis": "^1.5.2",
     "log4js": "^1.1.0",
     "md5": "^2.2.1",
-    "mongodb": "^3.0.1"
+    "mongodb": "^3.0.1",
+    "pm2": "^3.5.1"
   },
   "devDependencies": {
     "@types/express": "^4.0.39",

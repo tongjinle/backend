@@ -1,6 +1,6 @@
 import IConfig from "./iconfig";
 const config: IConfig = {
-  port: 7100,
+  port: 7004,
   dbName: "testBottle"
 };
 
