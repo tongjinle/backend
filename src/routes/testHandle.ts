@@ -61,7 +61,8 @@ export default function handle(app: express.Express) {
         url:
           "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/童颜/badad837acdc4aed26c4778534f6eb2b.jpg",
         coin: i + 1,
-        password: "password" + i
+        password: "password" + i,
+        isFrozen: false
       });
     }
     mongo
