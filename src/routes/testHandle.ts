@@ -1,6 +1,5 @@
 import * as express from "express";
-import Database from "../db";
-import getMongoClient from "../getMongoClient";
+import { getMongoClient } from "../getMongoClient";
 import config from "../config";
 
 export default function handle(app: express.Express) {
@@ -16,10 +15,16 @@ export default function handle(app: express.Express) {
   });
 
   app.get("/test/db", async (req, res) => {
-    let db = await Database.getIns();
+    let mongo = await getMongoClient();
     let ts = Date.now();
-    await db.getCollection("test").insertOne({ ts });
-    let data = await db.getCollection("test").findOne({ ts });
+    await mongo
+      .db(config.dbName)
+      .collection("test")
+      .insertOne({ ts });
+    let data = await mongo
+      .db(config.dbName)
+      .collection("test")
+      .findOne({ ts });
     res.end("db test:" + data.ts);
   });
 
@@ -32,7 +37,6 @@ export default function handle(app: express.Express) {
     console.log(config.connectStr, config.dbName);
 
     let client = await getMongoClient();
-    await client.connect();
     let users = client.db(config.dbName).collection("user");
     let photos = client.db(config.dbName).collection("photo");
 
@@ -118,7 +122,6 @@ export default function handle(app: express.Express) {
       }
     ]);
 
-    await client.close();
     res.end("recover done");
   });
 }

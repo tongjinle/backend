@@ -1,5 +1,5 @@
 import assert = require("assert");
-import getMongoClient from "../../getMongoClient";
+import { getMongoClient, closeMongoClient } from "../../getMongoClient";
 import { MongoClient, Collection } from "mongodb";
 import config from "../../config";
 import axios, { AxiosInstance } from "axios";
@@ -16,7 +16,6 @@ describe("guest router", async function() {
     });
 
     client = await getMongoClient();
-    await client.connect();
     collection = client.db(config.dbName).collection("photo");
   });
 
@@ -34,7 +33,7 @@ describe("guest router", async function() {
   afterEach(async function() {});
 
   after(async function() {
-    await client.close();
+    await closeMongoClient();
   });
 
   it("sort", async function() {

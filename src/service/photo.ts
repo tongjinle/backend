@@ -1,4 +1,4 @@
-import getMongoClient from "../getMongoClient";
+import { getMongoClient } from "../getMongoClient";
 import axios from "axios";
 import config from "../config";
 import md5 = require("md5");
@@ -17,7 +17,6 @@ export type Photo = {
 export async function sort(): Promise<Photo[]> {
   let rst: Photo[] = [];
   let client = await getMongoClient();
-  await client.connect();
 
   const limit = 10;
   let data = await client
@@ -37,7 +36,6 @@ export async function sort(): Promise<Photo[]> {
     logoUrl: n.logoUrl
   }));
 
-  await client.close();
   return rst;
 }
 
@@ -45,7 +43,6 @@ export async function sort(): Promise<Photo[]> {
 export async function search(id: string): Promise<Photo> {
   let rst: Photo;
   let client = await getMongoClient();
-  await client.connect();
 
   let data = await client
     .db(config.dbName)
@@ -63,7 +60,6 @@ export async function search(id: string): Promise<Photo> {
     };
   }
 
-  await client.close();
   return rst;
 }
 
@@ -103,13 +99,12 @@ export async function save(
 
   // 保存
   let client = await getMongoClient();
-  await client.connect();
+
   let id: string = md5(url);
   await client
     .db(config.dbName)
     .collection("photo")
     .insertOne({ id, userId, url, score, nickname, logoUrl });
-  await client.close();
 
   rst = { id, userId, nickname, url, score, logoUrl };
   return rst;
@@ -120,7 +115,6 @@ export async function history(userId: string): Promise<Photo[]> {
   let rst: Photo[] = [];
 
   let client = await getMongoClient();
-  await client.connect();
 
   let data = await client
     .db(config.dbName)
@@ -139,20 +133,17 @@ export async function history(userId: string): Promise<Photo[]> {
     };
   });
 
-  await client.close();
-
   return rst;
 }
 
 // 删除照片
 export async function remove(id: string): Promise<void> {
   let client = await getMongoClient();
-  await client.connect();
+
   await client
     .db(config.dbName)
     .collection("photo")
     .deleteOne({ id });
-  await client.close();
 }
 
 // 照片id和userId是否匹配
@@ -161,12 +152,11 @@ export async function checkOwner(userId: string, id: string): Promise<boolean> {
   let rst: boolean;
 
   let client = await getMongoClient();
-  await client.connect();
+
   let flag = !!(await client
     .db(config.dbName)
     .collection("photo")
     .findOne({ userId, id }));
-  await client.close();
 
   rst = flag;
   return rst;

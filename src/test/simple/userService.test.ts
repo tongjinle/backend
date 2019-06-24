@@ -1,5 +1,5 @@
 import assert = require("assert");
-import getMongoClient from "../../getMongoClient";
+import { getMongoClient, closeMongoClient } from "../../getMongoClient";
 import { MongoClient, Collection } from "mongodb";
 import * as userService from "../../service/user";
 import config from "../../config";
@@ -9,7 +9,6 @@ describe("user service", async function() {
   let collection: Collection;
   before(async function() {
     client = await getMongoClient();
-    await client.connect();
     collection = client.db(config.dbName).collection("user");
   });
 
@@ -19,7 +18,7 @@ describe("user service", async function() {
   });
 
   after(async function() {
-    await client.close();
+    await closeMongoClient();
   });
 
   it("addUser", async function() {

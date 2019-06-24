@@ -10,7 +10,6 @@ import loger from "./logIns";
 import config from "./config";
 
 import httpRouteHandle from "./routes/httpRoute";
-import Database from "./db";
 
 class Main {
   app: express.Express;

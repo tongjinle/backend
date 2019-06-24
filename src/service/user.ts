@@ -1,6 +1,5 @@
-import getMongoClient from "../getMongoClient";
 import config from "../config";
-import bodyParser = require("body-parser");
+import { getMongoClient } from "../getMongoClient";
 import md5 = require("md5");
 
 type User = {
@@ -13,7 +12,6 @@ export async function addUser(userId: string): Promise<boolean> {
   let rst: boolean;
 
   let client = await getMongoClient();
-  await client.connect();
 
   let collection = client.db(config.dbName).collection("user");
   if (!!(await collection.findOne({ userId }))) {
@@ -23,7 +21,6 @@ export async function addUser(userId: string): Promise<boolean> {
     rst = true;
   }
 
-  await client.close();
   return rst;
 }
 
@@ -32,13 +29,10 @@ export async function updateUser(userId: string, info: {}): Promise<boolean> {
   let rst: boolean;
 
   let client = await getMongoClient();
-  await client.connect();
 
   let collection = client.db(config.dbName).collection("user");
 
   let result = await collection.updateOne({ userId }, { $set: info });
-
-  await client.close();
 
   rst = result.modifiedCount === 1;
   return rst;
@@ -49,7 +43,6 @@ export async function getUser(userId: string): Promise<User> {
   let rst: User = undefined;
 
   let client = await getMongoClient();
-  await client.connect();
 
   let collection = client.db(config.dbName).collection("user");
   let data = await collection.findOne({ userId });
@@ -61,8 +54,6 @@ export async function getUser(userId: string): Promise<User> {
     };
   }
 
-  await client.close();
-
   return rst;
 }
 
@@ -72,5 +63,18 @@ export async function getToken(userId: string): Promise<string> {
   let code = "*UHB7ygv6tfc";
   let token: string = md5(userId + code);
   rst = token;
+  return rst;
+}
+
+// 签到
+export async function sign(
+  userId: string,
+  year: number,
+  month: number,
+  date: number
+): Promise<number> {
+  let rst: number = 0;
+
+  let mongo = await getMongoClient();
   return rst;
 }
