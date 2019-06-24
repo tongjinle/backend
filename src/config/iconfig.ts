@@ -32,6 +32,10 @@ interface IConfigDynamic {
     // 周末签到
     max: number;
   };
+  // 用以获取分享特征码的md5运算的code
+  shareCode: string;
+  // 分享得到的coin
+  shareCoin: number;
 }
 
 interface IConfig extends Partial<IConfigBase>, Partial<IConfigDynamic> {}

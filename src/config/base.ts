@@ -24,7 +24,9 @@ const config: IConfig = {
   signCoin: {
     min: 10,
     max: 20
-  }
+  },
+  shareCoin: 10,
+  shareCode: "sannian"
 };
 
 export default config;
