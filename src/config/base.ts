@@ -4,7 +4,6 @@ const config: IConfig = {
   protocol: "http",
   host: "localhost",
   port: 3000,
-
   connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
   dbName: "zst",
 
@@ -19,9 +18,13 @@ const config: IConfig = {
   tokenExpires: 2 * HOUR,
 
   mockToken: "sannian.zst",
-  mockOpenId: "sannian.zst"
+  mockOpenId: "sannian.zst",
 
   // ******** special for project ********
+  signCoin: {
+    min: 10,
+    max: 20
+  }
 };
 
 export default config;

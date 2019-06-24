@@ -25,7 +25,14 @@ interface IConfigBase {
 }
 
 // 根据项目需求而定的接口
-interface IConfigDynamic {}
+interface IConfigDynamic {
+  signCoin: {
+    //
+    min: number;
+    // 周末签到
+    max: number;
+  };
+}
 
 interface IConfig extends Partial<IConfigBase>, Partial<IConfigDynamic> {}
 

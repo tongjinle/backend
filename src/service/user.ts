@@ -65,16 +65,3 @@ export async function getToken(userId: string): Promise<string> {
   rst = token;
   return rst;
 }
-
-// 签到
-export async function sign(
-  userId: string,
-  year: number,
-  month: number,
-  date: number
-): Promise<number> {
-  let rst: number = 0;
-
-  let mongo = await getMongoClient();
-  return rst;
-}
