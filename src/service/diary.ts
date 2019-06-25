@@ -19,6 +19,8 @@ export type Diary = {
   score?: number;
   // 出售
   isSale: boolean;
+  // 时间
+  time: Date;
 };
 // 新增日记
 export async function add(diary: Diary): Promise<void> {
@@ -57,7 +59,7 @@ export async function buy(userId: string, diaryId: string): Promise<void> {
   await mongo
     .db(config.dbName)
     .collection("diarySale")
-    .insertOne({ userId, diaryId });
+    .insertOne({ userId, diaryId, time: new Date() });
 }
 
 // 是否购买了日记
