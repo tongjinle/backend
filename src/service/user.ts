@@ -11,8 +11,10 @@ export type BasicInfo = {
   gender: Gender;
 };
 // 扩展用户信息(可以修改)
-export type ExtendInfo = {};
-type User = BasicInfo & ExtendInfo;
+export type ExtendInfo = {
+  follow: number;
+};
+export type User = BasicInfo & ExtendInfo;
 
 // userId是不是已经存在
 

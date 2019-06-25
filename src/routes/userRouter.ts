@@ -39,18 +39,18 @@ router.use(async (req, res, next) => {
 });
 
 // 更新个人信息
-router.post("/update/", async (req, res) => {
-  let resData: protocol.IResUpdateUser;
-  let body: protocol.IReqUpdateUser = req.body;
+// router.post("/update/", async (req, res) => {
+//   let resData: protocol.IResUpdateUser;
+//   let body: protocol.IReqUpdateUser = req.body;
 
-  let userId: string = req.header("userId");
-  let nickname = body.nickname;
-  let flag = await userService.update(userId, { nickname });
+//   let userId: string = req.header("userId");
+//   let nickname = body.nickname;
+//   let flag = await userService.update(userId, { nickname });
 
-  resData = { code: 0 };
+//   resData = { code: 0 };
 
-  res.json(resData);
-});
+//   res.json(resData);
+// });
 
 // 颜值评分
 router.post("/score/", async (req, res) => {

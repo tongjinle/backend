@@ -3,8 +3,8 @@ import config from "../config";
 
 // 是否已经点赞
 export async function isUpvoted(
-  diaryId: string,
-  userId: string
+  userId: string,
+  diaryId: string
 ): Promise<boolean> {
   let rst: boolean;
 
@@ -18,7 +18,7 @@ export async function isUpvoted(
 }
 
 // 点赞
-export async function upvote(diaryId: string, userId: string): Promise<void> {
+export async function upvote(userId: string, diaryId: string): Promise<void> {
   let mongo = await getMongoClient();
 
   // upvote的记录
