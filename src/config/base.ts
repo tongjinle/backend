@@ -26,7 +26,8 @@ const config: IConfig = {
     max: 20
   },
   shareCoin: 10,
-  shareCode: "sannian"
+  shareCode: "sannian",
+  userCode: "mr.tea"
 };
 
 export default config;

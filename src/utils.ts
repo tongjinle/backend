@@ -13,15 +13,22 @@ function getSignCoin(year: number, month: number, day: number): number {
   return isWeekDay ? signCoin.max : signCoin.min;
 }
 
+// 获取分享code
 function getShareCode(userId: string): string {
   let code: string = config.shareCode;
   return md5(userId + code);
 }
 
+// 获取分享得到的代币奖励
 function getShareCoin(): number {
   return config.shareCoin;
 }
 
-let utils = { getSignCoin, getShareCode, getShareCoin };
+function getUserToken(userId: string): string {
+  let code: string = config.userCode;
+  return md5(userId + code);
+}
+
+let utils = { getSignCoin, getShareCode, getShareCoin, getUserToken };
 
 export default utils;

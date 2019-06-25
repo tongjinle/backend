@@ -36,6 +36,8 @@ interface IConfigDynamic {
   shareCode: string;
   // 分享得到的coin
   shareCoin: number;
+  // 用以获取token的md5运算的code
+  userCode: string;
 }
 
 interface IConfig extends Partial<IConfigBase>, Partial<IConfigDynamic> {}

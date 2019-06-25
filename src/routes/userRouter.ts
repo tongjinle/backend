@@ -4,6 +4,7 @@ import * as joi from "@hapi/joi";
 import errs from "../errCode";
 import * as photoService from "../service/photo";
 import * as userService from "../service/user";
+import utils from "../utils";
 
 let router = express.Router();
 
@@ -28,7 +29,7 @@ router.use(async (req, res, next) => {
     return;
   }
 
-  if (token !== (await userService.getToken(userId))) {
+  if (token !== utils.getUserToken(userId)) {
     res.json(errs.common.wrongToken);
     return;
   }
@@ -44,7 +45,7 @@ router.post("/update/", async (req, res) => {
 
   let userId: string = req.header("userId");
   let nickname = body.nickname;
-  let flag = await userService.updateUser(userId, { nickname });
+  let flag = await userService.update(userId, { nickname });
 
   resData = { code: 0 };
 

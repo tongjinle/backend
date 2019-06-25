@@ -5,6 +5,7 @@ import axios from "axios";
 import * as userService from "../service/user";
 import config from "../config";
 import * as request from "request";
+import utils from "../utils";
 
 let router = express.Router();
 
@@ -47,9 +48,7 @@ router.get("/login/", async (req, res) => {
       res.json({ code: 800 });
       return;
     }
-    let token = await userService.getToken(openId);
-    // 直接在数据库addUser
-    await userService.addUser(openId);
+    let token = utils.getUserToken(openId);
 
     resData = { code: 0, userId: openId, token };
   } catch (e) {

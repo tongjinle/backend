@@ -1,67 +1,48 @@
 import config from "../config";
 import { getMongoClient } from "../getMongoClient";
-import md5 = require("md5");
 
-type User = {
+export type Gender = "male" | "female";
+
+// 基本用户信息
+// 确认了不能修改
+export type BasicInfo = {
   userId: string;
   nickname: string;
+  gender: Gender;
 };
+// 扩展用户信息(可以修改)
+export type ExtendInfo = {};
+type User = BasicInfo & ExtendInfo;
+
+// userId是不是已经存在
 
 // 新增一个用户
-export async function addUser(userId: string): Promise<boolean> {
-  let rst: boolean;
-
+export async function add(user: BasicInfo): Promise<void> {
   let client = await getMongoClient();
+  let userId: string = user.userId;
 
   let collection = client.db(config.dbName).collection("user");
-  if (!!(await collection.findOne({ userId }))) {
-    rst = false;
-  } else {
-    await collection.insertOne({ userId });
-    rst = true;
-  }
-
-  return rst;
+  await collection.insertOne(user);
 }
 
 // 更新用户信息
-export async function updateUser(userId: string, info: {}): Promise<boolean> {
-  let rst: boolean;
-
+export async function update(
+  userId: string,
+  info: Partial<ExtendInfo>
+): Promise<void> {
   let client = await getMongoClient();
-
   let collection = client.db(config.dbName).collection("user");
-
   let result = await collection.updateOne({ userId }, { $set: info });
-
-  rst = result.modifiedCount === 1;
-  return rst;
 }
 
 // 获取用户的信息
-export async function getUser(userId: string): Promise<User> {
+export async function find(userId: string): Promise<User> {
   let rst: User = undefined;
 
   let client = await getMongoClient();
-
   let collection = client.db(config.dbName).collection("user");
   let data = await collection.findOne({ userId });
 
-  if (data) {
-    rst = {
-      userId: data.userId,
-      nickname: data.nickname
-    };
-  }
-
-  return rst;
-}
-
-// 检验用户token合法
-export async function getToken(userId: string): Promise<string> {
-  let rst: string;
-  let code = "*UHB7ygv6tfc";
-  let token: string = md5(userId + code);
-  rst = token;
+  rst = data;
   return rst;
 }
