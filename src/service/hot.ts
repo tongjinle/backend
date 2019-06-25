@@ -1,7 +1,6 @@
+// 热度
 import { getMongoClient } from "../getMongoClient";
 import config from "../config";
-
-// 热度
 
 // 增加热度
 export async function add(userId: string, hot: number): Promise<void> {
