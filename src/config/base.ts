@@ -15,6 +15,13 @@ const config: IConfig = {
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },
 
+  qq: {
+    appId: "1109682478",
+    appSecret: "re79cmI7cYwqGZzE",
+    // 信息模版Id
+    templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
+  },
+
   // token过期时间
   tokenExpires: 2 * HOUR,
 

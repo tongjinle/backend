@@ -7,10 +7,10 @@ import * as userService from "../service/user";
 
 let router = express.Router();
 
-let appId: string = config.wx.appId;
-let appSecret: string = config.wx.appSecret;
+let appId: string = config.qq.appId;
+let appSecret: string = config.qq.appSecret;
 
-let wxUrl = "https://api.puman.xyz/commonApi/wx/openId";
+let wxUrl = "https://api.puman.xyz/commonApi/qq/openId";
 // 登录
 router.get("/login/", async (req, res) => {
   let resData: protocol.IResLogin;
