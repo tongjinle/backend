@@ -16,6 +16,14 @@ interface IConfigBase {
     appSecret: string;
     templateId: string;
   };
+
+  // qq
+  qq: {
+    appId: string;
+    appSecret: string;
+    templateId: string;
+  };
+
   // token过期时间
   tokenExpires: number;
 
