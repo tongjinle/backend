@@ -34,7 +34,8 @@ const config: IConfig = {
   },
   shareCoin: 10,
   shareCode: "sannian",
-  userCode: "mr.tea"
+  // 这个不能改了,如果改动,前面原始的用户的token都会失效
+  userCode: "*UHB7ygv6tfc"
 };
 
 export default config;

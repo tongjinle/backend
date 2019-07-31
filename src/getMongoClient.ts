@@ -1,11 +1,12 @@
 import * as mongodb from "mongodb";
 import config from "./config/index";
-import { func } from "@hapi/joi";
 
 let client: mongodb.MongoClient;
 export async function getMongoClient(): Promise<mongodb.MongoClient> {
   if (!client) {
-    client = new mongodb.MongoClient(config.connectStr);
+    client = new mongodb.MongoClient(config.connectStr, {
+      useNewUrlParser: true
+    });
     // await client.
     await client.connect();
   }
@@ -17,4 +18,9 @@ export async function closeMongoClient(): Promise<void> {
     await client.close();
     client = undefined;
   }
+}
+
+export async function getCollection(name: string): Promise<mongodb.Collection> {
+  let client = await getMongoClient();
+  return client.db(config.dbName).collection(name);
 }

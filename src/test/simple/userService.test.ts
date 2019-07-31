@@ -1,15 +1,20 @@
 import assert = require("assert");
-import { getMongoClient, closeMongoClient } from "../../getMongoClient";
+import {
+  getMongoClient,
+  closeMongoClient,
+  getCollection
+} from "../../getMongoClient";
 import { MongoClient, Collection } from "mongodb";
 import * as userService from "../../service/user";
 import config from "../../config";
+import { func } from "@hapi/joi";
 
 describe("user service", async function() {
   let client: MongoClient;
   let collection: Collection;
   before(async function() {
     client = await getMongoClient();
-    collection = client.db(config.dbName).collection("user");
+    collection = await getCollection("user");
   });
 
   beforeEach(async function() {
@@ -21,34 +26,46 @@ describe("user service", async function() {
     await closeMongoClient();
   });
 
-  // it("addUser", async function() {
-  //   await userService.add("sannian");
-  //   let data = await collection.findOne({ userId: "sannian" });
-  //   assert(data.userId === "sannian");
-  // });
+  // 能否新增用户
+  // 1 sannian未在用户中,返回true
+  // 2 sannian已经在用户中,返回false
+  it("canAddUser", async function() {
+    let rst = await userService.canAdd("sannian");
+    assert(rst);
 
-  // it("updateUser.fail", async function() {
-  //   let flag = await userService.update("sannian", { coin: 100 });
+    {
+      await collection.insertOne({ userId: "sannian" });
+      let rst = await userService.canAdd("sannian");
+      assert(rst === false);
+    }
+  });
 
-  //   assert(!flag);
-  // });
+  it("addUser", async function() {
+    let user: userService.BasicInfo = {
+      userId: "sannian",
+      nickname: "三年",
+      gender: "female"
+    };
+    await userService.add(user);
+    let data = await collection.findOne({ userId: "sannian" });
+    assert(data.userId === "sannian");
+  });
 
-  // it("updateUser.success", async function() {
-  //   await collection.insertOne({ userId: "sannian" });
+  it("updateUser", async function() {
+    await collection.insertOne({ userId: "sannian" });
 
-  //   let flag = await userService.update("sannian", { coin: 100 });
-  //   let data = await collection.findOne({ userId: "sannian" });
-  //   assert(flag);
-  //   assert(data.coin === 100);
-  // });
+    await userService.update("sannian", { coin: 100 });
+    let data = await collection.findOne({ userId: "sannian" });
+    assert(data.coin === 100);
+  });
 
-  // it("getUser", async function() {
-  //   await collection.insertOne({ userId: "sannian", nickname: "bitch" });
+  it("getUser", async function() {
+    await collection.insertOne({ userId: "sannian", nickname: "bitch" });
 
-  //   let dataFail = await userService.find("wangyun");
+    let dataFail = await userService.find("wangyun");
 
-  //   let dataSuccess = await userService.find("sannian");
-  //   assert(dataFail === undefined);
-  //   assert(dataSuccess && dataSuccess.nickname === "bitch");
-  // });
+    let dataSuccess = await userService.find("sannian");
+    assert(dataFail === null);
+    assert(dataSuccess && dataSuccess.nickname === "bitch");
+  });
 });
