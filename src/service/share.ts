@@ -1,31 +1,58 @@
 import utils from "../utils";
-import { getMongoClient } from "../getMongoClient";
-import config from "../config/dev";
+import { getMongoClient, getCollection } from "../getMongoClient";
+import config from "../config";
+import { func } from "@hapi/joi";
 
 // 分享
-
-// 获取分享code
-export async function code(userId: string): Promise<string> {
+/**
+ * 获取分享码
+ * @param userId
+ * @returns 返回分享码,分享码具有时效性
+ */
+export async function shareCode(userId: string): Promise<string> {
   return utils.getShareCode(userId);
 }
 
-// 是否已经分享
-export async function isShare(
+/**
+ * 分享码是否有效
+ * @param userId 用户id
+ * @param shareCode 分享码
+ */
+export async function isShareCodeValid(
+  userId: string,
+  shareCode: string
+): Promise<boolean> {
+  return utils.isShareCodeValid(userId, shareCode);
+}
+
+/**
+ * 是否已经分享
+ * @param userId
+ * @param year
+ * @param month
+ * @param day
+ * @returns 返回某天是否分享了
+ */
+export async function isShared(
   userId: string,
   year: number,
   month: number,
   day: number
 ): Promise<boolean> {
   let rst: boolean;
-  let mongo = await getMongoClient();
-  rst = !!(await mongo
-    .db(config.dbName)
-    .collection("share")
-    .findOne({ userId, year, month, day }));
-  return;
+  let coll = await getCollection("share");
+  rst = !!(await coll.findOne({ userId, year, month, day }));
+  return rst;
 }
 
-// 分享
+/**
+ * 分享
+ * @param userId
+ * @param year
+ * @param month
+ * @param day
+ * @returns 返回成功分享后的代币奖励
+ */
 export async function share(
   userId: string,
   year: number,
@@ -33,57 +60,50 @@ export async function share(
   day: number
 ): Promise<number> {
   let rst: number;
-  let mongo = await getMongoClient();
+  let coll = await getCollection("share");
   let coin: number = utils.getShareCoin();
-  await mongo
-    .db(config.dbName)
-    .collection("share")
-    .insertOne({ userId, year, month, day, coin, time: new Date() });
+  await coll.insertOne({ userId, year, month, day, coin, time: new Date() });
   rst = coin;
   return rst;
 }
 
-// 能否成功分享
-// 1 userId不在user表中
-// 2 inviterId和shareCode能对应
-export async function isShareSuccess(
+/**
+ * 是否对分享发起人已经奖励过
+ * @param userId 被分享人userId
+ * @param inviterId 分享发起人的userId
+ * @returns 是否奖励过
+ */
+export async function isRewarded(
   userId: string,
-  inviterId: string,
-  shareCode: string
+  inviterId: string
 ): Promise<boolean> {
   let rst: boolean = true;
-  let mongo = await getMongoClient();
+  let coll = await getCollection("shareLink");
 
-  if (utils.getShareCode(inviterId) !== shareCode) {
-    return false;
-  }
-
-  if (
-    !!(await mongo
-      .db(config.dbName)
-      .collection("user")
-      .findOne({ userId }))
-  ) {
-    return false;
-  }
+  rst = !!(await coll.findOne({ userId, inviterId }));
 
   return rst;
 }
-// 分享成功,获取新用户
-export async function shareSuccess(
+
+/**
+ * 分享获取新用户的奖励
+ * @param userId 被分享人userId
+ * @param inviterId 分享发起人的userId
+ * @returns 返回代币奖励
+ */
+export async function reward(
   userId: string,
   inviterId: string
 ): Promise<number> {
   let rst: number;
-  let mongo = await getMongoClient();
-  await mongo
-    .db(config.dbName)
-    .collection("shareLink")
-    .insertOne({
-      userId,
-      inviterId,
-      time: new Date()
-    });
-  rst = utils.getShareCoin();
+  let coll = await getCollection("shareLink");
+  let coin = utils.getShareCoin();
+  await coll.insertOne({
+    userId,
+    inviterId,
+    coin,
+    time: new Date()
+  });
+  rst = coin;
   return rst;
 }
