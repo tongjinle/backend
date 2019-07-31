@@ -9,7 +9,7 @@ import { func } from "@hapi/joi";
 function getSignCoin(year: number, month: number, day: number): number {
   let signCoin = config.signCoin;
   let date = new Date(year, month, day);
-  let isWeekDay: boolean = [1, 7].indexOf(date.getDay()) >= 0;
+  let isWeekDay: boolean = [0, 6].indexOf(date.getDay()) >= 0;
   return isWeekDay ? signCoin.max : signCoin.min;
 }
 

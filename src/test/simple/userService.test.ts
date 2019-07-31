@@ -1,13 +1,11 @@
 import assert = require("assert");
+import { Collection, MongoClient } from "mongodb";
 import {
-  getMongoClient,
   closeMongoClient,
-  getCollection
+  getCollection,
+  getMongoClient
 } from "../../getMongoClient";
-import { MongoClient, Collection } from "mongodb";
 import * as userService from "../../service/user";
-import config from "../../config";
-import { func } from "@hapi/joi";
 
 describe("user service", async function() {
   let client: MongoClient;

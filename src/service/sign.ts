@@ -1,9 +1,16 @@
 import config from "../config";
-import { getMongoClient } from "../getMongoClient";
+import { getMongoClient, getCollection } from "../getMongoClient";
 import utils from "../utils";
 
-// 是否已经签到
-export async function isSign(
+/**
+ * 是否已经签到
+ * @param userId
+ * @param year
+ * @param month
+ * @param day
+ * @returns 已经签到返回true
+ */
+export async function isSigned(
   userId: string,
   year: number,
   month: number,
@@ -11,16 +18,20 @@ export async function isSign(
 ): Promise<boolean> {
   let rst: boolean;
 
-  let mongo = await getMongoClient();
-  rst = !!(await mongo
-    .db(config.dbName)
-    .collection("sign")
-    .findOne({ userId, year, month, day }));
+  let coll = await getCollection("sign");
+  rst = !!(await coll.findOne({ userId, year, month, day }));
 
   return rst;
 }
 
-// 签到
+/**
+ * 签到
+ * @param userId
+ * @param year
+ * @param month
+ * @param day
+ * @returns 签到得到的奖励的代币数量
+ */
 export async function sign(
   userId: string,
   year: number,
@@ -29,15 +40,11 @@ export async function sign(
 ): Promise<number> {
   let rst: number = 0;
 
-  let mongo = await getMongoClient();
-
+  let coll = await getCollection("sign");
   let coin = utils.getSignCoin(year, month, day);
+  await coll.insertOne({ userId, year, month, day, coin, time: new Date() });
 
-  await mongo
-    .db(config.dbName)
-    .collection("sign")
-    .insertOne({ userId, year, month, day, coin, time: new Date() });
-
+  rst = coin;
   return rst;
 }
 
@@ -46,7 +53,14 @@ export type SignInfo = {
   day: number;
   coin: number;
 };
-// 获取我的签到信息
+
+/**
+ * 获取我的签到信息
+ * @param userId
+ * @param year 签到的某年
+ * @param month 签到的某月
+ * @returns 返回某月的签到情况的数组
+ */
 export async function signList(
   userId: string,
   year: number,
