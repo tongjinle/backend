@@ -1,7 +1,5 @@
 import config from "./config";
-import moment = require("moment");
 import md5 = require("md5");
-import { func } from "@hapi/joi";
 
 // *** 存放一些通用方法 ***
 
