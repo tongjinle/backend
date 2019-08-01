@@ -13,7 +13,7 @@ export type ExtendInfo = {
   coin: number;
   follow: number;
 };
-export type User = BasicInfo & ExtendInfo;
+export type UserInfo = BasicInfo & ExtendInfo;
 
 // 是否可以新增用户
 // userId是不是已经存在
@@ -33,7 +33,9 @@ export async function canAdd(userId: string): Promise<boolean> {
 // 新增一个用户
 export async function add(user: BasicInfo): Promise<void> {
   let collection = await getCollection("user");
-  await collection.insertOne(user);
+  let ext: ExtendInfo = { coin: 0, follow: 0 };
+  let fullUser = { ...user, ...ext };
+  await collection.insertOne(fullUser);
 }
 
 // 更新用户信息
@@ -46,8 +48,8 @@ export async function update(
 }
 
 // 获取用户的信息
-export async function find(userId: string): Promise<User> {
-  let rst: User = undefined;
+export async function find(userId: string): Promise<UserInfo> {
+  let rst: UserInfo = undefined;
 
   let collection = await getCollection("user");
   let data = await collection.findOne({ userId });

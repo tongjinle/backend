@@ -2,7 +2,7 @@
 import { getMongoClient } from "../getMongoClient";
 import config from "../config";
 import * as userService from "./user";
-import { User } from "./user";
+import { UserInfo } from "./user";
 
 // 是否已经关注
 export async function isFollowed(
@@ -53,8 +53,8 @@ export async function unfollow(userId: string, girlId: string): Promise<void> {
 }
 
 // 关注列表
-export async function list(userId: string): Promise<User[]> {
-  let rst: User[] = [];
+export async function list(userId: string): Promise<UserInfo[]> {
+  let rst: UserInfo[] = [];
   let mongo = await getMongoClient();
   let data = await mongo
     .db(config.dbName)
@@ -64,7 +64,7 @@ export async function list(userId: string): Promise<User[]> {
 
   let girlIds: string[] = data.map(n => n.girlId);
 
-  let girls: User[] = await Promise.all(
+  let girls: UserInfo[] = await Promise.all(
     girlIds.map(id => userService.find(id))
   );
   rst = girls;

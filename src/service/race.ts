@@ -1,4 +1,7 @@
 import { getCollection } from "../getMongoClient";
+import * as userService from "./user";
+import { string } from "@hapi/joi";
+import utils from "../utils";
 
 /**
  * 比赛状态
@@ -19,7 +22,7 @@ export enum RaceStatus {
   /**
    * 比赛已经结束
    */
-  gameove = "gameover"
+  gameover = "gameover"
 }
 
 /**
@@ -46,7 +49,6 @@ export interface IRaceSetting {
    * 海报地址(数组)
    */
   postUrls: string[];
-
   /**
    * 状态
    */
@@ -57,15 +59,18 @@ export interface IRaceSetting {
  * 比赛完全信息
  */
 export interface IRace {
+  /**
+   * 设置
+   */
   setting: IRaceSetting;
-  player: {
-    id: string;
-    nickName: string;
-    upvote: number;
-    photoUrls: string[];
-  }[];
-  upvoter: { id: string; coin: number };
-  winnerId: string;
+  /**
+   * 参赛者列表
+   */
+  players: IPlayer[];
+  /**
+   * 打榜者列表
+   */
+  upvoters: IUpvoter[];
 }
 
 /**
@@ -80,9 +85,65 @@ export enum PlayerStatus {
   reject = "reject"
 }
 
+/**
+ * 参赛玩家信息
+ */
+export interface IPlayer {
+  /**
+   * 参赛用户id
+   */
+  userId: string;
+  /**
+   * 昵称
+   */
+  nickName: string;
+  /**
+   * 头像url
+   */
+  avatarUrl: string;
+  /**
+   * 打榜热度
+   */
+  upvote: number;
+  /**
+   * 媒体列表
+   */
+  mediaUrls: string[];
+
+  /**
+   * 参赛者状态
+   * @see PlayerStatus
+   */
+  status: PlayerStatus;
+}
+
+/**
+ * 打榜用户信息
+ */
+export interface IUpvoter {
+  /**
+   * 参赛用户id
+   */
+  userId: string;
+  /**
+   * 昵称
+   */
+  nickName: string;
+  /**
+   * 头像url
+   */
+  avatarUrl: string;
+  /**
+   * 打榜热度
+   */
+  coin: number;
+}
+
 // 表名
 const RACE = "race";
 const RACE_PLAYER = "racePlayer";
+const RACE_UPVOTER = "raceUpvoter";
+const RACE_UPVOTE_LOG = "raceUpvoteLog";
 
 /**
  * 创建比赛
@@ -113,10 +174,11 @@ export async function find(name: string): Promise<IRaceSetting> {
  * 获取所有比赛
  * @returns 返回比赛名字的列表
  */
-export async function list(): Promise<string[]> {
+export async function list(status?: RaceStatus): Promise<string[]> {
   let rst: string[] = [];
   let coll = await getCollection(RACE);
-  rst = (await coll.find({}).toArray()).map(n => n.name);
+  let query = status === undefined ? {} : { status };
+  rst = (await coll.find(query).toArray()).map(n => n.name);
   return rst;
 }
 
@@ -136,6 +198,15 @@ export async function ready(name: string): Promise<void> {
 export async function start(name: string): Promise<void> {
   let coll = await getCollection(RACE);
   await coll.updateOne({ name }, { status: RaceStatus.race });
+}
+
+/**
+ * 设置比赛进入gameover状态
+ * @param name 比赛名
+ */
+export async function gameover(name: string): Promise<void> {
+  let coll = await getCollection(RACE);
+  await coll.updateOne({ name }, { status: RaceStatus.gameover });
 }
 
 /**
@@ -166,24 +237,44 @@ export async function canRegister(
 
 /**
  * 用户报名
- * @param userId
+ * @param raceName 比赛名
+ * @param userId 报名者id
+ * @param mediaUrls 报名者媒体列表
  */
 export async function register(
   raceName: string,
-  userId: string
+  player: IPlayer
 ): Promise<void> {
   let coll = await getCollection(RACE_PLAYER);
-  await coll.insertOne({ raceName, userId, status: PlayerStatus.unknow });
+  await coll.insertOne({
+    raceName,
+    ...player,
+    upvote: 0,
+    status: PlayerStatus.unknow
+  });
 }
 
 /**
- * 获取报名用户
+ * 获取参赛用户
  * @param raceName 比赛名字
  */
-export async function registerList(raceName: string): Promise<string[]> {
+export async function playerList(raceName: string): Promise<IPlayer[]> {
+  let rst: IPlayer[] = [];
   let coll = await getCollection(RACE_PLAYER);
-  let data = (await coll.find({ raceName }).toArray()).map(n => n.userId);
-  return data;
+  let data = await coll.find({ raceName }).toArray();
+
+  rst = data.map(n => {
+    let item: IPlayer = {
+      userId: n.userId,
+      nickName: n.nickName,
+      avatarUrl: n.avatarUrl,
+      upvote: n.upvote,
+      mediaUrls: n.mediaUrls,
+      status: n.status
+    };
+    return item;
+  });
+  return rst;
 }
 
 /**
@@ -245,11 +336,18 @@ export async function removePlayer(
   );
 }
 
+/**
+ * 是否符合打榜的条件
+ * @param userId 打榜用户id
+ * @param playerId 参赛用户id(被打榜用户)
+ * @param raceName 比赛名
+ * @param coin 打榜消耗的代币
+ */
 export async function canUpvote(
-  userId,
-  playerId,
-  raceName,
-  coin
+  userId: string,
+  playerId: string,
+  raceName: string,
+  coin: number
 ): Promise<boolean> {
   let rst: boolean;
 
@@ -264,7 +362,7 @@ export async function canUpvote(
   if (
     !(await collPlayer.findOne({
       raceName,
-      userId,
+      userId: playerId,
       status: PlayerStatus.accpet
     }))
   ) {
@@ -272,13 +370,72 @@ export async function canUpvote(
   }
 
   // 3 是否有足够的coin
-  // todo
+  let user = await userService.find(userId);
+  if (!(user && user.coin >= coin)) {
+    return false;
+  }
 
   rst = true;
   return rst;
 }
 
-export async function upvote(userId, playerId, raceName, coin): Promise<void> {}
+/**
+ * 打榜
+ * @param userId 打榜用户id
+ * @param playerId 参赛用户id(被打榜用户)
+ * @param raceName 比赛名
+ * @param coin 打榜消耗的代币
+ */
+export async function upvote(
+  userId: string,
+  playerId: string,
+  raceName: string,
+  coin: number
+): Promise<void> {
+  let collPlayer = await getCollection(RACE_PLAYER);
+  let collUpvoter = await getCollection(RACE_UPVOTER);
+  let collUpvoteLog = await getCollection(RACE_UPVOTE_LOG);
+
+  let hot = utils.upvoteCoin2Hot(coin);
+  await collPlayer.updateOne(
+    { raceName, userId: playerId },
+    { $inc: { upvote: hot } }
+  );
+  await collUpvoter.updateOne({ raceName, userId }, { $inc: { coin } });
+
+  // 记录每笔upvote
+  collUpvoteLog.insertOne({ raceName, userId, coin, time: new Date() });
+}
+
+/**
+ * 金主排行榜
+ * @param raceName 比赛名
+ * @param limit 个数限制
+ */
+export async function upvoterList(
+  raceName: string,
+  limit: number
+): Promise<IUpvoter[]> {
+  let rst: IUpvoter[] = [];
+  let coll = await getCollection(RACE_UPVOTER);
+  let data = await coll
+    .find({ raceName })
+    .sort({ coin: -1 })
+    .limit(limit)
+    .toArray();
+
+  rst = data.map(n => {
+    let item: IUpvoter = {
+      userId: n.userId,
+      nickName: n.nickName,
+      avatarUrl: n.avatarUrl,
+      coin: n.coin
+    };
+    return item;
+  });
+
+  return rst;
+}
 
 // let coll = await getCollection(RACE);
 // ** 设置比赛(开始时间,结束时间,参赛人数,海报介绍)

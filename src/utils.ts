@@ -57,9 +57,21 @@ function getShareCoin(): number {
   return config.shareCoin;
 }
 
+/**
+ * 获取token
+ * @param userId 用户id
+ */
 function getUserToken(userId: string): string {
   let code: string = config.userCode;
   return md5(userId + code);
+}
+
+/**
+ * 返回消耗代币打榜所增加的热度
+ * @param coin 打榜的代币
+ */
+function upvoteCoin2Hot(coin: number): number {
+  return coin * 2;
 }
 
 let utils = {
@@ -67,7 +79,8 @@ let utils = {
   getShareCode,
   isShareCodeValid,
   getShareCoin,
-  getUserToken
+  getUserToken,
+  upvoteCoin2Hot
 };
 
 export default utils;
