@@ -314,7 +314,7 @@ export async function addPlayer(
   userId: string
 ): Promise<void> {
   let coll = await getCollection(RACE_PLAYER);
-  coll.updateOne(
+  await coll.updateOne(
     { raceName, userId },
     { $set: { status: PlayerStatus.accpet } }
   );
@@ -330,7 +330,7 @@ export async function removePlayer(
   userId: string
 ): Promise<void> {
   let coll = await getCollection(RACE_PLAYER);
-  coll.updateOne(
+  await coll.updateOne(
     { raceName, userId },
     { $set: { status: PlayerStatus.reject } }
   );
