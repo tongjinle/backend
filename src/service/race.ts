@@ -188,7 +188,7 @@ export async function list(status?: RaceStatus): Promise<string[]> {
  */
 export async function ready(name: string): Promise<void> {
   let coll = await getCollection(RACE);
-  await coll.updateOne({ name }, { status: RaceStatus.ready });
+  await coll.updateOne({ name }, { $set: { status: RaceStatus.ready } });
 }
 
 /**
@@ -197,7 +197,7 @@ export async function ready(name: string): Promise<void> {
  */
 export async function start(name: string): Promise<void> {
   let coll = await getCollection(RACE);
-  await coll.updateOne({ name }, { status: RaceStatus.race });
+  await coll.updateOne({ name }, { $set: { status: RaceStatus.race } });
 }
 
 /**
@@ -206,7 +206,7 @@ export async function start(name: string): Promise<void> {
  */
 export async function gameover(name: string): Promise<void> {
   let coll = await getCollection(RACE);
-  await coll.updateOne({ name }, { status: RaceStatus.gameover });
+  await coll.updateOne({ name }, { $set: { status: RaceStatus.gameover } });
 }
 
 /**
@@ -401,10 +401,14 @@ export async function upvote(
     { raceName, userId: playerId },
     { $inc: { upvote: hot } }
   );
-  await collUpvoter.updateOne({ raceName, userId }, { $inc: { coin } });
+  await collUpvoter.updateOne(
+    { raceName, userId },
+    { $inc: { coin } },
+    { upsert: true }
+  );
 
   // 记录每笔upvote
-  collUpvoteLog.insertOne({ raceName, userId, coin, time: new Date() });
+  await collUpvoteLog.insertOne({ raceName, userId, coin, time: new Date() });
 }
 
 /**

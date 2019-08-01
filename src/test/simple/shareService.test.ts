@@ -8,7 +8,7 @@ import {
 import * as shareService from "../../service/share";
 import { accessSync } from "fs";
 
-describe("user service", async function() {
+describe("share service", async function() {
   let client: MongoClient;
   let collShare: Collection;
   let collShareLink: Collection;
