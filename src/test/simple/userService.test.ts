@@ -43,7 +43,7 @@ describe("user service", async function() {
       userId: "sannian",
       nickname: "三年",
       gender: "female"
-    };
+    } as userService.BasicInfo;
     await userService.add(user);
     let data = await collection.findOne({ userId: "sannian" });
     assert(data.userId === "sannian");

@@ -1,114 +1,82 @@
 import assert = require("assert");
-import { getMongoClient, closeMongoClient } from "../../getMongoClient";
+import {
+  getMongoClient,
+  closeMongoClient,
+  getCollection
+} from "../../getMongoClient";
 import { MongoClient, Collection } from "mongodb";
 import config from "../../config";
 import axios, { AxiosInstance } from "axios";
 import errs from "../../errCode";
 import * as userService from "../../service/user";
+import { fork, ChildProcess } from "child_process";
+import * as path from "path";
+import utils from "../../utils";
+import * as protocol from "../../protocol";
 
 describe("user router", async function() {
   let request: AxiosInstance;
   let bareRequest: AxiosInstance;
   let client: MongoClient;
   let photos: Collection;
-  let users: Collection;
-  // before(async function() {
-  //   request = axios.create({
-  //     baseURL: `${config.protocol}://${config.host}:${config.port}`,
-  //     headers: {
-  //       userId: "sannian",
-  //       token: await userService.getToken("sannian")
-  //     }
-  //   });
-  //   bareRequest = axios.create({
-  //     baseURL: `${config.protocol}://${config.host}:${config.port}`
-  //   });
+  let collUser: Collection;
+  let worker: ChildProcess;
 
-  //   client = await getMongoClient();
-  //   photos = client.db(config.dbName).collection("photo");
-  //   users = client.db(config.dbName).collection("user");
-  // });
+  before(async function() {
+    this.timeout(30 * 1000);
+    let file = path.resolve(__dirname, "../../app.js");
+    console.log(file);
+    worker = fork(file);
+    await new Promise(resolve => {
+      setTimeout(resolve, 3 * 1000);
+    });
 
-  // beforeEach(async function() {
-  //   // 清理所有数据
-  //   await photos.deleteMany({});
-  //   await users.deleteMany({});
+    request = axios.create({
+      baseURL: `${config.protocol}://${config.host}:${config.port}`,
+      headers: {
+        userId: "sannian",
+        token: await utils.getUserToken("sannian")
+      }
+    });
+    bareRequest = axios.create({
+      baseURL: `${config.protocol}://${config.host}:${config.port}`
+    });
 
-  //   await users.insertMany([
-  //     { userId: "sannian", nickname: "三年" },
-  //     { userId: "zst", nickname: "周淑婷" }
-  //   ]);
-  //   await photos.insertMany([
-  //     { id: "1", score: 100, url: "url1", nickname: "三年", userId: "sannian" },
-  //     { id: "2", score: 90, url: "url2", nickname: "三年", userId: "sannian" },
-  //     { id: "3", score: 90, url: "url2", nickname: "周淑婷", userId: "zst" }
-  //   ]);
-  // });
+    collUser = await getCollection("user");
+  });
 
-  // afterEach(async function() {});
+  beforeEach(async function() {
+    await Promise.all([collUser.deleteMany({})]);
+  });
 
-  // after(async function() {
-  //   await closeMongoClient();
-  // });
+  after(async function() {
+    worker.kill();
+    await closeMongoClient();
+  });
 
-  // it("check user role", async function() {
-  //   {
-  //     let res = await bareRequest.get("/user");
-  //     assert(res.data.code === errs.common.invalidParams.code);
-  //   }
+  it("addUser", async function() {
+    await request.post("/user/add", { nickname: "三年" });
+    let data = await collUser.findOne({ userId: "sannian" });
+    assert(data);
+  });
 
-  //   {
-  //     let res = await bareRequest.get("/user", {
-  //       headers: {
-  //         userId: "tongjinle",
-  //         token: "123"
-  //       }
-  //     });
-  //     assert(res.data.code === errs.common.wrongToken.code);
-  //   }
-  // });
+  it("user info", async function() {
+    await request.post("/user/add", { nickname: "三年" });
+    let { data } = await request.get("/user/info");
+    assert(
+      data.userId === "sannian" && data.nickname === "三年" && data.coin === 0
+    );
+  });
 
-  // it("update", async function() {
-  //   let res = await request.post("/user/update/", {
-  //     nickname: "三年是傻子"
-  //   });
+  it("update user", async function() {
+    await request.post("/user/add", { nickname: "三年" });
+    await request.post("/user/update", { nickname: "婊子", birthYear: 2000 });
 
-  //   let data = await users.findOne({ userId: "sannian" });
-
-  //   assert(data.nickname === "三年是傻子");
-  //   assert(res.data.code === 0);
-  // });
-
-  // it("score", async function() {
-  //   this.timeout(30 * 1000);
-  //   let res = await request.post("/user/score/", {
-  //     url:
-  //       "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/faceScore/034b8d45c2140f1a4697cf1d9c4b4a34.jpg",
-  //     nickname: "三年",
-  //     logoUrl:
-  //       "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/faceScore/034b8d45c2140f1a4697cf1d9c4b4a34.jpg"
-  //   });
-
-  //   assert(res.data.code === 0 && res.data.score !== -1);
-  // });
-
-  // it("history", async function() {
-  //   let res = await request.get("/user/history/");
-  //   assert(res.data.code === 0 && res.data.list.length === 2);
-  // });
-
-  // // 删除不是我的照片
-  // it("remove.fail", async function() {
-  //   let res = await request.post("/user/remove/", { id: "3" });
-  //   assert(res.data.code === errs.photo.notOwner.code);
-  // });
-
-  // //  删除我的照片
-  // it("remove.success", async function() {
-  //   let res = await request.post("/user/remove/", { id: "1" });
-  //   assert(res.data.code === 0);
-
-  //   let data = await photos.find({ userId: "sannian" }).toArray();
-  //   assert(data.length === 1);
-  // });
+    let { data } = await request.get("/user/info");
+    assert(
+      data.userId === "sannian" &&
+        data.nickname === "婊子" &&
+        data.birthYear === 2000
+    );
+  });
 });

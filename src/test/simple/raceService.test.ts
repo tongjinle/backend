@@ -57,12 +57,12 @@ describe("race service", async function() {
       userId: "tong",
       nickname: "童",
       gender: "male"
-    };
+    } as userService.BasicInfo;
     let jin: userService.BasicInfo = {
       userId: "jin",
       nickname: "金",
       gender: "male"
-    };
+    } as userService.BasicInfo;
     await userService.add(tong);
     coinService.update("tong", 10000);
     await userService.add(jin);

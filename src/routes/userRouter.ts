@@ -38,91 +38,67 @@ router.use(async (req, res, next) => {
   next();
 });
 
-// 更新个人信息
-// router.post("/update/", async (req, res) => {
-//   let resData: protocol.IResUpdateUser;
-//   let body: protocol.IReqUpdateUser = req.body;
+// 新增用户
+router.post("/add", async (req, res) => {
+  let resData: protocol.IResAddUser;
+  let reqData: protocol.IReqAddUser = req.body;
 
-//   let userId: string = req.header("userId");
-//   let nickname = body.nickname;
-//   let flag = await userService.update(userId, { nickname });
+  let userId = req.header("userId");
 
-//   resData = { code: 0 };
-
-//   res.json(resData);
-// });
-
-// 颜值评分
-router.post("/score/", async (req, res) => {
-  let resData: protocol.IResScore;
-  let body: protocol.IReqScore = req.body;
-
-  let result = joi.validate(body, {
-    url: joi
-      .string()
-      .uri()
-      .required(),
-    nickname: joi.string().required(),
-    logoUrl: joi
-      .string()
-      .uri()
-      .required()
-  });
-  if (result.error) {
-    res.json(errs.common.invalidParams);
+  if (!(await userService.canAdd(userId))) {
+    resData = { code: -1, message: "该用户已经存在" };
+    res.json(resData);
     return;
   }
 
-  let userId: string = req.header("userId");
-  let url: string = body.url;
-  let nickname: string = body.nickname;
-  let logoUrl: string = body.logoUrl;
-
-  let photo = await photoService.save(userId, url, nickname, logoUrl);
-
-  if (!photo) {
-    res.json(errs.photo.saveFail);
-    return;
-  }
-
-  resData = Object.assign({ code: 0 }, photo);
-  res.json(resData);
-});
-
-// 我的历史照片
-router.get("/history/", async (req, res) => {
-  let resData: protocol.IResHistory;
-  let userId: string = req.header("userId");
-  let list = await photoService.history(userId);
-  resData = { code: 0, list };
-  res.json(resData);
-});
-
-// 删除我的照片
-router.post("/remove/", async (req, res) => {
-  let resData: protocol.IResRemovePhoto;
-  let body: protocol.IReqRemovePhoto = req.body;
-
-  let result = joi.validate(body, { id: joi.string().required() });
-
-  if (result.error) {
-    res.json(errs.common.invalidParams);
-    return;
-  }
-
-  let userId: string = req.header("userId");
-  let id: string = body.id;
-
-  // 判断是不是照片所有人
-  let flag = await photoService.checkOwner(userId, id);
-  if (!flag) {
-    res.json(errs.photo.notOwner);
-    return;
-  }
-
-  await photoService.remove(id);
+  let user: userService.BasicInfo = {
+    userId,
+    nickname: reqData.nickname,
+    logoUrl: reqData.logoUrl,
+    gender: reqData.gender,
+    city: reqData.city
+  };
+  await userService.add(user);
 
   resData = { code: 0 };
   res.json(resData);
 });
+
+// 获取用户信息
+router.get("/info", async (req, res) => {
+  let resData: protocol.IResUserInfo;
+  let reqData: protocol.IReqUserInfo;
+
+  let userId = req.header("userId");
+  let user = await userService.find(userId);
+
+  if (!user) {
+    res.json({ code: -1, message: "没有找到用户信息" });
+    return;
+  }
+
+  resData = { code: 0, ...user };
+  res.json(resData);
+});
+
+// 更新个人信息
+router.post("/update/", async (req, res) => {
+  let resData: protocol.IResUpdateUser;
+  let reqData: protocol.IReqUpdateUser = req.body;
+  let body: protocol.IReqUpdateUser = req.body;
+
+  let userId: string = req.header("userId");
+
+  if (Object.keys(reqData).length === 0) {
+    resData = { code: -1, message: "没有修改的用户数据" };
+    res.json(resData);
+    return;
+  }
+
+  await userService.update(userId, reqData);
+
+  resData = { code: 0 };
+  res.json(resData);
+});
+
 export default router;

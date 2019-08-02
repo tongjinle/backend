@@ -1,15 +1,19 @@
 import { getCollection } from "../getMongoClient";
-export type Gender = "male" | "female";
+export type Gender = "male" | "female" | "unknow";
 
 // 基本用户信息
 // 确认了不能修改
 export type BasicInfo = {
   userId: string;
   nickname: string;
+  logoUrl: string;
   gender: Gender;
+  city: string;
 };
 // 扩展用户信息(可以修改)
 export type ExtendInfo = {
+  birthYear: number;
+  bgUrl: string;
   coin: number;
   follow: number;
 };
@@ -33,7 +37,7 @@ export async function canAdd(userId: string): Promise<boolean> {
 // 新增一个用户
 export async function add(user: BasicInfo): Promise<void> {
   let collection = await getCollection("user");
-  let ext: ExtendInfo = { coin: 0, follow: 0 };
+  let ext: ExtendInfo = { birthYear: -1, bgUrl: undefined, coin: 0, follow: 0 };
   let fullUser = { ...user, ...ext };
   await collection.insertOne(fullUser);
 }

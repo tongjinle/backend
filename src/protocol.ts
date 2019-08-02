@@ -1,100 +1,73 @@
 // *** 基础response格式
 // *** 带有code[错误码]和msg[错误信息]
-// *** 当code===undefined的时候,表示正确
-export interface IResErr {
+// *** 当code===0的时候,表示正确
+export interface IResBase {
   // 错误码
-  code?: number;
+  code: number;
   // 错误信息
   message?: string;
-}
-
-export interface IReqToken {
-  code: string;
-}
-
-export interface IResToken {
-  token: string;
-}
-
-export interface IReqScore {
-  url: string;
-  nickname: string;
-  logoUrl: string;
-}
-
-export interface IResScore extends IResErr {
-  id: string;
-  // userId
-  userId: string;
-  // 微信昵称
-  nickname: string;
-  // 远程url
-  url: string;
-  // 得分
-  score: number;
-}
-export interface IReqSort {}
-
-export interface IResSort extends IResErr {
-  list: {
-    id: string;
-    // userId
-    userId: string;
-    // 微信昵称
-    nickname: string;
-    // 远程url
-    url: string;
-    // 得分
-    score: number;
-  }[];
-}
-export interface IReqHistory {}
-
-export interface IResHistory extends IResErr {
-  list: {
-    id: string;
-    // userId
-    userId: string;
-    // 微信昵称
-    nickname: string;
-    // 远程url
-    url: string;
-    // 得分
-    score: number;
-  }[];
-}
-export interface IReqRemovePhoto {
-  id: string;
-}
-
-export interface IResRemovePhoto extends IResErr {}
-export interface IReqSearchPhoto {
-  id: string;
-}
-
-export interface IResSearchPhoto extends IResErr {
-  id: string;
-  // userId
-  userId: string;
-  // 微信昵称
-  nickname: string;
-  // 远程url
-  url: string;
-  // 得分
-  score: number;
 }
 
 export interface IReqLogin {
   code: string;
 }
 
-export interface IResLogin extends IResErr {
+export interface IResLogin extends IResBase {
   userId: string;
   token: string;
 }
 
 export interface IReqUpdateUser {
-  nickname: string;
+  // 背景图
+  bgUrl?: string;
+  // 生年
+  // -1表示未设置
+  birthYear?: number;
+  // 城市
+  city?: string;
+  // 性别
+  gender?: "female" | "male" | "unknow";
 }
 
-export interface IResUpdateUser extends IResErr {}
+export interface IResUpdateUser extends IResBase {}
+
+/**
+ * 新增用户request数据结构
+ */
+export interface IReqAddUser {
+  // id
+  userId: string;
+  // 昵称
+  nickname: string;
+  // 头像
+  logoUrl: string;
+  // 性别
+  gender: "female" | "male" | "unknow";
+  // 城市
+  city: string;
+}
+
+export interface IResAddUser extends IResBase {}
+
+/**
+ * 用户信息request数据结构
+ */
+export interface IReqUserInfo {}
+
+export interface IResUserInfo extends IResBase {
+  userId: string;
+  nickname: string;
+  // 头像
+  logoUrl: string;
+  //
+  bgUrl: string;
+  // 生年
+  // -1表示未设置
+  birthYear: number;
+  // 城市
+  city: string;
+  // 性别
+  gender: "female" | "male" | "unknow";
+  // 金币
+  coin: number;
+}
