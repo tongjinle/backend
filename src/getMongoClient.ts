@@ -24,3 +24,7 @@ export async function getCollection(name: string): Promise<mongodb.Collection> {
   let client = await getMongoClient();
   return client.db(config.dbName).collection(name);
 }
+
+export function getObjectId(id: string) {
+  return new mongodb.ObjectId(id);
+}
