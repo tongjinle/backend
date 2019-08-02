@@ -6,6 +6,7 @@ import wxRouter from "./wxRouter";
 import qqRouter from "./qqRouter";
 import userRouter from "./userRouter";
 import signRouter from "./signRouter";
+import shareRouter from "./shareRouter";
 
 // 错误
 
@@ -24,4 +25,7 @@ export default function handler(app: express.Express) {
 
   // 签到路由
   app.use("/user", signRouter);
+
+  // 分享路由
+  app.use("/user", shareRouter);
 }

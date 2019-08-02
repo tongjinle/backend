@@ -107,3 +107,23 @@ export interface IResSignList extends IResBase {
   // 当年当月的签到日子
   signed: number[];
 }
+
+/**
+ * 分享
+ */
+export interface IReqShare {}
+export interface IResShare extends IResBase {
+  // 获得的coin
+  coin: number;
+}
+
+export interface IReqShareReward {
+  // 新用户的userId
+  userId: string;
+  // 分享者的userId
+  sharerId: string;
+  // 分享码
+  shareCode: string;
+}
+
+export interface IResShareReward {}

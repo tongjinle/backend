@@ -70,17 +70,17 @@ export async function share(
 /**
  * 是否对分享发起人已经奖励过
  * @param userId 被分享人userId
- * @param inviterId 分享发起人的userId
+ * @param sharerId 分享发起人的userId
  * @returns 是否奖励过
  */
 export async function isRewarded(
   userId: string,
-  inviterId: string
+  sharerId: string
 ): Promise<boolean> {
   let rst: boolean = true;
   let coll = await getCollection("shareLink");
 
-  rst = !!(await coll.findOne({ userId, inviterId }));
+  rst = !!(await coll.findOne({ userId, sharerId }));
 
   return rst;
 }
@@ -88,19 +88,19 @@ export async function isRewarded(
 /**
  * 分享获取新用户的奖励
  * @param userId 被分享人userId
- * @param inviterId 分享发起人的userId
+ * @param sharerId 分享发起人的userId
  * @returns 返回代币奖励
  */
 export async function reward(
   userId: string,
-  inviterId: string
+  sharerId: string
 ): Promise<number> {
   let rst: number;
   let coll = await getCollection("shareLink");
   let coin = utils.getShareCoin();
   await coll.insertOne({
     userId,
-    inviterId,
+    sharerId,
     coin,
     time: new Date()
   });
