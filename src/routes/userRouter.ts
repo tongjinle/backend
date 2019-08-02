@@ -1,42 +1,12 @@
 import * as express from "express";
 import * as protocol from "../protocol";
-import * as joi from "@hapi/joi";
-import errs from "../errCode";
-import * as photoService from "../service/photo";
 import * as userService from "../service/user";
-import utils from "../utils";
+import userCheck from "./userCheck";
 
 let router = express.Router();
 
 // check user role
-router.use(async (req, res, next) => {
-  let flag: boolean;
-  flag = true;
-
-  let userId: string = req.header("userId");
-  let token: string = req.header("token");
-  console.log({ userId, token });
-  let result = joi.validate(
-    { userId, token },
-    {
-      userId: joi.string().required(),
-      token: joi.string().required()
-    }
-  );
-
-  if (result.error) {
-    res.json(errs.common.invalidParams);
-    return;
-  }
-
-  if (token !== utils.getUserToken(userId)) {
-    res.json(errs.common.wrongToken);
-    return;
-  }
-
-  console.log("check user role:", flag);
-  next();
-});
+router.use(userCheck);
 
 // 新增用户
 router.post("/add", async (req, res) => {

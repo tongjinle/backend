@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=dev node ./dist/app.js",
-    "clean": "rm -rf dist/*",
+    "clear": "rm -rf dist/*",
     "build": "npm run clean  && tsc  &&  cp -r src/public dist/public",
     "start-test-server": "cross-env NODE_ENV=test node ./dist/app",
     "test": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/*.test.js",
     "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/raceService.test.js",
     "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js",
-    "test-handle:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/userRouter.test.js"
+    "test-handle:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/signRouter.test.js"
   },
   "keywords": [],
   "author": "",

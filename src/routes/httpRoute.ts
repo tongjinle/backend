@@ -5,6 +5,7 @@ import testHandle from "./testHandle";
 import wxRouter from "./wxRouter";
 import qqRouter from "./qqRouter";
 import userRouter from "./userRouter";
+import signRouter from "./signRouter";
 
 // 错误
 
@@ -20,4 +21,7 @@ export default function handler(app: express.Express) {
 
   // 用户路由
   app.use("/user", userRouter);
+
+  // 签到路由
+  app.use("/user", signRouter);
 }

@@ -1,18 +1,11 @@
 import assert = require("assert");
-import {
-  getMongoClient,
-  closeMongoClient,
-  getCollection
-} from "../../getMongoClient";
-import { MongoClient, Collection } from "mongodb";
-import config from "../../config";
 import axios, { AxiosInstance } from "axios";
-import errs from "../../errCode";
-import * as userService from "../../service/user";
-import { fork, ChildProcess } from "child_process";
+import { ChildProcess, fork } from "child_process";
+import { Collection, MongoClient } from "mongodb";
 import * as path from "path";
+import config from "../../config";
+import { closeMongoClient, getCollection } from "../../getMongoClient";
 import utils from "../../utils";
-import * as protocol from "../../protocol";
 
 describe("user router", async function() {
   let request: AxiosInstance;
