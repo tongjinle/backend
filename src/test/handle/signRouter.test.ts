@@ -55,7 +55,7 @@ describe("sign router", async function() {
   });
 
   it("isSign", async function() {
-    let { data } = await request.get("/user/isSign");
+    let { data } = await request.get("/sign/isSign");
     assert(!data.isSign);
 
     {
@@ -67,7 +67,7 @@ describe("sign router", async function() {
       ];
       await collSign.insertOne({ userId: "sannian", year, month, day });
 
-      let { data } = await request.get("/user/isSign");
+      let { data } = await request.get("/sign/isSign");
       assert(data.isSign);
     }
   });
@@ -79,7 +79,7 @@ describe("sign router", async function() {
       today.getMonth(),
       today.getDate()
     ];
-    await request.post("/user/sign");
+    await request.post("/sign");
 
     let data = await collSign.findOne({ userId: "sannian", year, month, day });
     assert(data);
@@ -95,7 +95,7 @@ describe("sign router", async function() {
       })
     );
 
-    let { data } = await request.get("/user/signList", {
+    let { data } = await request.get("/sign/list", {
       params: { year, month }
     });
     assert(data.days.length > 0);

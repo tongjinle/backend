@@ -25,10 +25,10 @@ export default function handler(app: express.Express) {
   app.use("/user", userRouter);
 
   // 签到路由
-  app.use("/user", signRouter);
+  app.use("/sign", signRouter);
 
   // 分享路由
-  app.use("/user", shareRouter);
+  app.use("/share", shareRouter);
 
   // 官方通知
   app.use("/user/notice", noticeRouter);

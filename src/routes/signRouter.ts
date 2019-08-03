@@ -28,7 +28,7 @@ router.get("/isSign", async (req, res) => {
 });
 
 // 签到
-router.post("/sign", async (req, res) => {
+router.post("/", async (req, res) => {
   let resData: protocol.IResSign;
   let reqData: protocol.IReqSign = req.body;
 
@@ -51,7 +51,7 @@ router.post("/sign", async (req, res) => {
 });
 
 // 签到记录
-router.get("/signList", async (req, res) => {
+router.get("/list", async (req, res) => {
   let resData: protocol.IResSignList;
   let reqData: protocol.IReqSignList = req.query;
 

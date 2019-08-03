@@ -61,3 +61,13 @@ export async function find(userId: string): Promise<UserInfo> {
   rst = data;
   return rst;
 }
+
+/**
+ * 设置用户代币
+ * @param userId 用户id
+ * @param coin 代币增量
+ */
+export async function updateCoin(userId: string, coin: number): Promise<void> {
+  let coll = await getCollection("user");
+  await coll.updateOne({ userId }, { $inc: { coin } });
+}

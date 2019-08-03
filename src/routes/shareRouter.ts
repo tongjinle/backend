@@ -10,7 +10,7 @@ let router = express.Router();
 router.use(userCheck);
 
 // 记录分享
-router.post("/share", async (req, res) => {
+router.post("/", async (req, res) => {
   let resData: protocol.IResShare;
   let reqData: protocol.IReqShare = req.body;
 
@@ -36,7 +36,7 @@ router.post("/share", async (req, res) => {
 });
 
 // 分享获得新用户的奖励
-router.post("/share/reward", async (req, res) => {
+router.post("/reward", async (req, res) => {
   let resData: protocol.IResShareReward;
   let reqData: protocol.IReqShareReward = req.body;
 

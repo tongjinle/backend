@@ -67,7 +67,7 @@ describe("sign router", async function() {
       today.getDate()
     ];
     {
-      let { data } = await request.post("/user/share");
+      let { data } = await request.post("/share");
       assert(data.code === 0);
     }
 
@@ -82,7 +82,7 @@ describe("sign router", async function() {
     }
 
     {
-      let { data } = await request.post("/user/share");
+      let { data } = await request.post("/share");
       assert(data.code !== 0);
     }
   });
@@ -103,7 +103,7 @@ describe("sign router", async function() {
     let sharerId: string = "wangyun";
     let shareCode: string = utils.getShareCode(sharerId);
     {
-      let { data } = await request.post("/user/share/reward", {
+      let { data } = await request.post("/share/reward", {
         sharerId,
         shareCode: "123"
       });
@@ -111,12 +111,12 @@ describe("sign router", async function() {
     }
 
     {
-      let { data } = await request.post("/user/share/reward", { shareCode });
+      let { data } = await request.post("/share/reward", { shareCode });
       assert(data.code !== 0);
     }
 
     {
-      let { data } = await request.post("/user/share/reward", {
+      let { data } = await request.post("/share/reward", {
         sharerId,
         shareCode
       });
@@ -131,7 +131,7 @@ describe("sign router", async function() {
     }
 
     {
-      let { data } = await request.post("/user/share/reward", {
+      let { data } = await request.post("/share/reward", {
         sharerId,
         shareCode
       });
