@@ -14,8 +14,19 @@ export type BasicInfo = {
 export type ExtendInfo = {
   birthYear: number;
   bgUrl: string;
+  /**
+   * 代币
+   */
   coin: number;
   follow: number;
+  // 被打榜的总人数
+  beUpvoted: number;
+  // 被打榜的总代币
+  beUpvotedCoin: number;
+  // 打榜过的总人数
+  upvoted: number;
+  // 打榜过的总代币
+  upvotedCoin: number;
 };
 export type UserInfo = BasicInfo & ExtendInfo;
 
@@ -37,7 +48,16 @@ export async function canAdd(userId: string): Promise<boolean> {
 // 新增一个用户
 export async function add(user: BasicInfo): Promise<void> {
   let collection = await getCollection("user");
-  let ext: ExtendInfo = { birthYear: -1, bgUrl: undefined, coin: 0, follow: 0 };
+  let ext: ExtendInfo = {
+    birthYear: -1,
+    bgUrl: undefined,
+    coin: 0,
+    follow: 0,
+    upvoted: 0,
+    upvotedCoin: 0,
+    beUpvoted: 0,
+    beUpvotedCoin: 0
+  };
   let fullUser = { ...user, ...ext };
   await collection.insertOne(fullUser);
 }
@@ -63,11 +83,38 @@ export async function find(userId: string): Promise<UserInfo> {
 }
 
 /**
- * 设置用户代币
+ * 更新用户代币
  * @param userId 用户id
  * @param coin 代币增量
  */
 export async function updateCoin(userId: string, coin: number): Promise<void> {
   let coll = await getCollection("user");
   await coll.updateOne({ userId }, { $inc: { coin } });
+}
+
+/**
+ * 更新用户打榜信息(打榜总信息)
+ * @param userId 用户id
+ * @param coin 代币增量
+ */
+export async function updateUpvote(
+  userId: string,
+  upvoterId: string,
+  coin: number
+): Promise<void> {
+  let coll = await getCollection("user");
+  await coll.updateOne(
+    { userId },
+    { $inc: { beUpvoted: 1, beUpvoteCoin: coin } }
+  );
+
+  await coll.updateOne(
+    { userId: upvoterId },
+    {
+      $ins: {
+        upvoted: 1,
+        upvotedCoin: coin
+      }
+    }
+  );
 }

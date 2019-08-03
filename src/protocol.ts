@@ -151,3 +151,64 @@ export interface IReqNoticeRead {
   id: string;
 }
 export interface IResNoticeRead extends IResBase {}
+
+export interface IReqDiaryQuery {
+  id: string;
+}
+export interface IResDiaryQuery extends IResBase {
+  // 日记id
+  id: string;
+  // 用户编号
+  userId: string;
+  // 照片地址(后期可能是视频等其他格式的media的url地址)
+  url: string;
+  // 类型
+  type: "image" | "video" | "audio";
+  // 得分(仅为image的时候存在)
+  score?: number;
+  // 简单文本
+  text?: string;
+  // 赞的次数
+  upvote: number;
+  // 打榜用掉的代币
+  coin: number;
+}
+
+export interface IReqDiaryRemove {
+  id: string;
+}
+export interface IResDiaryRemove extends IResBase {}
+
+export interface IReqDiaryUpvote {
+  // id
+  id: string;
+  // 打榜所消耗的coin
+  coin: number;
+}
+
+export interface IResDiaryUpvote extends IResBase {}
+
+export interface IReqDiaryList {
+  userId: string;
+}
+
+export interface IResDiaryList extends IResBase {
+  list: {
+    // 日记id
+    id: string;
+    // 用户编号
+    userId: string;
+    // 照片地址(后期可能是视频等其他格式的media的url地址)
+    url: string;
+    // 类型
+    type: "image" | "video" | "audio";
+    // 得分(仅为photo的时候存在)
+    score?: number;
+    // 简单文本
+    text?: string;
+    // 赞的次数
+    upvote: number;
+    // 打榜用掉的代币
+    coin: number;
+  }[];
+}

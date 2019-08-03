@@ -87,6 +87,23 @@ export async function find(id: string): Promise<Diary> {
 }
 
 /**
+ * 能否删除日记
+ * @param id 日记id
+ * @param userId 用户id
+ */
+export async function canRemove(id: string, userId: string): Promise<boolean> {
+  let rst: boolean;
+
+  let collDiary = await getCollection(DIARY);
+  if (!(await collDiary.findOne({ _id: getObjectId(id), userId }))) {
+    return false;
+  }
+
+  rst = true;
+  return rst;
+}
+
+/**
  * 删除日记
  * @param id 日记id
  */
