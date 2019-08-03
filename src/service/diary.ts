@@ -1,9 +1,15 @@
 // 颜值日记
-import { getMongoClient } from "../getMongoClient";
+import { getMongoClient, getCollection, getObjectId } from "../getMongoClient";
 import config from "../config";
+import { date, func } from "@hapi/joi";
+import * as userService from "./user";
 
 // 媒体类型
-export type MediaType = "photo" | "video" | "audio";
+export enum MediaType {
+  image = "image",
+  video = "video",
+  audio = "audio"
+}
 // 日记
 export type Diary = {
   id: string;
@@ -18,62 +24,172 @@ export type Diary = {
   // 得分
   score?: number;
   // 出售
-  isSale: boolean;
+  // isSale: boolean;
   // 时间
-  time: Date;
+  timestamp: number;
+  // 打榜次数
+  upvote: number;
+  // 打榜消耗的金币
+  coin: number;
 };
-// 新增日记
-export async function add(diary: Diary): Promise<void> {
-  let mongo = await getMongoClient();
-  await mongo
-    .db(config.dbName)
-    .collection("diary")
-    .insertOne(diary);
+
+const DIARY: string = "diary";
+const DIARY_UPVOTE: string = "diaryUpvote";
+
+/**
+ * 新增日记
+ * @param userId 用户id
+ * @param text 日记文本
+ * @param url 媒体url
+ * @param type 媒体类型
+ */
+export async function add(
+  userId: string,
+  text: string,
+  url: string,
+  type: MediaType,
+  score: number
+): Promise<void> {
+  let coll = await getCollection(DIARY);
+  await coll.insertOne({
+    userId,
+    text,
+    url,
+    type,
+    score,
+    time: new Date(),
+    upvote: 0,
+    coin: 0
+  });
 }
 
-// 寻找日记
-export async function find(diaryId: string): Promise<Diary> {
+/**
+ * 寻找日记
+ * @param id 日记id
+ */
+export async function find(id: string): Promise<Diary> {
   let rst: Diary;
+  let coll = await getCollection(DIARY);
+  let data = await coll.findOne({ _id: getObjectId(id) });
 
-  let mongo = await getMongoClient();
-  let data = await mongo
-    .db(config.dbName)
-    .collection("diary")
-    .findOne({ id: diaryId });
-  rst = data;
+  rst = {
+    userId: data.userId,
+    id: data._id.toString(),
+    text: data.text,
+    url: data.url,
+    type: data.type,
+    score: data.score,
+    timestamp: data.time.getTime(),
+    upvote: data.upvote,
+    coin: data.coin
+  };
   return rst;
 }
 
-// 删除日记
-export async function remove(diaryId: string): Promise<void> {
-  let mongo = await getMongoClient();
-  await mongo
-    .db(config.dbName)
-    .collection("diary")
-    .deleteOne({ id: diaryId });
+/**
+ * 删除日记
+ * @param id 日记id
+ */
+export async function remove(id: string): Promise<void> {
+  let coll = await getCollection(DIARY);
+  await coll.deleteOne({ _id: getObjectId(id) });
+}
+
+/**
+ * 能否打榜日记
+ * @param id 日记id
+ * @param userId 打榜者id
+ * @param coin 打榜的金币
+ */
+export async function canUpvote(id: string, userId: string): Promise<boolean> {
+  let rst: boolean;
+
+  let collDiary = await getCollection(DIARY);
+  // 1 日记存在
+  if (!(await collDiary.findOne({ _id: getObjectId(id) }))) {
+    return false;
+  }
+  // 2 尚未打榜
+  let collUpvote = await getCollection(DIARY_UPVOTE);
+  if (await collUpvote.findOne({ dairyId: id, userId })) {
+    return false;
+  }
+
+  // 3 打榜者有足够的打榜代币
+  // 3 应该在别的代码中实现,而不是这里
+  // let user = await userService.find(userId);
+  // if (!(user && user.coin >= coin)) {
+  //   return false;
+  // }
+
+  rst = true;
+  return rst;
+}
+
+/**
+ * 日记打榜
+ * @param id 日记id
+ * @param userId 打榜者id
+ * @param coin 打榜消耗的代币
+ */
+export async function upvote(
+  id: string,
+  userId: string,
+  coin: number
+): Promise<void> {
+  let collDiary = await getCollection(DIARY);
+  let collUpvote = await getCollection(DIARY_UPVOTE);
+  await collDiary.updateOne(
+    { _id: getObjectId(id) },
+    { $inc: { upvote: 1, coin } }
+  );
+  await collUpvote.insertOne({ diaryId: id, userId, coin, time: new Date() });
+}
+
+/**
+ * 日记列表
+ * @param userId 用户id
+ */
+export async function list(userId: string): Promise<Diary[]> {
+  let rst: Diary[];
+  let coll = await getCollection(DIARY);
+
+  let data = await coll.find({ userId }).toArray();
+  rst = data.map(n => ({
+    userId: n.userId,
+    id: n._id.toString(),
+    text: n.text,
+    url: n.url,
+    type: n.type,
+    score: n.score,
+    timestamp: n.time.getTime(),
+    upvote: n.upvote,
+    coin: n.coin
+  }));
+  return rst;
 }
 
 // 购买日记
-export async function buy(userId: string, diaryId: string): Promise<void> {
-  let mongo = await getMongoClient();
-  await mongo
-    .db(config.dbName)
-    .collection("diarySale")
-    .insertOne({ userId, diaryId, time: new Date() });
-}
+// export async function buy(userId: string, diaryId: string): Promise<void> {
+//   let mongo = await getMongoClient();
+//   await mongo
+//     .db(config.dbName)
+//     .collection("diarySale")
+//     .insertOne({ userId, diaryId, time: new Date() });
+// }
 
 // 是否购买了日记
-export async function isBuyed(
-  userId: string,
-  diaryId: string
-): Promise<boolean> {
-  let rst: boolean;
+// export async function isBuyed(
+//   userId: string,
+//   diaryId: string
+// ): Promise<boolean> {
+//   let rst: boolean;
 
-  let mongo = await getMongoClient();
-  rst = !!(await mongo
-    .db(config.dbName)
-    .collection("diarySale")
-    .findOne({ userId, diaryId }));
+//   let mongo = await getMongoClient();
+//   rst = !!(await mongo
+//     .db(config.dbName)
+//     .collection("diarySale")
+//     .findOne({ userId, diaryId }));
 
-  return rst;
-}
+//   return rst;
+// }
