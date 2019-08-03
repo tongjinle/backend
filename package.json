@@ -11,7 +11,7 @@
     "test": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/*.test.js",
     "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/noticeService.test.js",
     "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js",
-    "test-handle:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/shareRouter.test.js"
+    "test-handle:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/noticeRouter.test.js"
   },
   "keywords": [],
   "author": "",

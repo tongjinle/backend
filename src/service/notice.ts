@@ -41,7 +41,7 @@ export async function list(userId: string): Promise<INotice[]> {
 
   rst = data.map(n => {
     return {
-      id: n._id,
+      id: n._id.toString(),
       text: n.text,
       coin: n.coin,
       type: n.type,

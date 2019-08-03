@@ -33,7 +33,7 @@ router.post("/read", async (req, res) => {
     return;
   }
 
-  await noticeService.read(userId);
+  await noticeService.read(noticeId);
 
   resData = { code: 0 };
   res.json(resData);

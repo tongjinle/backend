@@ -7,6 +7,7 @@ import qqRouter from "./qqRouter";
 import userRouter from "./userRouter";
 import signRouter from "./signRouter";
 import shareRouter from "./shareRouter";
+import noticeRouter from "./noticeRouter";
 
 // 错误
 
@@ -30,5 +31,5 @@ export default function handler(app: express.Express) {
   app.use("/user", shareRouter);
 
   // 官方通知
-  app.use("/user/notice", shareRouter);
+  app.use("/user/notice", noticeRouter);
 }
