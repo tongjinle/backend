@@ -28,4 +28,7 @@ export default function handler(app: express.Express) {
 
   // 分享路由
   app.use("/user", shareRouter);
+
+  // 官方通知
+  app.use("/user/notice", shareRouter);
 }

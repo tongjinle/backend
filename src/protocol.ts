@@ -1,5 +1,3 @@
-import { inflate } from "zlib";
-
 // *** 基础response格式
 // *** 带有code[错误码]和msg[错误信息]
 // *** 当code===0的时候,表示正确
@@ -127,3 +125,29 @@ export interface IReqShareReward {
 }
 
 export interface IResShareReward {}
+
+export interface IReqNoticeList {}
+export interface IResNoticeList extends IResBase {
+  list: {
+    id: string;
+    // 文本
+    text: string;
+    // 金币数量
+    coin?: number;
+    // 通知类型
+    // normal
+    // back是退款
+    // shareReward是转发成功获取用户的奖励
+    type: "normal" | "back" | "shareReward";
+    // 官方发放notice时候的时间戳
+    timestamp: number;
+    // 阅读的时间戳
+    // 不存在该字段就是"未读"
+    readTimestamp?: number;
+  }[];
+}
+
+export interface IReqNoticeRead {
+  id: string;
+}
+export interface IResNoticeRead extends IResBase {}
