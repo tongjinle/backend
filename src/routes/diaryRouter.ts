@@ -24,7 +24,7 @@ router.get("/query", async (req, res) => {
 // 删除日记
 router.post("/remove", async (req, res) => {
   let resData: protocol.IResDiaryRemove;
-  let reqData: protocol.IReqDiaryRemove = req.bod;
+  let reqData: protocol.IReqDiaryRemove = req.body;
 
   let id = reqData.id;
   let userId: string = req.header("userId");

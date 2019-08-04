@@ -56,10 +56,8 @@ describe("sign router", async function() {
     await closeMongoClient();
   });
 
-  // 分享记录
-  // 1 可以记录
-  // 2 第二次请求记录的时候,会通知已经记录过了
-  it("share", async function() {
+  // 新增一个日记
+  it("add", async function() {
     let today = new Date();
     let [year, month, day] = [
       today.getFullYear(),
