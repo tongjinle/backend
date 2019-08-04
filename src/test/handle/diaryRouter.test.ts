@@ -7,6 +7,7 @@ import config from "../../config";
 import { closeMongoClient, getCollection } from "../../getMongoClient";
 import * as diaryService from "../../service/diary";
 import * as userService from "../../service/user";
+import * as raceService from "../../service/race";
 import utils from "../../utils";
 
 describe("diary router", async function() {
@@ -17,6 +18,10 @@ describe("diary router", async function() {
   let collUser: Collection;
   let collDiary: Collection;
   let collDiaryUpvote: Collection;
+  let collRace: Collection;
+  let collPlayer: Collection;
+  let collUpvoter: Collection;
+  let collUpvoteLog: Collection;
   let worker: ChildProcess;
 
   before(async function() {
@@ -42,13 +47,21 @@ describe("diary router", async function() {
     collDiary = await getCollection("diary");
     collDiaryUpvote = await getCollection("diaryUpvote");
     collUser = await getCollection("user");
+    collRace = await getCollection("race");
+    collPlayer = await getCollection("racePlayer");
+    collUpvoter = await getCollection("raceUpvote");
+    collUpvoteLog = await getCollection("raceUpvoteLog");
   });
 
   beforeEach(async function() {
     await Promise.all([
       collDiary.deleteMany({}),
       collDiaryUpvote.deleteMany({}),
-      collUser.deleteMany({})
+      collUser.deleteMany({}),
+      collRace.deleteMany({}),
+      collPlayer.deleteMany({}),
+      collUpvoter.deleteMany({}),
+      collUpvoteLog.deleteMany({})
     ]);
   });
 
@@ -179,8 +192,7 @@ describe("diary router", async function() {
       await userService.updateCoin("sannian", 10000);
       let { data } = await request.post("/diary/upvote", {
         id,
-        coin: 100,
-        kk: 123
+        coin: 100
       });
 
       assert(data.code === 0);
@@ -193,6 +205,68 @@ describe("diary router", async function() {
       assert(bitch.coin === 0);
       assert(bitch.beUpvoted === 1);
       assert(bitch.beUpvotedCoin === 100);
+    }
+  });
+  it("upvote-race", async function() {
+    await userService.add({
+      userId: "bitch",
+      nickname: "婊子",
+      logoUrl: "",
+      gender: "female",
+      city: ""
+    });
+    await userService.add({
+      userId: "sannian",
+      nickname: "三年",
+      logoUrl: "",
+      gender: "female",
+      city: ""
+    });
+    await diaryService.add(
+      "bitch",
+      "abc",
+      "1.jpg",
+      diaryService.MediaType.image,
+      90
+    );
+    let id = (await collDiary.findOne({ text: "abc" }))._id.toString();
+
+    // 准备race
+    let collPlayer = await getCollection("racePlayer");
+    let collUpvoter = await getCollection("raceUpvote");
+    let collUpvoteLog = await getCollection("raceUpvoteLog");
+    {
+      await raceService.create({
+        name: "seed",
+        startTime: new Date(2000, 0, 1),
+        endTime: new Date(2001, 0, 1),
+        postUrls: [],
+        status: raceService.RaceStatus.prepare
+      });
+    }
+
+    {
+      await userService.updateCoin("sannian", 10000);
+      await request.post("/diary/upvote", {
+        id,
+        coin: 100
+      });
+
+      let data = await collPlayer.findOne({ userId: "bitch" });
+      assert(!data);
+    }
+
+    {
+      // 开启比赛
+      await raceService.start("seed");
+      await userService.updateCoin("sannian", 10000);
+      await request.post("/diary/upvote", {
+        id,
+        coin: 100
+      });
+
+      let data = await collPlayer.findOne({ userId: "bitch" });
+      assert(data);
     }
   });
 
