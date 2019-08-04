@@ -14,7 +14,7 @@ import * as path from "path";
 import utils from "../../utils";
 import * as protocol from "../../protocol";
 
-describe("sign router", async function() {
+describe("notice router", async function() {
   let request: AxiosInstance;
   let bareRequest: AxiosInstance;
   let client: MongoClient;
@@ -72,7 +72,7 @@ describe("sign router", async function() {
       timestampe: new Date(2001, 0, 1).getTime()
     });
     {
-      let { data } = await request.get("/user/notice/list");
+      let { data } = await request.get("/notice/list");
       assert(data.code === 0);
       assert(data.list.length === 2);
     }
@@ -104,11 +104,11 @@ describe("sign router", async function() {
     let id2 = (await collNotice.findOne({ text: "ghi" }))._id.toString();
     console.log({ id0, id2 });
     {
-      let { data } = await request.post("/user/notice/read", { id: id2 });
+      let { data } = await request.post("/notice/read", { id: id2 });
       assert(data.code !== 0);
     }
     {
-      let { data } = await request.post("/user/notice/read", { id: id0 });
+      let { data } = await request.post("/notice/read", { id: id0 });
       assert(data.code === 0);
       {
         let data = await collNotice.findOne({ text: "abc" });

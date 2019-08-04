@@ -8,6 +8,7 @@ import userRouter from "./userRouter";
 import signRouter from "./signRouter";
 import shareRouter from "./shareRouter";
 import noticeRouter from "./noticeRouter";
+import diaryRouter from "./diaryRouter";
 
 // 错误
 
@@ -31,5 +32,8 @@ export default function handler(app: express.Express) {
   app.use("/share", shareRouter);
 
   // 官方通知
-  app.use("/user/notice", noticeRouter);
+  app.use("/notice", noticeRouter);
+
+  // 日记
+  app.use("/diary", diaryRouter);
 }

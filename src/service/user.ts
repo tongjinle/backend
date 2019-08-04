@@ -105,13 +105,13 @@ export async function updateUpvote(
   let coll = await getCollection("user");
   await coll.updateOne(
     { userId },
-    { $inc: { beUpvoted: 1, beUpvoteCoin: coin } }
+    { $inc: { beUpvoted: 1, beUpvotedCoin: coin } }
   );
 
   await coll.updateOne(
     { userId: upvoterId },
     {
-      $ins: {
+      $inc: {
         upvoted: 1,
         upvotedCoin: coin
       }

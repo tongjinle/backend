@@ -14,7 +14,7 @@ import * as path from "path";
 import utils from "../../utils";
 import * as protocol from "../../protocol";
 
-describe("sign router", async function() {
+describe("share router", async function() {
   let request: AxiosInstance;
   let bareRequest: AxiosInstance;
   let client: MongoClient;

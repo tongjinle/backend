@@ -174,6 +174,19 @@ export interface IResDiaryQuery extends IResBase {
   coin: number;
 }
 
+export interface IReqDiaryAdd {
+  // 简单文本
+  text: string;
+  // 日记地址
+  url: string;
+  // 类型
+  type: "image" | "video" | "audio";
+  // 得分(仅为image的时候存在)
+  score?: number;
+}
+
+export interface IResDiaryAdd extends IResBase {}
+
 export interface IReqDiaryRemove {
   id: string;
 }
