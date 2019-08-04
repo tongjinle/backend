@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as userService from "../service/user";
+import * as raceService from "../service/race";
 import * as diaryService from "../service/diary";
 import userCheck from "./userCheck";
 import * as joi from "@hapi/joi";
@@ -85,6 +86,13 @@ router.post("/upvote", async (req, res) => {
   await diaryService.upvote(id, userId, coin);
   await userService.updateUpvote(diary.userId, userId, coin);
   await userService.updateCoin(userId, -coin);
+
+  // race
+  // 如果有比赛开启,则会把upvote也记录到race中去
+  let race = await raceService.findInRace();
+  if (race) {
+    await raceService.upvote(userId, diary.userId, race.name, coin);
+  }
 
   resData = { code: 0 };
   res.json(resData);

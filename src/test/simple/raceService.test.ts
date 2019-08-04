@@ -80,7 +80,6 @@ describe("race service", async function() {
       name: "seed",
       startTime: new Date(2000, 0, 1),
       endTime: new Date(2000, 1, 1),
-      count: 2,
       postUrls: [],
       status: raceService.RaceStatus.prepare
     };
@@ -91,102 +90,22 @@ describe("race service", async function() {
     assert(data.status === raceService.RaceStatus.prepare);
   });
 
-  // 能否报名
-  // 1 不在ready状态的race不能报名
-  // 2 在ready状态的race可以报名
-  // 3 报名之后,不能重复报名
-  // 4 不存在的race自然不能报名
-  it("can register", async function() {
-    // 1
-    let can = await raceService.canRegister("seed", "sannian");
-    assert(can === false);
-
-    // 用户报名
-    // 2
-    await raceService.ready("seed");
-    {
-      let can = await raceService.canRegister("seed", "sannian");
-      assert(can);
-    }
-
-    // 3
-    {
-      await raceService.register("seed", sannian);
-      let can = await raceService.canRegister("seed", "sannian");
-      assert(!can);
-    }
-
-    // 4
-    {
-      let can = await raceService.canRegister("seed2", "sannian");
-      assert(!can);
-    }
-  });
-
-  // 能否处理用户
-  // 1 sannian已经报名,可以处理
-  // 2 不存在的比赛不能处理
-  // 3 未报名的用户sannian2不能处理
-  it("canSetPlayer", async function() {
-    let can = await raceService.canSetPlayer("seed", "sannian");
-    assert(can);
-
-    {
-      let can = await raceService.canSetPlayer("seed2", "sannian");
-      assert(!can);
-    }
-
-    {
-      let can = await raceService.canSetPlayer("seed", "sannian2");
-      assert(!can);
-    }
-  });
-
-  // 选择报名用户
-  it("addPlayer", async function() {
-    await raceService.addPlayer("seed", "sannian");
-    let user = await collPlayer.findOne({ userId: "sannian" });
-    assert(user && user.status === raceService.PlayerStatus.accpet);
-  });
-
-  // 拒绝报名用户
-  it("removePlayer", async function() {
-    await raceService.register("seed", wangyun);
-    await raceService.removePlayer("seed", "wangyun");
-    let user = await collPlayer.findOne({ userId: "wangyun" });
-    assert(user && user.status === raceService.PlayerStatus.reject);
-
-    // 后面要使用到王云
-    await raceService.addPlayer("seed", "wangyun");
-  });
-
   // 能否打榜
-  // 1 不在race状态下,不能打榜
-  // 1.5 race状态下可以打榜
-  // 2 不存在race不能打榜
-  // 3 不存在player不能打榜
-  // 4 钱不够不能打榜
+  // 1 不存在race不能打榜
+  // 2 不在race状态下,不能打榜
   it("can upvote", async function() {
     {
-      let can = await raceService.canUpvote("tong", "sannian", "seed", 100);
+      let can = await raceService.canUpvote("seed2");
+      assert(!can);
+    }
+    {
+      let can = await raceService.canUpvote("seed");
       assert(!can);
     }
     {
       await raceService.start("seed");
-      let can = await raceService.canUpvote("tong", "sannian", "seed", 100);
+      let can = await raceService.canUpvote("seed");
       assert(can);
-    }
-    {
-      let can = await raceService.canUpvote("tong", "sannian", "seed2", 100);
-      assert(!can);
-    }
-    {
-      let can = await raceService.canUpvote("tong", "sannian2", "seed", 100);
-      assert(!can);
-    }
-    {
-      let can = await raceService.canUpvote("jin", "sannian", "seed", 100);
-      assert(!can);
     }
   });
 

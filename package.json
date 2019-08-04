@@ -9,7 +9,7 @@
     "build": "npm run clean  && tsc  &&  cp -r src/public dist/public",
     "start-test-server": "cross-env NODE_ENV=test node ./dist/app",
     "test": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/*.test.js",
-    "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/diaryService.test.js",
+    "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/raceService.test.js",
     "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js",
     "test-handle:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/diaryRouter.test.js"
   },

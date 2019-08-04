@@ -42,10 +42,6 @@ export interface IRaceSetting {
    */
   endTime: Date;
   /**
-   * 报名人数
-   */
-  count: number;
-  /**
    * 海报地址(数组)
    */
   postUrls: string[];
@@ -170,6 +166,13 @@ export async function find(name: string): Promise<IRaceSetting> {
   return rst;
 }
 
+export async function findInRace(): Promise<IRaceSetting> {
+  let rst: IRaceSetting;
+  let coll = await getCollection(RACE);
+  rst = await coll.findOne({ status: RaceStatus.race });
+  return rst;
+}
+
 /**
  * 获取所有比赛
  * @returns 返回比赛名字的列表
@@ -183,12 +186,29 @@ export async function list(status?: RaceStatus): Promise<string[]> {
 }
 
 /**
- * 设置比赛进入ready状态
+ * 能否开始一个比赛
  * @param name 比赛名
  */
-export async function ready(name: string): Promise<void> {
+export async function canStart(name: string): Promise<boolean> {
+  let rst: boolean;
+  // 1 比赛存在,而且比赛的状态为prepare
   let coll = await getCollection(RACE);
-  await coll.updateOne({ name }, { $set: { status: RaceStatus.ready } });
+  let race = await find(name);
+  if (!(race && race.status === RaceStatus.prepare)) {
+    return false;
+  }
+
+  // 2 没有其他比赛处于race状态中(因为只能有一个比赛在race状态下)
+  let other = await coll.findOne({
+    name: { $ne: name },
+    status: RaceStatus.race
+  });
+  if (other) {
+    return false;
+  }
+
+  rst = true;
+  return rst;
 }
 
 /**
@@ -210,168 +230,19 @@ export async function gameover(name: string): Promise<void> {
 }
 
 /**
- * 能否报名
- * @param raceName 比赛名
- * @param userId 用户id
- */
-export async function canRegister(
-  raceName: string,
-  userId: string
-): Promise<boolean> {
-  let rst: boolean;
-  let collRace = await getCollection(RACE);
-  let collPlayer = await getCollection(RACE_PLAYER);
-  // 1 是否存在比赛,并且比赛处于ready状态
-  if (!(await collRace.findOne({ name: raceName, status: RaceStatus.ready }))) {
-    return false;
-  }
-
-  // 2 是否已经报名
-  if (await collPlayer.findOne({ raceName, userId })) {
-    return false;
-  }
-
-  rst = true;
-  return rst;
-}
-
-/**
- * 用户报名
- * @param raceName 比赛名
- * @param userId 报名者id
- * @param mediaUrls 报名者媒体列表
- */
-export async function register(
-  raceName: string,
-  player: IPlayer
-): Promise<void> {
-  let coll = await getCollection(RACE_PLAYER);
-  await coll.insertOne({
-    raceName,
-    ...player,
-    upvote: 0,
-    status: PlayerStatus.unknow
-  });
-}
-
-/**
- * 获取参赛用户
- * @param raceName 比赛名字
- */
-export async function playerList(raceName: string): Promise<IPlayer[]> {
-  let rst: IPlayer[] = [];
-  let coll = await getCollection(RACE_PLAYER);
-  let data = await coll.find({ raceName }).toArray();
-
-  rst = data.map(n => {
-    let item: IPlayer = {
-      userId: n.userId,
-      nickName: n.nickName,
-      avatarUrl: n.avatarUrl,
-      upvote: n.upvote,
-      mediaUrls: n.mediaUrls,
-      status: n.status
-    };
-    return item;
-  });
-  return rst;
-}
-
-/**
- *
- * @param raceName 比赛名
- * @param userId 参赛用户id
- */
-export async function canSetPlayer(
-  raceName: string,
-  userId: string
-): Promise<boolean> {
-  let rst: boolean;
-
-  let collRace = await getCollection(RACE);
-  let collPlayer = await getCollection(RACE_PLAYER);
-  // 1 是否存在比赛,并且比赛处于ready状态
-  if (!(await collRace.findOne({ name: raceName, status: RaceStatus.ready }))) {
-    return false;
-  }
-
-  // 2 应该已经报名
-  if (!(await collPlayer.findOne({ raceName, userId }))) {
-    return false;
-  }
-
-  rst = true;
-  return rst;
-}
-
-/**
- * 新增参赛用户
- * @param raceName 比赛名
- * @param userId 参赛用户id
- */
-export async function addPlayer(
-  raceName: string,
-  userId: string
-): Promise<void> {
-  let coll = await getCollection(RACE_PLAYER);
-  await coll.updateOne(
-    { raceName, userId },
-    { $set: { status: PlayerStatus.accpet } }
-  );
-}
-
-/**
- * 新增参赛用户
- * @param raceName 比赛名
- * @param userId 参赛用户id
- */
-export async function removePlayer(
-  raceName: string,
-  userId: string
-): Promise<void> {
-  let coll = await getCollection(RACE_PLAYER);
-  await coll.updateOne(
-    { raceName, userId },
-    { $set: { status: PlayerStatus.reject } }
-  );
-}
-
-/**
  * 是否符合打榜的条件
  * @param userId 打榜用户id
  * @param playerId 参赛用户id(被打榜用户)
  * @param raceName 比赛名
  * @param coin 打榜消耗的代币
  */
-export async function canUpvote(
-  userId: string,
-  playerId: string,
-  raceName: string,
-  coin: number
-): Promise<boolean> {
+export async function canUpvote(raceName: string): Promise<boolean> {
   let rst: boolean;
 
   let collRace = await getCollection(RACE);
   let collPlayer = await getCollection(RACE_PLAYER);
   // 1 是否存在比赛,并且比赛处于race状态
   if (!(await collRace.findOne({ name: raceName, status: RaceStatus.race }))) {
-    return false;
-  }
-
-  // 2 playerId应该已经报名,且被官方批准参赛
-  if (
-    !(await collPlayer.findOne({
-      raceName,
-      userId: playerId,
-      status: PlayerStatus.accpet
-    }))
-  ) {
-    return false;
-  }
-
-  // 3 是否有足够的coin
-  let user = await userService.find(userId);
-  if (!(user && user.coin >= coin)) {
     return false;
   }
 
@@ -399,7 +270,8 @@ export async function upvote(
   let hot = utils.upvoteCoin2Hot(coin);
   await collPlayer.updateOne(
     { raceName, userId: playerId },
-    { $inc: { upvote: hot } }
+    { $inc: { upvote: hot } },
+    { upsert: true }
   );
   await collUpvoter.updateOne(
     { raceName, userId },
@@ -411,6 +283,28 @@ export async function upvote(
   await collUpvoteLog.insertOne({ raceName, userId, coin, time: new Date() });
 }
 
+/**
+ * 获取参赛用户
+ * @param raceName 比赛名字
+ */
+export async function playerList(raceName: string): Promise<IPlayer[]> {
+  let rst: IPlayer[] = [];
+  let coll = await getCollection(RACE_PLAYER);
+  let data = await coll.find({ raceName }).toArray();
+
+  rst = data.map(n => {
+    let item: IPlayer = {
+      userId: n.userId,
+      nickName: n.nickName,
+      avatarUrl: n.avatarUrl,
+      upvote: n.upvote,
+      mediaUrls: n.mediaUrls,
+      status: n.status
+    };
+    return item;
+  });
+  return rst;
+}
 /**
  * 金主排行榜
  * @param raceName 比赛名

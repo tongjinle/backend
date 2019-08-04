@@ -78,7 +78,7 @@ describe("share service", async function() {
     assert(!isRewarded);
 
     {
-      await collShareLink.insertOne({ userId: "sannian", inviterId: "bitch" });
+      await collShareLink.insertOne({ userId: "sannian", sharerId: "bitch" });
       let isRewarded = await shareService.isRewarded("sannian", "bitch");
       assert(isRewarded);
     }
