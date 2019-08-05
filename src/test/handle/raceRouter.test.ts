@@ -1,25 +1,22 @@
 import assert = require("assert");
-import {
-  getMongoClient,
-  closeMongoClient,
-  getCollection
-} from "../../getMongoClient";
-import { MongoClient, Collection } from "mongodb";
-import config from "../../config";
 import axios, { AxiosInstance } from "axios";
-import errs from "../../errCode";
-import * as userService from "../../service/user";
-import { fork, ChildProcess } from "child_process";
+import { ChildProcess, fork } from "child_process";
+import { Collection, MongoClient } from "mongodb";
 import * as path from "path";
+import config from "../../config";
+import { closeMongoClient, getCollection } from "../../getMongoClient";
+import * as raceService from "../../service/race";
 import utils from "../../utils";
-import * as protocol from "../../protocol";
 
-describe("share router", async function() {
+describe("race router", async function() {
   let request: AxiosInstance;
   let bareRequest: AxiosInstance;
   let client: MongoClient;
   let photos: Collection;
   let collRace: Collection;
+  let collRacePlayer: Collection;
+  let collRaceUpvoter: Collection;
+  let collRaceUpvoterLog: Collection;
   let worker: ChildProcess;
 
   before(async function() {
@@ -43,10 +40,18 @@ describe("share router", async function() {
     });
 
     collRace = await getCollection("race");
+    collRacePlayer = await getCollection("racePlayer");
+    collRaceUpvoter = await getCollection("raceUpvoter");
+    collRaceUpvoterLog = await getCollection("race");
   });
 
   beforeEach(async function() {
-    await Promise.all([collRace.deleteMany({})]);
+    await Promise.all([
+      collRace.deleteMany({}),
+      collRacePlayer.deleteMany({}),
+      collRaceUpvoter.deleteMany({}),
+      collRaceUpvoterLog.deleteMany({})
+    ]);
   });
 
   after(async function() {
@@ -54,15 +59,65 @@ describe("share router", async function() {
     await closeMongoClient();
   });
 
-  // 分享记录
-  // 1 可以记录
-  // 2 第二次请求记录的时候,会通知已经记录过了
-  it("share", async function() {});
+  it("player", async function() {
+    await collRacePlayer.insertMany([
+      {
+        raceName: "seed",
+        userId: "sannian",
+        nickname: "三年",
+        logoUrl: "sannian.jpg",
+        upvote: 10000
+      },
+      {
+        raceName: "seed2",
+        userId: "sannian",
+        nickname: "三年",
+        logoUrl: "sannian.jpg",
+        upvote: 1000
+      },
+      {
+        raceName: "seed",
+        userId: "wangyun",
+        nickname: "王云",
+        logoUrl: "wangyun.jpg",
+        upvote: 90
+      }
+    ]);
 
-  // 新用户分享奖励
-  // 1 不合法的shareCode
-  // 2 参数缺少
-  // 3 分享成功
-  // 4 重复请求分享奖励会失败
-  it("share reward", async function() {});
+    let { data } = await request.get("/race/player", {
+      params: { name: "seed" }
+    });
+    assert(data && data.list.length === 2);
+  });
+
+  it("upvoter", async function() {
+    await collRaceUpvoter.insertMany([
+      {
+        raceName: "seed",
+        userId: "sannian",
+        nickname: "三年",
+        logoUrl: "sannian.jpg",
+        coin: 10000
+      },
+      {
+        raceName: "seed2",
+        userId: "sannian",
+        nickname: "三年",
+        logoUrl: "sannian.jpg",
+        coin: 1000
+      },
+      {
+        raceName: "seed",
+        userId: "wangyun",
+        nickname: "王云",
+        logoUrl: "wangyun.jpg",
+        coin: 90
+      }
+    ]);
+
+    let { data } = await request.get("/race/upvoter", {
+      params: { name: "seed2" }
+    });
+    assert(data && data.list.length === 1);
+  });
 });

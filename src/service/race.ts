@@ -354,11 +354,19 @@ export async function upvote(
 /**
  * 获取参赛用户
  * @param raceName 比赛名字
+ * @param limit 个数限制
  */
-export async function playerList(raceName: string): Promise<IPlayer[]> {
+export async function playerList(
+  raceName: string,
+  limit: number
+): Promise<IPlayer[]> {
   let rst: IPlayer[] = [];
   let coll = await getCollection(RACE_PLAYER);
-  let data = await coll.find({ raceName }).toArray();
+  let data = await coll
+    .find({ raceName })
+    .sort({ upvote: -1 })
+    .limit(limit)
+    .toArray();
 
   rst = data.map(n => {
     let item: IPlayer = {
