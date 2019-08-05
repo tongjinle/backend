@@ -14,17 +14,18 @@ router.get("/player", async (req, res) => {
   let reqData: protocol.IReqRacePlayerList = req.query;
   let resData: protocol.IResRacePlayerList;
 
-  let name = reqData.name;
-  let limit: number = reqData.limit - 0;
-
   let result = joi.validate(reqData, {
     name: joi.string().required(),
     limit: joi.number().required()
   });
   if (result.error) {
     res.json({ code: -1, message: "参数格式不正确" });
+    console.error(result.error);
+    return;
   }
 
+  let name = reqData.name;
+  let limit: number = Math.min(20, reqData.limit - 0);
   let list = await raceService.playerList(name, limit);
 
   resData = { code: 0, list };
@@ -42,10 +43,12 @@ router.get("/upvoter", async (req, res) => {
   });
   if (result.error) {
     res.json({ code: -1, message: "参数格式不正确" });
+    console.error(result.error);
+    return;
   }
 
   let name = reqData.name;
-  let limit: number = reqData.limit - 0;
+  let limit: number = Math.min(20, reqData.limit - 0);
   let list = await raceService.upvoterList(name, limit);
 
   resData = { code: 0, list };

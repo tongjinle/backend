@@ -85,8 +85,9 @@ describe("race router", async function() {
     ]);
 
     let { data } = await request.get("/race/player", {
-      params: { name: "seed" }
+      params: { name: "seed", limit: 10 }
     });
+    console.log(data);
     assert(data && data.list.length === 2);
   });
 
@@ -116,7 +117,7 @@ describe("race router", async function() {
     ]);
 
     let { data } = await request.get("/race/upvoter", {
-      params: { name: "seed2" }
+      params: { name: "seed2", limit: 10 }
     });
     assert(data && data.list.length === 1);
   });

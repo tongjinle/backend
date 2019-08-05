@@ -110,12 +110,12 @@ describe("race service", async function() {
   it("upvote", async function() {
     {
       await raceService.upvote("tong", "sannian", "seed", 100);
-      let list = await raceService.playerList("seed");
+      let list = await raceService.playerList("seed", 100);
       assert(list && list[0].userId === "sannian" && list[0].upvote === 200);
     }
     {
       await raceService.upvote("tong", "sannian", "seed", 100);
-      let list = await raceService.playerList("seed");
+      let list = await raceService.playerList("seed", 100);
       assert(list && list[0].userId === "sannian" && list[0].upvote === 400);
     }
     await raceService.upvote("jin", "sannian", "seed", 10);
