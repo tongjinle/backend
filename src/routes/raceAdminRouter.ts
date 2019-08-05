@@ -17,6 +17,11 @@ router.post("/add", async (req, res) => {
 
   let { name, days, postUrls } = reqData;
 
+  if (!(await raceService.canAdd(name))) {
+    res.json({ code: -1, message: "比赛新增失败" });
+    return;
+  }
+
   await raceService.add(name, days, postUrls);
   resData = { code: 0 };
   res.json(resData);
@@ -40,6 +45,11 @@ router.post("/remove", async (req, res) => {
   let resData: protocol.IResRemoveRace;
 
   let name: string = reqData.name;
+
+  if (!(await raceService.canRemove(name))) {
+    res.json({ code: -1, message: "不能删除比赛" });
+    return;
+  }
 
   await raceService.remove(name);
   resData = { code: 0 };

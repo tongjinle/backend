@@ -138,6 +138,18 @@ const RACE_PLAYER = "racePlayer";
 const RACE_UPVOTER = "raceUpvoter";
 const RACE_UPVOTE_LOG = "raceUpvoteLog";
 
+export async function canAdd(name: string): Promise<boolean> {
+  let rst: boolean;
+  let coll = await getCollection(RACE);
+
+  if (!!(await coll.findOne({ name }))) {
+    return false;
+  }
+
+  rst = true;
+  return rst;
+}
+
 /**
  * 创建比赛
  * @param name 比赛名
@@ -158,6 +170,21 @@ export async function add(
     time: new Date()
   };
   await coll.insertOne(fullSetting);
+}
+
+/**
+ * 能否删除比赛
+ * @param name 比赛名
+ */
+export async function canRemove(name: string): Promise<boolean> {
+  let rst: boolean;
+  let coll = await getCollection(RACE);
+
+  if (!(await coll.findOne({ name, status: "prepare" }))) {
+    return false;
+  }
+  rst = true;
+  return rst;
 }
 
 /**
