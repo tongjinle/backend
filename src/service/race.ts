@@ -1,5 +1,6 @@
 import { getCollection } from "../getMongoClient";
 import utils from "../utils";
+import * as userService from "./user";
 
 /**
  * 比赛状态
@@ -160,6 +161,15 @@ export async function add(
 }
 
 /**
+ * 删除比赛
+ * @param name 比赛名
+ */
+export async function remove(name: string): Promise<void> {
+  let coll = await getCollection(RACE);
+  await coll.deleteOne({ name });
+}
+
+/**
  * 寻找比赛
  * @param name 比赛名字
  */
@@ -283,16 +293,32 @@ export async function upvote(
   let collUpvoteLog = await getCollection(RACE_UPVOTE_LOG);
 
   let hot = utils.upvoteCoin2Hot(coin);
-  await collPlayer.updateOne(
-    { raceName, userId: playerId },
-    { $inc: { upvote: hot } },
-    { upsert: true }
-  );
-  await collUpvoter.updateOne(
-    { raceName, userId },
-    { $inc: { coin } },
-    { upsert: true }
-  );
+  // 记录参赛选手
+  {
+    let op: any = { $inc: { upvote: hot } };
+    if (!(await collPlayer.findOne({ raceName, userId: playerId }))) {
+      let user = await userService.find(playerId);
+      let nickName = user.nickname;
+      let logoUrl = user.logoUrl;
+      op = { ...op, $set: { nickName, logoUrl } };
+    }
+
+    await collPlayer.updateOne({ raceName, userId: playerId }, op, {
+      upsert: true
+    });
+  }
+
+  // 记录打榜金主
+  {
+    let op: any = { $inc: { coin } };
+    if (!(await collUpvoter.findOne({ raceName, userId }))) {
+      let user = await userService.find(userId);
+      let nickName = user.nickname;
+      let logoUrl = user.logoUrl;
+      op = { ...op, $set: { nickName, logoUrl } };
+    }
+    await collUpvoter.updateOne({ raceName, userId }, op, { upsert: true });
+  }
 
   // 记录每笔upvote
   await collUpvoteLog.insertOne({ raceName, userId, coin, time: new Date() });

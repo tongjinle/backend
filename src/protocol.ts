@@ -236,3 +236,114 @@ export interface IReqAddRace {
 }
 
 export interface IResAddRace extends IResBase {}
+
+export interface IReqRaceList {
+  // 比赛状态
+  // 如果为空,则表示查询所有
+  status?: "prepare" | "race" | "gameover";
+}
+
+export interface IResRaceList extends IResBase {
+  list: {
+    /**
+     * 比赛名称
+     */
+    name: string;
+    /**
+     * 比赛周期(以日为单位)
+     */
+    days: number;
+    /**
+     * 开始时间
+     */
+    startTime?: Date;
+    /**
+     * 结束时间
+     */
+    endTime?: Date;
+    /**
+     * 海报地址(数组)
+     */
+    postUrls: string[];
+    /**
+     * 状态
+     */
+    status: "prepare" | "race" | "gameover";
+    /**
+     * 创建race的时间
+     */
+    time: Date;
+  }[];
+}
+
+export interface IReqRemoveRace {
+  // 比赛名
+  name: string;
+}
+
+export interface IResRemoveRace extends IResBase {}
+
+export interface IReqStartRace {
+  // 比赛名
+  name: string;
+}
+
+export interface IResStartRace extends IResBase {}
+
+// 金主排行
+export interface IReqRaceUpvoterList {
+  // 比赛名
+  name: string;
+  // 个数限制
+  limit: number;
+}
+
+export interface IResRaceUpvoterList extends IResBase {
+  list: {
+    /**
+     * 参赛用户id
+     */
+    userId: string;
+    /**
+     * 昵称
+     */
+    nickName: string;
+    /**
+     * 头像url
+     */
+    logoUrl: string;
+    /**
+     * 打榜热度
+     */
+    coin: number;
+  }[];
+}
+
+export interface IReqRacePlayerList {
+  // 比赛名
+  name: string;
+  // 个数限制
+  limit: number;
+}
+
+// 比赛中选手排名
+export interface IResRacePlayerList extends IResBase {
+  list: {
+    /**
+     * 参赛用户id
+     */
+    userId: string;
+    /**
+     * 昵称
+     */
+    nickName: string;
+    /**
+     * 头像url
+     */
+    logoUrl: string;
+    /**
+     * 打榜热度
+     */
+    upvote: number;
+  }[];
+}
