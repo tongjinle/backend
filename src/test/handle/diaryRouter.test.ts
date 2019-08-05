@@ -236,13 +236,7 @@ describe("diary router", async function() {
     let collUpvoter = await getCollection("raceUpvote");
     let collUpvoteLog = await getCollection("raceUpvoteLog");
     {
-      await raceService.create({
-        name: "seed",
-        startTime: new Date(2000, 0, 1),
-        endTime: new Date(2001, 0, 1),
-        postUrls: [],
-        status: raceService.RaceStatus.prepare
-      });
+      await raceService.create("seed", 7, []);
     }
 
     {

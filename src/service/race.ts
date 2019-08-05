@@ -1,6 +1,4 @@
 import { getCollection } from "../getMongoClient";
-import * as userService from "./user";
-import { string } from "@hapi/joi";
 import utils from "../utils";
 
 /**
@@ -34,6 +32,10 @@ export interface IRaceSetting {
    */
   name: string;
   /**
+   * 比赛周期(以日为单位)
+   */
+  days: number;
+  /**
    * 开始时间
    */
   startTime: Date;
@@ -49,6 +51,10 @@ export interface IRaceSetting {
    * 状态
    */
   status: RaceStatus;
+  /**
+   * 创建race的时间
+   */
+  time: Date;
 }
 
 /**
@@ -143,12 +149,20 @@ const RACE_UPVOTE_LOG = "raceUpvoteLog";
 
 /**
  * 创建比赛
- * @param setting 比赛信息
+ * @param name 比赛名
+ * @param days 持续的日子
+ * @param postUrls 海报url列表
  */
-export async function create(setting: IRaceSetting): Promise<void> {
+export async function create(
+  name: string,
+  days: number,
+  postUrls: string[]
+): Promise<void> {
   let coll = await getCollection(RACE);
   let fullSetting = {
-    ...setting,
+    name,
+    days,
+    postUrls,
     status: RaceStatus.prepare,
     time: new Date()
   };
@@ -216,8 +230,19 @@ export async function canStart(name: string): Promise<boolean> {
  * @param name 比赛名
  */
 export async function start(name: string): Promise<void> {
+  let race = await find(name);
+  let startTime: Date = new Date();
+  let endTime: Date = new Date(
+    startTime.getFullYear(),
+    startTime.getMonth(),
+    startTime.getDate() + race.days
+  );
+
   let coll = await getCollection(RACE);
-  await coll.updateOne({ name }, { $set: { status: RaceStatus.race } });
+  await coll.updateOne(
+    { name },
+    { $set: { status: RaceStatus.race, startTime, endTime } }
+  );
 }
 
 /**

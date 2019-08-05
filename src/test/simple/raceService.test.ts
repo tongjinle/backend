@@ -76,14 +76,7 @@ describe("race service", async function() {
   // 新建一个比赛
   // 1 能查到这个比赛
   it("create race", async function() {
-    let setting: raceService.IRaceSetting = {
-      name: "seed",
-      startTime: new Date(2000, 0, 1),
-      endTime: new Date(2000, 1, 1),
-      postUrls: [],
-      status: raceService.RaceStatus.prepare
-    };
-    await raceService.create(setting);
+    await raceService.create("seed", 7, []);
 
     let data = await raceService.find("seed");
     assert(!!data);
