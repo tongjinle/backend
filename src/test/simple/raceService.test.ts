@@ -24,18 +24,14 @@ describe("race service", async function() {
   const sannian: raceService.IPlayer = {
     userId: "sannian",
     nickName: "三年",
-    avatarUrl: "sannian.jpg",
-    mediaUrls: ["1.jpg", "2.jpg"],
-    upvote: 0,
-    status: raceService.PlayerStatus.unknow
+    logoUrl: "sannian.jpg",
+    upvote: 0
   };
   const wangyun: raceService.IPlayer = {
     userId: "wangyun",
     nickName: "三年",
-    avatarUrl: "wangyun.jpg",
-    mediaUrls: ["11.jpg", "12.jpg"],
-    upvote: 0,
-    status: raceService.PlayerStatus.unknow
+    logoUrl: "wangyun.jpg",
+    upvote: 0
   };
 
   before(async function() {
@@ -76,7 +72,7 @@ describe("race service", async function() {
   // 新建一个比赛
   // 1 能查到这个比赛
   it("create race", async function() {
-    await raceService.create("seed", 7, []);
+    await raceService.add("seed", 7, []);
 
     let data = await raceService.find("seed");
     assert(!!data);

@@ -1,5 +1,6 @@
 import { getCollection } from "../getMongoClient";
 import utils from "../utils";
+import * as userService from "./user";
 
 /**
  * 比赛状态
@@ -102,21 +103,11 @@ export interface IPlayer {
   /**
    * 头像url
    */
-  avatarUrl: string;
+  logoUrl: string;
   /**
    * 打榜热度
    */
   upvote: number;
-  /**
-   * 媒体列表
-   */
-  mediaUrls: string[];
-
-  /**
-   * 参赛者状态
-   * @see PlayerStatus
-   */
-  status: PlayerStatus;
 }
 
 /**
@@ -134,7 +125,7 @@ export interface IUpvoter {
   /**
    * 头像url
    */
-  avatarUrl: string;
+  logoUrl: string;
   /**
    * 打榜热度
    */
@@ -147,13 +138,25 @@ const RACE_PLAYER = "racePlayer";
 const RACE_UPVOTER = "raceUpvoter";
 const RACE_UPVOTE_LOG = "raceUpvoteLog";
 
+export async function canAdd(name: string): Promise<boolean> {
+  let rst: boolean;
+  let coll = await getCollection(RACE);
+
+  if (!!(await coll.findOne({ name }))) {
+    return false;
+  }
+
+  rst = true;
+  return rst;
+}
+
 /**
  * 创建比赛
  * @param name 比赛名
  * @param days 持续的日子
  * @param postUrls 海报url列表
  */
-export async function create(
+export async function add(
   name: string,
   days: number,
   postUrls: string[]
@@ -167,6 +170,30 @@ export async function create(
     time: new Date()
   };
   await coll.insertOne(fullSetting);
+}
+
+/**
+ * 能否删除比赛
+ * @param name 比赛名
+ */
+export async function canRemove(name: string): Promise<boolean> {
+  let rst: boolean;
+  let coll = await getCollection(RACE);
+
+  if (!(await coll.findOne({ name, status: "prepare" }))) {
+    return false;
+  }
+  rst = true;
+  return rst;
+}
+
+/**
+ * 删除比赛
+ * @param name 比赛名
+ */
+export async function remove(name: string): Promise<void> {
+  let coll = await getCollection(RACE);
+  await coll.deleteOne({ name });
 }
 
 /**
@@ -191,11 +218,11 @@ export async function findInRace(): Promise<IRaceSetting> {
  * 获取所有比赛
  * @returns 返回比赛名字的列表
  */
-export async function list(status?: RaceStatus): Promise<string[]> {
-  let rst: string[] = [];
+export async function list(status?: RaceStatus): Promise<IRaceSetting[]> {
+  let rst: IRaceSetting[] = [];
   let coll = await getCollection(RACE);
   let query = status === undefined ? {} : { status };
-  rst = (await coll.find(query).toArray()).map(n => n.name);
+  rst = await coll.find(query).toArray();
   return rst;
 }
 
@@ -293,16 +320,32 @@ export async function upvote(
   let collUpvoteLog = await getCollection(RACE_UPVOTE_LOG);
 
   let hot = utils.upvoteCoin2Hot(coin);
-  await collPlayer.updateOne(
-    { raceName, userId: playerId },
-    { $inc: { upvote: hot } },
-    { upsert: true }
-  );
-  await collUpvoter.updateOne(
-    { raceName, userId },
-    { $inc: { coin } },
-    { upsert: true }
-  );
+  // 记录参赛选手
+  {
+    let op: any = { $inc: { upvote: hot } };
+    if (!(await collPlayer.findOne({ raceName, userId: playerId }))) {
+      let user = await userService.find(playerId);
+      let nickName = user.nickname;
+      let logoUrl = user.logoUrl;
+      op = { ...op, $set: { nickName, logoUrl } };
+    }
+
+    await collPlayer.updateOne({ raceName, userId: playerId }, op, {
+      upsert: true
+    });
+  }
+
+  // 记录打榜金主
+  {
+    let op: any = { $inc: { coin } };
+    if (!(await collUpvoter.findOne({ raceName, userId }))) {
+      let user = await userService.find(userId);
+      let nickName = user.nickname;
+      let logoUrl = user.logoUrl;
+      op = { ...op, $set: { nickName, logoUrl } };
+    }
+    await collUpvoter.updateOne({ raceName, userId }, op, { upsert: true });
+  }
 
   // 记录每笔upvote
   await collUpvoteLog.insertOne({ raceName, userId, coin, time: new Date() });
@@ -311,20 +354,26 @@ export async function upvote(
 /**
  * 获取参赛用户
  * @param raceName 比赛名字
+ * @param limit 个数限制
  */
-export async function playerList(raceName: string): Promise<IPlayer[]> {
+export async function playerList(
+  raceName: string,
+  limit: number
+): Promise<IPlayer[]> {
   let rst: IPlayer[] = [];
   let coll = await getCollection(RACE_PLAYER);
-  let data = await coll.find({ raceName }).toArray();
+  let data = await coll
+    .find({ raceName })
+    .sort({ upvote: -1 })
+    .limit(limit)
+    .toArray();
 
   rst = data.map(n => {
     let item: IPlayer = {
       userId: n.userId,
       nickName: n.nickName,
-      avatarUrl: n.avatarUrl,
-      upvote: n.upvote,
-      mediaUrls: n.mediaUrls,
-      status: n.status
+      logoUrl: n.avatarUrl,
+      upvote: n.upvote
     };
     return item;
   });
@@ -351,7 +400,7 @@ export async function upvoterList(
     let item: IUpvoter = {
       userId: n.userId,
       nickName: n.nickName,
-      avatarUrl: n.avatarUrl,
+      logoUrl: n.avatarUrl,
       coin: n.coin
     };
     return item;
