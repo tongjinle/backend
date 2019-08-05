@@ -225,3 +225,14 @@ export interface IResDiaryList extends IResBase {
     coin: number;
   }[];
 }
+
+export interface IReqAddRace {
+  // 比赛名
+  name: string;
+  // 持续时间
+  days: number;
+  // 海报url列表
+  postUrls: string[];
+}
+
+export interface IResAddRace extends IResBase {}

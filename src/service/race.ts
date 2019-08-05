@@ -102,21 +102,11 @@ export interface IPlayer {
   /**
    * 头像url
    */
-  avatarUrl: string;
+  logoUrl: string;
   /**
    * 打榜热度
    */
   upvote: number;
-  /**
-   * 媒体列表
-   */
-  mediaUrls: string[];
-
-  /**
-   * 参赛者状态
-   * @see PlayerStatus
-   */
-  status: PlayerStatus;
 }
 
 /**
@@ -134,7 +124,7 @@ export interface IUpvoter {
   /**
    * 头像url
    */
-  avatarUrl: string;
+  logoUrl: string;
   /**
    * 打榜热度
    */
@@ -153,7 +143,7 @@ const RACE_UPVOTE_LOG = "raceUpvoteLog";
  * @param days 持续的日子
  * @param postUrls 海报url列表
  */
-export async function create(
+export async function add(
   name: string,
   days: number,
   postUrls: string[]
@@ -191,11 +181,11 @@ export async function findInRace(): Promise<IRaceSetting> {
  * 获取所有比赛
  * @returns 返回比赛名字的列表
  */
-export async function list(status?: RaceStatus): Promise<string[]> {
-  let rst: string[] = [];
+export async function list(status?: RaceStatus): Promise<IRaceSetting[]> {
+  let rst: IRaceSetting[] = [];
   let coll = await getCollection(RACE);
   let query = status === undefined ? {} : { status };
-  rst = (await coll.find(query).toArray()).map(n => n.name);
+  rst = await coll.find(query).toArray();
   return rst;
 }
 
@@ -321,10 +311,8 @@ export async function playerList(raceName: string): Promise<IPlayer[]> {
     let item: IPlayer = {
       userId: n.userId,
       nickName: n.nickName,
-      avatarUrl: n.avatarUrl,
-      upvote: n.upvote,
-      mediaUrls: n.mediaUrls,
-      status: n.status
+      logoUrl: n.avatarUrl,
+      upvote: n.upvote
     };
     return item;
   });
@@ -351,7 +339,7 @@ export async function upvoterList(
     let item: IUpvoter = {
       userId: n.userId,
       nickName: n.nickName,
-      avatarUrl: n.avatarUrl,
+      logoUrl: n.avatarUrl,
       coin: n.coin
     };
     return item;
