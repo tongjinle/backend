@@ -226,6 +226,29 @@ export interface IResDiaryList extends IResBase {
   }[];
 }
 
+export interface IReqDiaryRecommendList {}
+
+export interface IResDiaryRecommendList extends IResBase {
+  list: {
+    // 日记id
+    id: string;
+    // 用户编号
+    userId: string;
+    // 照片地址(后期可能是视频等其他格式的media的url地址)
+    url: string;
+    // 类型
+    type: "image" | "video" | "audio";
+    // 得分(仅为photo的时候存在)
+    score?: number;
+    // 简单文本
+    text?: string;
+    // 赞的次数
+    upvote: number;
+    // 打榜用掉的代币
+    coin: number;
+  }[];
+}
+
 export interface IReqAddRace {
   // 比赛名
   name: string;

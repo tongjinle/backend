@@ -186,6 +186,59 @@ export async function list(userId: string): Promise<Diary[]> {
   return rst;
 }
 
+/**
+ * 热度最高的日记列表
+ * @param limit 个数限制
+ */
+export async function topList(limit: number): Promise<Diary[]> {
+  let rst: Diary[] = [];
+  let coll = await getCollection(DIARY);
+  let data = await coll
+    .find({})
+    .sort({ upvote: -1 })
+    .limit(limit)
+    .toArray();
+  rst = data.map(n => ({
+    userId: n.userId,
+    id: n._id.toString(),
+    text: n.text,
+    url: n.url,
+    type: n.type,
+    score: n.score,
+    timestamp: n.time.getTime(),
+    upvote: n.upvote,
+    coin: n.coin
+  }));
+  return rst;
+}
+
+/** 最新的日记列表 */
+/**
+ *
+ * @param limit 个数限制
+ */
+export async function freshList(limit: number): Promise<Diary[]> {
+  let rst: Diary[] = [];
+  let coll = await getCollection(DIARY);
+  let data = await coll
+    .find({})
+    .sort({ timestamp: -1 })
+    .limit(limit)
+    .toArray();
+  rst = data.map(n => ({
+    userId: n.userId,
+    id: n._id.toString(),
+    text: n.text,
+    url: n.url,
+    type: n.type,
+    score: n.score,
+    timestamp: n.time.getTime(),
+    upvote: n.upvote,
+    coin: n.coin
+  }));
+  return rst;
+}
+
 // 购买日记
 // export async function buy(userId: string, diaryId: string): Promise<void> {
 //   let mongo = await getMongoClient();

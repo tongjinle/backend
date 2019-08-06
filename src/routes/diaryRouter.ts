@@ -21,8 +21,13 @@ router.post("/add", async (req, res) => {
 
   let text = reqData.text || "";
   let url = reqData.url;
-  let type = reqData.type as diaryService.MediaType;
-  let score = reqData.score || -1;
+  let type: diaryService.MediaType = reqData.type as diaryService.MediaType;
+
+  let score = -1;
+  if (type === diaryService.MediaType.image) {
+    score = 80;
+    // todo
+  }
 
   await diaryService.add(userId, text, url, type, score);
   resData = { code: 0 };
@@ -107,6 +112,30 @@ router.get("/list", async (req, res) => {
   console.log({ diaryUserId });
 
   let list = await diaryService.list(diaryUserId);
+  resData = { code: 0, list };
+  res.json(resData);
+});
+
+// 获取推荐日记列表
+router.get("/recommend", async (req, res) => {
+  let resData: protocol.IResDiaryRecommendList;
+  let reqData: protocol.IReqDiaryRecommendList = req.query;
+
+  const topLimit = 100;
+  const topCount = 2;
+  const freshLimit = 1000;
+  const freshCount = 8;
+  let freshes = await diaryService.freshList(freshLimit);
+  let tops = await diaryService.topList(topLimit);
+
+  let fetch = (arr, count) => {
+    return arr
+      .sort(() => 0.5 - Math.random())
+      .filter((n, i) => i < count)
+      .map(n => ({ ...n }));
+  };
+
+  let list = [...fetch(tops, topCount), ...fetch(freshes, freshCount)];
   resData = { code: 0, list };
   res.json(resData);
 });
