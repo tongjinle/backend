@@ -1,18 +1,37 @@
 import { getCollection } from "../getMongoClient";
 import { func } from "@hapi/joi";
 import { Collection } from "mongodb";
+import { upvote } from "../service/race";
 
 let collUser: Collection;
 let collDiary: Collection;
+let collRace: Collection;
+let collRacePlayer: Collection;
+let collRaceUpvoter: Collection;
+let collRaceUpvoteLog: Collection;
 
 export default async function recover() {
   collUser = await getCollection("user");
   collDiary = await getCollection("diary");
+  collRace = await getCollection("race");
+  collRacePlayer = await getCollection("racePlayer");
+  collRaceUpvoter = await getCollection("raceUpvoter");
+  collRaceUpvoteLog = await getCollection("raceUpvoteLog");
 
-  await Promise.all([collUser, collDiary].map(coll => coll.deleteMany({})));
+  await Promise.all(
+    [
+      collUser,
+      collDiary,
+      collRace,
+      collRacePlayer,
+      collRaceUpvoter,
+      collRaceUpvoteLog
+    ].map(coll => coll.deleteMany({}))
+  );
 
   await recoverUser();
   await recoverDiary();
+  await recoverRace();
 }
 
 // 用户数据
@@ -28,7 +47,7 @@ async function recoverUser() {
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E7%AB%A5%E9%A2%9C/080942a0fee28fa6bbc1be6790718757.jpg",
       city: "上海",
       birthYear: 2000,
-      coin: 90
+      coin: 9000
     },
     {
       userId: "wangyun",
@@ -38,7 +57,7 @@ async function recoverUser() {
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E6%B5%85%E6%B5%85/0bafca06466c9de2c366ed21f10d8b44.jpg",
       city: "北京",
       birthYear: 2001,
-      coin: 100
+      coin: 10000
     }
   ]);
 }
@@ -100,6 +119,44 @@ async function recoverDiary() {
       score: -1,
       upvote: 300,
       coin: 0
+    }
+  ]);
+}
+
+// 比赛数据
+async function recoverRace() {
+  let startTime = new Date();
+  await collRace.insertMany([
+    {
+      name: "颜值杯",
+      days: 1,
+      startTime,
+      endTime: new Date(startTime.getTime() + 5 * 60 * 1000),
+      postUrls: [
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/1.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/2.jpg"
+      ],
+      status: "race"
+    }
+  ]);
+
+  await collRacePlayer.insertMany([
+    {
+      userId: "wangyun",
+      nickname: "王云",
+      logoUrl:
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E6%B5%85%E6%B5%85/0bafca06466c9de2c366ed21f10d8b44.jpg",
+      upvote: 888
+    }
+  ]);
+
+  await collRaceUpvoter.insertMany([
+    {
+      userId: "tongyan",
+      nickname: "童颜",
+      logoUrl:
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E7%AB%A5%E9%A2%9C/080942a0fee28fa6bbc1be6790718757.jpg",
+      coin: 1000
     }
   ]);
 }
