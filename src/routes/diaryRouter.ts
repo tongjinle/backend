@@ -136,6 +136,14 @@ router.get("/recommend", async (req, res) => {
   };
 
   let list = [...fetch(tops, topCount), ...fetch(freshes, freshCount)];
+
+  list = list.map(async n => {
+    let user = await userService.find(n.userId);
+    n.nickname = user.nickname;
+    n.logoUrl = user.logoUrl;
+    return n;
+  });
+
   resData = { code: 0, list };
   res.json(resData);
 });
