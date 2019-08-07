@@ -83,7 +83,7 @@ async function recoverDiary() {
       url:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/1.mp4",
       type: "video",
-      timeStamp: new Date(2018, 7, 2),
+      time: new Date(2018, 7, 2),
       score: -1,
       upvote: 3500,
       coin: 80
@@ -94,7 +94,7 @@ async function recoverDiary() {
       url:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/2.jpg",
       type: "image",
-      timeStamp: new Date(1546272000000),
+      time: new Date(1546272000000),
       score: -1,
       upvote: 300,
       coin: 0
@@ -105,7 +105,7 @@ async function recoverDiary() {
       url:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/3.jpg",
       type: "image",
-      timeStamp: new Date(1546272000000),
+      time: new Date(1546272000000),
       score: -1,
       upvote: 300,
       coin: 0
@@ -115,7 +115,7 @@ async function recoverDiary() {
       url:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/music.mp3",
       type: "audio",
-      timeStamp: new Date(1546272000000),
+      time: new Date(1546272000000),
       score: -1,
       upvote: 300,
       coin: 0
