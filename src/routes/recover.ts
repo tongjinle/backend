@@ -142,6 +142,7 @@ async function recoverRace() {
 
   await collRacePlayer.insertMany([
     {
+      raceName: "颜值杯",
       userId: "wangyun",
       nickname: "王云",
       logoUrl:
@@ -152,6 +153,7 @@ async function recoverRace() {
 
   await collRaceUpvoter.insertMany([
     {
+      raceName: "颜值杯",
       userId: "tongyan",
       nickname: "童颜",
       logoUrl:

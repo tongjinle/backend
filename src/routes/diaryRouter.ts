@@ -108,6 +108,11 @@ router.get("/list", async (req, res) => {
   let resData: protocol.IResDiaryList;
   let reqData: protocol.IReqDiaryList = req.query;
 
+  let result = joi.validate(reqData, { userId: joi.string().required() });
+  if (result.error) {
+    res.json({ code: -1, message: "缺少userId参数" });
+    return;
+  }
   let diaryUserId: string = reqData.userId;
   console.log({ diaryUserId });
 
@@ -137,12 +142,14 @@ router.get("/recommend", async (req, res) => {
 
   let list = [...fetch(tops, topCount), ...fetch(freshes, freshCount)];
 
-  list = list.map(async n => {
-    let user = await userService.find(n.userId);
-    n.nickname = user.nickname;
-    n.logoUrl = user.logoUrl;
-    return n;
-  });
+  list = await Promise.all(
+    list.map(async n => {
+      let user = await userService.find(n.userId);
+      n.nickname = user.nickname;
+      n.logoUrl = user.logoUrl;
+      return n;
+    })
+  );
 
   resData = { code: 0, list };
   res.json(resData);

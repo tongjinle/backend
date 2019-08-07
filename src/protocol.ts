@@ -370,3 +370,35 @@ export interface IResRacePlayerList extends IResBase {
     upvote: number;
   }[];
 }
+
+export interface IReqRaceInRace {}
+export interface IResRaceInRace extends IResBase {
+  /**
+   * 比赛名称
+   */
+  name: string;
+  /**
+   * 比赛周期(以日为单位)
+   */
+  days: number;
+  /**
+   * 开始时间
+   */
+  startTimestamp?: number;
+  /**
+   * 结束时间
+   */
+  endTimestamp?: number;
+  /**
+   * 海报地址(数组)
+   */
+  postUrls: string[];
+  /**
+   * 状态
+   */
+  status: "prepare" | "race" | "gameover";
+  /**
+   * 创建race的时间
+   */
+  time: Date;
+}
