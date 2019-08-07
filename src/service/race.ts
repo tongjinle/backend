@@ -99,7 +99,7 @@ export interface IPlayer {
   /**
    * 昵称
    */
-  nickName: string;
+  nickname: string;
   /**
    * 头像url
    */
@@ -371,8 +371,8 @@ export async function playerList(
   rst = data.map(n => {
     let item: IPlayer = {
       userId: n.userId,
-      nickName: n.nickName,
-      logoUrl: n.avatarUrl,
+      nickname: n.nickname,
+      logoUrl: n.logoUrl,
       upvote: n.upvote
     };
     return item;

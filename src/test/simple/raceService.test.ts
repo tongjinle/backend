@@ -23,13 +23,13 @@ describe("race service", async function() {
 
   const sannian: raceService.IPlayer = {
     userId: "sannian",
-    nickName: "三年",
+    nickname: "三年",
     logoUrl: "sannian.jpg",
     upvote: 0
   };
   const wangyun: raceService.IPlayer = {
     userId: "wangyun",
-    nickName: "三年",
+    nickname: "三年",
     logoUrl: "wangyun.jpg",
     upvote: 0
   };

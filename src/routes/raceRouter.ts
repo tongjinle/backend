@@ -42,7 +42,7 @@ router.get("/player", async (req, res) => {
   let name = reqData.name;
   let limit: number = Math.min(20, reqData.limit - 0);
   let list: any = await raceService.playerList(name, limit);
-  // console.log({ list });
+  console.log({ list });
   // list = await Promise.all(
   //   list.map(async n => {
   //     let user = await userService.find(n.userId);
