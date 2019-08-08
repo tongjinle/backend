@@ -148,6 +148,14 @@ async function recoverRace() {
       logoUrl:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E6%B5%85%E6%B5%85/0bafca06466c9de2c366ed21f10d8b44.jpg",
       upvote: 888
+    },
+    {
+      raceName: "颜值杯",
+      userId: "tongyan",
+      nickname: "童颜",
+      logoUrl:
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E7%AB%A5%E9%A2%9C/080942a0fee28fa6bbc1be6790718757.jpg",
+      upvote: 1200
     }
   ]);
 

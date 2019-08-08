@@ -73,7 +73,7 @@ router.get("/upvoter", async (req, res) => {
 
   let name = reqData.name;
   let limit: number = Math.min(20, reqData.limit - 0);
-  let list = await raceService.upvoterList(name, limit);
+  let list: any = await raceService.upvoterList(name, limit);
 
   resData = { code: 0, list };
   res.json(resData);

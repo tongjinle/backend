@@ -121,7 +121,7 @@ export interface IUpvoter {
   /**
    * 昵称
    */
-  nickName: string;
+  nickname: string;
   /**
    * 头像url
    */
@@ -399,8 +399,8 @@ export async function upvoterList(
   rst = data.map(n => {
     let item: IUpvoter = {
       userId: n.userId,
-      nickName: n.nickName,
-      logoUrl: n.avatarUrl,
+      nickname: n.nickname,
+      logoUrl: n.logoUrl,
       coin: n.coin
     };
     return item;

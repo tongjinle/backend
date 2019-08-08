@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as signService from "../service/sign";
+import * as userService from "../service/user";
 import userCheck from "./userCheck";
 import * as joi from "@hapi/joi";
 
@@ -46,6 +47,10 @@ router.post("/", async (req, res) => {
   }
 
   let coin: number = await signService.sign(userId, year, month, day);
+
+  // 修改用户的coin
+  userService.updateCoin(userId, coin);
+
   resData = { code: 0, coin };
   res.json(resData);
 });
