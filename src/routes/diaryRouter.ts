@@ -88,8 +88,11 @@ router.post("/upvote", async (req, res) => {
 
   let diary = await diaryService.find(id);
 
+  // 日记打榜
   await diaryService.upvote(id, userId, coin);
+  // 被打榜者的打榜次数和打榜金币的处理
   await userService.updateUpvote(diary.userId, userId, coin);
+  // 打榜者扣除相应金币
   await userService.updateCoin(userId, -coin);
 
   // race

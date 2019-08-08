@@ -156,10 +156,13 @@ export async function upvote(
 ): Promise<void> {
   let collDiary = await getCollection(DIARY);
   let collUpvote = await getCollection(DIARY_UPVOTE);
+  // 日记打榜次数+1
+  // 日记打榜coin累加
   await collDiary.updateOne(
     { _id: getObjectId(id) },
     { $inc: { upvote: 1, coin } }
   );
+  // 日记打榜log
   await collUpvote.insertOne({ diaryId: id, userId, coin, time: new Date() });
 }
 
