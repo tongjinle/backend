@@ -138,7 +138,7 @@ export interface IResNoticeList extends IResBase {
     // normal
     // back是退款
     // shareReward是转发成功获取用户的奖励
-    type: "normal" | "back" | "shareReward";
+    type: "normal" | "back" | "shareReward" | "sendCoin";
     // 官方发放notice时候的时间戳
     timestamp: number;
     // 阅读的时间戳

@@ -9,6 +9,7 @@ let collRace: Collection;
 let collRacePlayer: Collection;
 let collRaceUpvoter: Collection;
 let collRaceUpvoteLog: Collection;
+let collNotice: Collection;
 
 export default async function recover() {
   collUser = await getCollection("user");
@@ -17,6 +18,7 @@ export default async function recover() {
   collRacePlayer = await getCollection("racePlayer");
   collRaceUpvoter = await getCollection("raceUpvoter");
   collRaceUpvoteLog = await getCollection("raceUpvoteLog");
+  collNotice = await getCollection("notice");
 
   await Promise.all(
     [
@@ -25,13 +27,15 @@ export default async function recover() {
       collRace,
       collRacePlayer,
       collRaceUpvoter,
-      collRaceUpvoteLog
+      collRaceUpvoteLog,
+      collNotice
     ].map(coll => coll.deleteMany({}))
   );
 
   await recoverUser();
   await recoverDiary();
   await recoverRace();
+  await recoverNotice();
 }
 
 // 用户数据
@@ -169,4 +173,76 @@ async function recoverRace() {
       coin: 1000
     }
   ]);
+}
+
+// recover官方通知
+async function recoverNotice() {
+  // 家琪的openid
+  let userId = "oT-BK5ILEuHHhzKa2vOrs4d1jR-4";
+  collNotice.insertMany([
+    {
+      userId,
+      text: "家琪,欢迎你",
+      coin: undefined,
+      type: "normal",
+      timestamp: new Date(2019, 5, 1),
+      readTimestamp: new Date(2019, 6, 1)
+    },
+    {
+      userId,
+      text: "很遗憾,小猪没有接受你的金币",
+      coin: 10,
+      type: "back",
+      timestamp: new Date(2019, 6, 1)
+    },
+    {
+      userId,
+      text: "扑满为你投币了10金币",
+      coin: undefined,
+      type: "sendCoin",
+      timestamp: new Date(2019, 7, 1)
+    },
+    {
+      userId,
+      text: "你成功邀请了新用户王云,奖励100金币",
+      coin: 100,
+      type: "shareReward",
+      timestamp: new Date(2019, 7, 5)
+    }
+  ]);
+
+  {
+    let userId = "oT-BK5Mww0ZXNS3D-0J-jwVSDdLk";
+    collNotice.insertMany([
+      {
+        userId,
+        text: "扑满,欢迎你",
+        coin: undefined,
+        type: "normal",
+        timestamp: new Date(2019, 5, 1),
+        readTimestamp: new Date(2019, 6, 1)
+      },
+      {
+        userId,
+        text: "很遗憾,小猪没有接受你的金币",
+        coin: 10,
+        type: "back",
+        timestamp: new Date(2019, 6, 1)
+      },
+      {
+        userId,
+        text: "王云为你投币了10金币",
+        coin: undefined,
+        type: "sendCoin",
+        timestamp: new Date(2019, 7, 1)
+      },
+      {
+        userId,
+        text: "你成功邀请了新用户周淑婷,奖励200金币",
+        coin: 200,
+        type: "shareReward",
+        timestamp: new Date(2019, 6, 6)
+      }
+    ]);
+  }
 }

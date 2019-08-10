@@ -3,11 +3,7 @@ import config from "../config";
 import { getMongoClient, getCollection, getObjectId } from "../getMongoClient";
 import utils from "../utils";
 
-export enum NoticeType {
-  normal = "normal",
-  back = "back",
-  shareReward = "shareReward"
-}
+export type NoticeType = "normal" | "sendCoin" | "back" | "shareReward";
 
 export interface INotice {
   id: string;
@@ -19,7 +15,7 @@ export interface INotice {
   // normal
   // back是退款
   // shareReward是转发成功获取用户的奖励
-  type: "normal" | "back" | "shareReward";
+  type: NoticeType;
   // 官方发放notice时候的时间戳
   timestamp: number;
   // 阅读的时间戳
@@ -67,7 +63,7 @@ export async function add(
   type: NoticeType
 ): Promise<void> {
   let coll = await getCollection(NOTICE);
-  await coll.insertOne({ userId, text, coin, timestamp: Date.now() });
+  await coll.insertOne({ userId, text, coin, type, timestamp: Date.now() });
 }
 
 /**

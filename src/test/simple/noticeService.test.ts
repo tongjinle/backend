@@ -27,12 +27,7 @@ describe("notice service", async function() {
 
   // 新增通知
   it("add", async function() {
-    await noticeService.add(
-      "sannian",
-      "hi",
-      0,
-      noticeService.NoticeType.normal
-    );
+    await noticeService.add("sannian", "hi", 0, "normal");
 
     {
       let data = await collNotice.findOne({ userId: "sannian" });
