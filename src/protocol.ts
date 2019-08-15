@@ -402,3 +402,9 @@ export interface IResRaceInRace extends IResBase {
    */
   time: Date;
 }
+
+// 分享码
+export interface IReqShareCode {}
+export interface IResShareCode extends IResBase {
+  shareCode: string;
+}

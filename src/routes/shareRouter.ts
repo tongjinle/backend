@@ -35,6 +35,18 @@ router.post("/", async (req, res) => {
   res.json(resData);
 });
 
+// 获取分享码
+router.get("/code", async (req, res) => {
+  let resData: protocol.IResShareCode;
+  let reqData: protocol.IReqShareCode = req.query;
+  let userId = req.header("userId");
+  let shareCode = await shareService.shareCode(userId);
+
+  resData = { code: 0, shareCode };
+
+  res.json(resData);
+});
+
 // 分享获得新用户的奖励
 router.post("/reward", async (req, res) => {
   let resData: protocol.IResShareReward;
