@@ -5,7 +5,9 @@ let client: mongodb.MongoClient;
 export async function getMongoClient(): Promise<mongodb.MongoClient> {
   if (!client) {
     client = new mongodb.MongoClient(config.connectStr, {
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      autoReconnect: true,
+      poolSize: 10
     });
     // await client.
     await client.connect();
