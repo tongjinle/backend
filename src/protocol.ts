@@ -160,6 +160,10 @@ export interface IResDiaryQuery extends IResBase {
   id: string;
   // 用户编号
   userId: string;
+  // 用户昵称
+  nickname: string;
+  // 头像
+  logoUrl: string;
   // 照片地址(后期可能是视频等其他格式的media的url地址)
   url: string;
   // 类型

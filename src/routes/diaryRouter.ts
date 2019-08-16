@@ -40,8 +40,19 @@ router.get("/query", async (req, res) => {
   let reqData: protocol.IReqDiaryQuery = req.query;
 
   let data = await diaryService.find(reqData.id);
+  if (!data) {
+    res.json({ code: -1, message: "没有该id的日记" });
+    return;
+  }
 
-  resData = { code: 0, ...data };
+  let user = await userService.find(data.userId);
+
+  resData = {
+    code: 0,
+    ...data,
+    nickname: user.nickname,
+    logoUrl: user.logoUrl
+  };
   res.json(resData);
 });
 

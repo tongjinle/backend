@@ -71,18 +71,19 @@ export async function find(id: string): Promise<Diary> {
   let rst: Diary;
   let coll = await getCollection(DIARY);
   let data = await coll.findOne({ _id: getObjectId(id) });
-
-  rst = {
-    userId: data.userId,
-    id: data._id.toString(),
-    text: data.text,
-    url: data.url,
-    type: data.type,
-    score: data.score,
-    timestamp: data.time.getTime(),
-    upvote: data.upvote,
-    coin: data.coin
-  };
+  if (data) {
+    rst = {
+      userId: data.userId,
+      id: data._id.toString(),
+      text: data.text,
+      url: data.url,
+      type: data.type,
+      score: data.score,
+      timestamp: data.time.getTime(),
+      upvote: data.upvote,
+      coin: data.coin
+    };
+  }
   return rst;
 }
 
