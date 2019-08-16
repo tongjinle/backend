@@ -2,6 +2,7 @@ import * as express from "express";
 import * as protocol from "../protocol";
 import * as userService from "../service/user";
 import userCheck from "./userCheck";
+import * as joi from "@hapi/joi";
 
 let router = express.Router();
 
@@ -48,6 +49,41 @@ router.get("/info", async (req, res) => {
   }
 
   resData = { code: 0, ...user };
+  res.json(resData);
+});
+
+router.get("/info/other", async (req, res) => {
+  let resData: protocol.IResOtherUserInfo;
+  let reqData: protocol.IReqOtherUserInfo = req.query;
+
+  let result = joi.validate(reqData, {
+    userId: joi.string().required()
+  });
+  if (result.error) {
+    res.json({ code: -1, message: "缺少合法的userId参数" });
+    return;
+  }
+
+  let userId = reqData.userId;
+  let user = await userService.find(userId);
+
+  if (!user) {
+    res.json({ code: -1, message: "没有找到用户信息" });
+    return;
+  }
+
+  resData = {
+    code: 0,
+    userId: user.userId,
+    nickname: user.nickname,
+    logoUrl: user.logoUrl,
+    bgUrl: user.bgUrl,
+    birthYear: user.birthYear,
+    gender: user.gender,
+    city: user.city,
+    upvotedCoin: user.upvotedCoin,
+    beUpvotedCoin: user.beUpvotedCoin
+  };
   res.json(resData);
 });
 

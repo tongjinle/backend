@@ -73,6 +73,33 @@ export interface IResUserInfo extends IResBase {
 }
 
 /**
+ * 其他用户
+ */
+export interface IReqOtherUserInfo {
+  userId: string;
+}
+
+export interface IResOtherUserInfo extends IResBase {
+  userId: string;
+  nickname: string;
+  // 头像
+  logoUrl: string;
+  //
+  bgUrl: string;
+  // 生年
+  // -1表示未设置
+  birthYear: number;
+  // 城市
+  city: string;
+  // 性别
+  gender: "female" | "male" | "unknow";
+  // 花费的金币
+  upvotedCoin: number;
+  // 被打赏的金币
+  beUpvotedCoin: number;
+}
+
+/**
  * 签到
  */
 export interface IReqSign {}
