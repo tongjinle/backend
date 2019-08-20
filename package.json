@@ -7,6 +7,8 @@
     "start": "npm run build && cross-env NODE_ENV=dev node ./dist/app.js",
     "clear": "rm -rf dist/*",
     "build": "npm run clean  && tsc  &&  cp -r src/public dist/public",
+    "initdb": "cross-env NODE_ENV=dev node ./dist/createMongoIndex",
+    "initdb-product": "cross-env NODE_ENV=product node ./dist/createMongoIndex",
     "dev": "cross-env NODE_ENV=dev node ./dist/app",
     "test": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/*.test.js",
     "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/raceService.test.js",
