@@ -1,9 +1,6 @@
 import IConfig from "./iconfig";
 const config: IConfig = {
-  dbName: "testCute",
-  mockToken: "sannian.zst",
-  mockOpenId: "sannian.zst",
-  port: 7003
+  dbName: "test-cute2"
 };
 
 export default config;

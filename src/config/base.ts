@@ -3,7 +3,7 @@ import { HOUR } from "../constant";
 const config: IConfig = {
   protocol: "http",
   host: "localhost",
-  port: 3000,
+  port: 8003,
   connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
   dbName: "zst",
 

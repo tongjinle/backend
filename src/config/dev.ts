@@ -1,7 +1,6 @@
 import IConfig from "./iconfig";
 const config: IConfig = {
-  dbName: "devCute",
-  port: 7003
+  dbName: "dev-cute2"
 };
 
 export default config;

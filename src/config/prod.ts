@@ -2,8 +2,7 @@ import IConfig from "./iconfig";
 const config: IConfig = {
   protocol: "http",
   host: "localhost",
-  port: 7003,
-  dbName:"cute"
+  dbName: "cute2"
 };
 
 export default config;
