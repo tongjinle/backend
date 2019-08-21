@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as userService from "../service/user";
+import * as noticeService from "../service/notice";
 import userCheck from "./userCheck";
 import * as joi from "@hapi/joi";
 
@@ -33,6 +34,8 @@ router.post("/add", async (req, res) => {
 
   resData = { code: 0 };
   res.json(resData);
+
+  noticeService.add(userId, `${user.nickname},欢迎你`, 0, "normal");
 });
 
 // 获取用户信息

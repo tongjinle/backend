@@ -11,6 +11,7 @@ import noticeRouter from "./noticeRouter";
 import diaryRouter from "./diaryRouter";
 import raceRouter from "./raceRouter";
 import raceAdminRouter from "./raceAdminRouter";
+import guestRouter from "./guestRouter";
 
 // 错误
 
@@ -44,4 +45,7 @@ export default function handler(app: express.Express) {
 
   // 比赛管理
   app.use("/race/admin", raceAdminRouter);
+
+  // guest
+  app.use("/guest", guestRouter);
 }

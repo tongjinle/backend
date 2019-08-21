@@ -10,6 +10,7 @@ let collRacePlayer: Collection;
 let collRaceUpvoter: Collection;
 let collRaceUpvoteLog: Collection;
 let collNotice: Collection;
+let collSign: Collection;
 
 export default async function recover() {
   collUser = await getCollection("user");
@@ -19,6 +20,7 @@ export default async function recover() {
   collRaceUpvoter = await getCollection("raceUpvoter");
   collRaceUpvoteLog = await getCollection("raceUpvoteLog");
   collNotice = await getCollection("notice");
+  collSign = await getCollection("sign");
 
   await Promise.all(
     [
@@ -28,7 +30,8 @@ export default async function recover() {
       collRacePlayer,
       collRaceUpvoter,
       collRaceUpvoteLog,
-      collNotice
+      collNotice,
+      collSign
     ].map(coll => coll.deleteMany({}))
   );
 
@@ -51,7 +54,11 @@ async function recoverUser() {
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E7%AB%A5%E9%A2%9C/080942a0fee28fa6bbc1be6790718757.jpg",
       city: "上海",
       birthYear: 2000,
-      coin: 9000
+      coin: 9000,
+      upvoted: 1,
+      upvotedCoin: 100,
+      beUpvoted: 10,
+      beUpvotedCoin: 13200
     },
     {
       userId: "wangyun",
@@ -61,7 +68,11 @@ async function recoverUser() {
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E6%B5%85%E6%B5%85/0bafca06466c9de2c366ed21f10d8b44.jpg",
       city: "北京",
       birthYear: 2001,
-      coin: 10000
+      coin: 10000,
+      upvoted: 2,
+      upvotedCoin: 80,
+      beUpvoted: 5,
+      beUpvotedCoin: 1200
     }
   ]);
 }

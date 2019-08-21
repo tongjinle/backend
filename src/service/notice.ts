@@ -41,7 +41,7 @@ export async function list(userId: string): Promise<INotice[]> {
       text: n.text,
       coin: n.coin,
       type: n.type,
-      timestamp: n.timestamp,
+      timestamp: new Date(n.timestamp).getTime(),
       readTimestamp: n.readTimestamp
     };
   });

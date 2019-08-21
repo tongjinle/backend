@@ -3,9 +3,9 @@ import * as protocol from "../protocol";
 import * as userService from "../service/user";
 import * as raceService from "../service/race";
 import * as diaryService from "../service/diary";
+import * as noticeService from "../service/notice";
 import userCheck from "./userCheck";
 import * as joi from "@hapi/joi";
-import { MediaType } from "express-serve-static-core";
 
 let router = express.Router();
 
@@ -103,6 +103,12 @@ router.post("/upvote", async (req, res) => {
   await diaryService.upvote(id, userId, coin);
   // 被打榜者的打榜次数和打榜金币的处理
   await userService.updateUpvote(diary.userId, userId, coin);
+  noticeService.add(
+    diary.userId,
+    `${user.nickname}为你投币了${coin}个金币`,
+    0,
+    "sendCoin"
+  );
   // 打榜者扣除相应金币
   await userService.updateCoin(userId, -coin);
 

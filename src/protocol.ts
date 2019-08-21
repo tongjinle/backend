@@ -439,3 +439,11 @@ export interface IReqShareCode {}
 export interface IResShareCode extends IResBase {
   shareCode: string;
 }
+
+// 是否已经注册
+export interface IReqIsAddUser {
+  userId: string;
+}
+export interface IResIsAddUser extends IResBase {
+  isAdd: boolean;
+}

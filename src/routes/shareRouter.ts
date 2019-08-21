@@ -2,6 +2,8 @@ import * as express from "express";
 import * as protocol from "../protocol";
 import * as shareService from "../service/share";
 import userCheck from "./userCheck";
+import * as noticeService from "../service/notice";
+import * as userService from "../service/user";
 import * as joi from "@hapi/joi";
 
 let router = express.Router();
@@ -30,9 +32,13 @@ router.post("/", async (req, res) => {
   }
 
   let coin = await shareService.share(userId, year, month, day);
-
   resData = { code: 0, coin };
   res.json(resData);
+
+  // 通知
+  {
+    noticeService.add(userId, `每日分享奖励+${coin}金币`, 0, "shareReward");
+  }
 });
 
 // 获取分享码
@@ -87,7 +93,15 @@ router.post("/reward", async (req, res) => {
   res.json(resData);
 
   // 官方通知
-  // todo
+  {
+    let user = await userService.find(userId);
+    noticeService.add(
+      sharerId,
+      `你成功邀请了新用户${user.nickname},奖励${coin}金币`,
+      0,
+      "shareReward"
+    );
+  }
 });
 
 export default router;

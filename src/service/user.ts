@@ -35,7 +35,7 @@ export type UserInfo = BasicInfo & ExtendInfo;
 export async function canAdd(userId: string): Promise<boolean> {
   let rst: boolean;
 
-  let collection = await getCollection("userLog");
+  let collection = await getCollection("user");
   let user = await collection.findOne({ userId });
   if (!!user) {
     return false;
@@ -65,11 +65,6 @@ export async function add(user: BasicInfo): Promise<void> {
     { $set: fullUser },
     { upsert: true }
   );
-
-  {
-    let collection = await getCollection("userLog");
-    await collection.insertOne({ userId: user.userId });
-  }
 }
 
 // 更新用户信息
