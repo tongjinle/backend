@@ -6,6 +6,8 @@ export async function getMongoClient(): Promise<mongodb.MongoClient> {
   if (!client) {
     client = new mongodb.MongoClient(config.connectStr, {
       useNewUrlParser: true,
+      reconnectTries: Number.MAX_VALUE,
+      reconnectInterval: 1000,
       autoReconnect: true,
       poolSize: 10
     });
