@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "cute-test",
+      "name": "cute2-test",
       "script": "./dist/app.js",
       "args": [],
       "watch": ["dist"],
