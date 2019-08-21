@@ -85,6 +85,11 @@ describe("diary router", async function() {
 
   // 查找一个日记
   it("find", async function() {
+    await collUser.insertOne({
+      userId: "sannian",
+      nickname: "puman",
+      logoUrl: ""
+    });
     await request.post("/diary/add", {
       text: "abc",
       url: "1.jpg",

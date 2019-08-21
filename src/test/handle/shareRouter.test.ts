@@ -19,6 +19,7 @@ describe("share router", async function() {
   let bareRequest: AxiosInstance;
   let client: MongoClient;
   let photos: Collection;
+  let collUser: Collection;
   let collShare: Collection;
   let collShareLink: Collection;
   let worker: ChildProcess;
@@ -44,11 +45,16 @@ describe("share router", async function() {
     });
 
     collShare = await getCollection("share");
+    collUser = await getCollection("user");
     collShareLink = await getCollection("shareLink");
   });
 
   beforeEach(async function() {
-    await Promise.all([collShare.deleteMany({}), collShareLink.deleteMany({})]);
+    await Promise.all([
+      collUser.deleteMany({}),
+      collShare.deleteMany({}),
+      collShareLink.deleteMany({})
+    ]);
   });
 
   after(async function() {
@@ -101,6 +107,7 @@ describe("share router", async function() {
     ];
 
     let sharerId: string = "wangyun";
+    await collUser.insertOne({ userId: "sannian" });
     let shareCode: string = utils.getShareCode(sharerId);
     {
       let { data } = await request.post("/share/reward", {
