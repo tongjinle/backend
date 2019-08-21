@@ -128,10 +128,10 @@ export async function canUpvote(id: string, userId: string): Promise<boolean> {
     return false;
   }
   // 2 尚未打榜
-  let collUpvote = await getCollection(DIARY_UPVOTE);
-  if (await collUpvote.findOne({ dairyId: id, userId })) {
-    return false;
-  }
+  // let collUpvote = await getCollection(DIARY_UPVOTE);
+  // if (await collUpvote.findOne({ dairyId: id, userId })) {
+  //   return false;
+  // }
 
   // 3 打榜者有足够的打榜代币
   // 3 应该在别的代码中实现,而不是这里

@@ -14,6 +14,12 @@ router.get("/current", async (req, res) => {
   let reqData: protocol.IReqRaceInRace = req.query;
   let resData: protocol.IResRaceInRace;
   let race = await raceService.findInRace();
+
+  if (!race) {
+    res.json({ code: -1, message: "没有当前比赛" });
+    return;
+  }
+
   resData = {
     code: 0,
     ...race,
