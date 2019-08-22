@@ -3,18 +3,29 @@ import config from "./config/index";
 
 let client: mongodb.MongoClient;
 export async function getMongoClient(): Promise<mongodb.MongoClient> {
-  if (!client) {
-    client = new mongodb.MongoClient(config.connectStr, {
-      useNewUrlParser: true,
-      reconnectTries: Number.MAX_VALUE,
-      reconnectInterval: 1000,
-      autoReconnect: true,
-      poolSize: 10
-    });
-    // await client.
-    await client.connect();
-  }
+  let client = new mongodb.MongoClient(config.connectStr, {
+    useNewUrlParser: true,
+    reconnectTries: Number.MAX_VALUE,
+    reconnectInterval: 1000,
+    autoReconnect: true,
+    poolSize: 100
+  });
+  await client.connect();
   return client;
+}
+
+type GetCollection = (name: string) => Promise<mongodb.Collection>;
+export async function getMongoEnv(
+  fn: ({ getCollection: GetCollection }) => any
+) {
+  let client = await getMongoClient();
+  let getCollection: GetCollection = async (name: string) =>
+    client.db(config.dbName).collection(name);
+
+  let rst = await fn({ getCollection });
+  await client.close();
+  console.log("release");
+  return rst;
 }
 
 export async function closeMongoClient(): Promise<void> {

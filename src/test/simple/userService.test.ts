@@ -11,6 +11,7 @@ describe("user service", async function() {
   let client: MongoClient;
   let collection: Collection;
   before(async function() {
+    this.timeout(10 * 1000);
     client = await getMongoClient();
     collection = await getCollection("user");
   });

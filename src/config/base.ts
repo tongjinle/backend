@@ -4,7 +4,8 @@ const config: IConfig = {
   protocol: "http",
   host: "localhost",
   port: 8003,
-  connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
+  // connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
+  connectStr: "mongodb://localhost:27017",
   dbName: "zst",
 
   wx: {

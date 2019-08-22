@@ -13,7 +13,7 @@ export default function userCheck(
 
   let userId: string = req.header("userId");
   let token: string = req.header("token");
-  console.log({ userId, token });
+  // console.log({ userId, token });
   let result = joi.validate(
     { userId, token },
     {
@@ -32,6 +32,6 @@ export default function userCheck(
     return;
   }
 
-  console.log("check user role:", flag);
+  // console.log("check user role:", flag);
   next();
 }

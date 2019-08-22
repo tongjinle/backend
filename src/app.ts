@@ -10,6 +10,8 @@ import loger from "./logIns";
 import config from "./config";
 
 import httpRouteHandle from "./routes/httpRoute";
+import { getMongoClient } from "./getMongoClient";
+import { MongoClient } from "mongodb";
 
 class Main {
   app: express.Express;
@@ -23,7 +25,11 @@ class Main {
   // 挂载路由
   initRoute(): void {
     let app = this.app;
-
+    app.use(async function(req, res, next) {
+      let client = await getMongoClient();
+      req["client"] = client;
+      next();
+    });
     // 中间件
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -79,6 +85,17 @@ class Main {
         );
       }
     };
+
+    let count = 0;
+    app.use(async function(req, res, next) {
+      let client: MongoClient = req["client"];
+      if (client && client.isConnected()) {
+        await client.close();
+        req["client"] = undefined;
+        console.log("release...", ++count);
+      }
+      next();
+    });
 
     app.listen(port, cb);
   }

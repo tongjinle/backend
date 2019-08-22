@@ -1,4 +1,4 @@
-import { getCollection } from "../getMongoClient";
+import { getCollection, getMongoEnv } from "../getMongoClient";
 export type Gender = "male" | "female" | "unknow";
 
 // 基本用户信息
@@ -33,38 +33,42 @@ export type UserInfo = BasicInfo & ExtendInfo;
 // 是否可以新增用户
 // userId是不是已经存在
 export async function canAdd(userId: string): Promise<boolean> {
-  let rst: boolean;
+  return getMongoEnv(async function({ getCollection }) {
+    let rst: boolean;
 
-  let collection = await getCollection("user");
-  let user = await collection.findOne({ userId });
-  if (!!user) {
-    return false;
-  }
+    let collection = await getCollection("user");
+    let user = await collection.findOne({ userId });
+    if (!!user) {
+      return false;
+    }
 
-  rst = true;
-  return rst;
+    rst = true;
+    return rst;
+  });
 }
 
 // 新增一个用户
 export async function add(user: BasicInfo): Promise<void> {
-  let collection = await getCollection("user");
-  let ext: ExtendInfo = {
-    birthYear: -1,
-    bgUrl: undefined,
-    coin: 0,
-    follow: 0,
-    upvoted: 0,
-    upvotedCoin: 0,
-    beUpvoted: 0,
-    beUpvotedCoin: 0
-  };
-  let fullUser = { ...user, ...ext };
-  // await collection.insertOne(fullUser);
-  await collection.updateOne(
-    { userId: user.userId },
-    { $set: fullUser },
-    { upsert: true }
-  );
+  return getMongoEnv(async function({ getCollection }) {
+    let collection = await getCollection("user");
+    let ext: ExtendInfo = {
+      birthYear: -1,
+      bgUrl: undefined,
+      coin: 0,
+      follow: 0,
+      upvoted: 0,
+      upvotedCoin: 0,
+      beUpvoted: 0,
+      beUpvotedCoin: 0
+    };
+    let fullUser = { ...user, ...ext };
+    // await collection.insertOne(fullUser);
+    await collection.updateOne(
+      { userId: user.userId },
+      { $set: fullUser },
+      { upsert: true }
+    );
+  });
 }
 
 // 更新用户信息
@@ -72,19 +76,23 @@ export async function update(
   userId: string,
   info: Partial<ExtendInfo>
 ): Promise<void> {
-  let collection = await getCollection("user");
-  let result = await collection.updateOne({ userId }, { $set: info });
+  return getMongoEnv(async function({ getCollection }) {
+    let collection = await getCollection("user");
+    let result = await collection.updateOne({ userId }, { $set: info });
+  });
 }
 
 // 获取用户的信息
 export async function find(userId: string): Promise<UserInfo> {
-  let rst: UserInfo = undefined;
+  return getMongoEnv(async function({ getCollection }) {
+    let rst: UserInfo = undefined;
 
-  let collection = await getCollection("user");
-  let data = await collection.findOne({ userId });
+    let collection = await getCollection("user");
+    let data = await collection.findOne({ userId });
 
-  rst = data;
-  return rst;
+    rst = data;
+    return rst;
+  });
 }
 
 /**
@@ -93,8 +101,10 @@ export async function find(userId: string): Promise<UserInfo> {
  * @param coin 代币增量
  */
 export async function updateCoin(userId: string, coin: number): Promise<void> {
-  let coll = await getCollection("user");
-  await coll.updateOne({ userId }, { $inc: { coin } });
+  return getMongoEnv(async function({ getCollection }) {
+    let coll = await getCollection("user");
+    await coll.updateOne({ userId }, { $inc: { coin } });
+  });
 }
 
 /**
@@ -107,19 +117,21 @@ export async function updateUpvote(
   upvoterId: string,
   coin: number
 ): Promise<void> {
-  let coll = await getCollection("user");
-  await coll.updateOne(
-    { userId },
-    { $inc: { beUpvoted: 1, beUpvotedCoin: coin } }
-  );
+  return getMongoEnv(async function({ getCollection }) {
+    let coll = await getCollection("user");
+    await coll.updateOne(
+      { userId },
+      { $inc: { beUpvoted: 1, beUpvotedCoin: coin } }
+    );
 
-  await coll.updateOne(
-    { userId: upvoterId },
-    {
-      $inc: {
-        upvoted: 1,
-        upvotedCoin: coin
+    await coll.updateOne(
+      { userId: upvoterId },
+      {
+        $inc: {
+          upvoted: 1,
+          upvotedCoin: coin
+        }
       }
-    }
-  );
+    );
+  });
 }

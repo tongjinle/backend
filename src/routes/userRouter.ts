@@ -4,14 +4,29 @@ import * as userService from "../service/user";
 import * as noticeService from "../service/notice";
 import userCheck from "./userCheck";
 import * as joi from "@hapi/joi";
+import { MongoClient } from "mongodb";
+import { getMongoClient } from "../getMongoClient";
 
 let router = express.Router();
 
 // check user role
 router.use(userCheck);
 
+let count = 0;
 // 新增用户
 router.post("/add", async (req, res) => {
+  // let client = await getMongoClient();
+
+  // let client: MongoClient = req["client"];
+  // await client
+  //   .db("testCute2")
+  //   .collection("user")
+  //   .insertOne({ nickname: "" });
+  // res.json({});
+  // console.log(++count);
+  // client.close();
+  // return;
+
   let resData: protocol.IResAddUser;
   let reqData: protocol.IReqAddUser = req.body;
 
@@ -34,8 +49,8 @@ router.post("/add", async (req, res) => {
 
   resData = { code: 0 };
   res.json(resData);
-
-  noticeService.add(userId, `${user.nickname},欢迎你`, 0, "normal");
+  console.log({ resData, user });
+  // noticeService.add(userId, `${user.nickname},欢迎你`, 0, "normal");
 });
 
 // 获取用户信息
