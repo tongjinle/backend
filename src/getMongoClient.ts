@@ -10,7 +10,10 @@ export async function getMongoClient(): Promise<mongodb.MongoClient> {
     autoReconnect: true,
     poolSize: 100
   });
+  let d1 = Date.now();
   await client.connect();
+  let d2 = Date.now();
+  console.log("connect duration:", d2 - d1);
   return client;
 }
 
@@ -23,8 +26,10 @@ export async function usingMongoEnv(
     client.db(config.dbName).collection(name);
 
   let rst = await fn({ getCollection });
-  client.close();
-  console.log("release");
+  let d1 = Date.now();
+  // await client.close();
+  let d2 = Date.now();
+  console.log("close duration:", d2 - d1);
   return rst;
 }
 
