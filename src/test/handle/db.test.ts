@@ -54,7 +54,7 @@ describe("diary router", async function() {
   it("add", async function() {
     this.timeout(200 * 60 * 1000);
     try {
-      let count = 2;
+      let count = 50;
       let arr = [];
       while (count--) {
         let userId: string = "user" + Math.floor(1e8 * Math.random());
