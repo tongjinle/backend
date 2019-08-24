@@ -8,16 +8,26 @@ import * as bodyParser from "body-parser";
 
 import loger from "./logIns";
 import config from "./config";
+import { getMongoClient } from "./getMongoClient";
 
 import httpRouteHandle from "./routes/httpRoute";
+import * as mongodb from "mongodb";
 
 class Main {
   app: express.Express;
   server: Http.Server;
+  client: mongodb.MongoClient;
   constructor() {
     let app = (this.app = express());
 
     this.initRoute();
+    this.bindMongo();
+  }
+
+  bindMongo() {
+    getMongoClient().then(client => {
+      this.client = client;
+    });
   }
 
   // 挂载路由
@@ -73,9 +83,7 @@ class Main {
           `visit DB: ${config.protocol}://${config.host}:${config.port}/test/db`
         );
         console.log(
-          `visit STATIC: ${config.protocol}://${config.host}:${
-            config.port
-          }/static/test.jpg`
+          `visit STATIC: ${config.protocol}://${config.host}:${config.port}/static/test.jpg`
         );
       }
     };
