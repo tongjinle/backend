@@ -1,4 +1,4 @@
-import { getCollection, getMongoEnv } from "../getMongoClient";
+import { getCollection, usingMongoEnv } from "../getMongoClient";
 export type Gender = "male" | "female" | "unknow";
 
 // 基本用户信息
@@ -33,7 +33,7 @@ export type UserInfo = BasicInfo & ExtendInfo;
 // 是否可以新增用户
 // userId是不是已经存在
 export async function canAdd(userId: string): Promise<boolean> {
-  return getMongoEnv(async function({ getCollection }) {
+  return usingMongoEnv(async function({ getCollection }) {
     let rst: boolean;
 
     let collection = await getCollection("user");
@@ -49,7 +49,7 @@ export async function canAdd(userId: string): Promise<boolean> {
 
 // 新增一个用户
 export async function add(user: BasicInfo): Promise<void> {
-  return getMongoEnv(async function({ getCollection }) {
+  return usingMongoEnv(async function({ getCollection }) {
     let collection = await getCollection("user");
     let ext: ExtendInfo = {
       birthYear: -1,
@@ -76,7 +76,7 @@ export async function update(
   userId: string,
   info: Partial<ExtendInfo>
 ): Promise<void> {
-  return getMongoEnv(async function({ getCollection }) {
+  return usingMongoEnv(async function({ getCollection }) {
     let collection = await getCollection("user");
     let result = await collection.updateOne({ userId }, { $set: info });
   });
@@ -84,7 +84,7 @@ export async function update(
 
 // 获取用户的信息
 export async function find(userId: string): Promise<UserInfo> {
-  return getMongoEnv(async function({ getCollection }) {
+  return usingMongoEnv(async function({ getCollection }) {
     let rst: UserInfo = undefined;
 
     let collection = await getCollection("user");
@@ -101,7 +101,7 @@ export async function find(userId: string): Promise<UserInfo> {
  * @param coin 代币增量
  */
 export async function updateCoin(userId: string, coin: number): Promise<void> {
-  return getMongoEnv(async function({ getCollection }) {
+  return usingMongoEnv(async function({ getCollection }) {
     let coll = await getCollection("user");
     await coll.updateOne({ userId }, { $inc: { coin } });
   });
@@ -117,7 +117,7 @@ export async function updateUpvote(
   upvoterId: string,
   coin: number
 ): Promise<void> {
-  return getMongoEnv(async function({ getCollection }) {
+  return usingMongoEnv(async function({ getCollection }) {
     let coll = await getCollection("user");
     await coll.updateOne(
       { userId },

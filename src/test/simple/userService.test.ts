@@ -6,14 +6,17 @@ import {
   getMongoClient
 } from "../../getMongoClient";
 import * as userService from "../../service/user";
+import config from "../../config";
 
 describe("user service", async function() {
+  this.timeout(20 * 60 * 1000);
   let client: MongoClient;
   let collection: Collection;
   before(async function() {
     this.timeout(10 * 1000);
     client = await getMongoClient();
-    collection = await getCollection("user");
+    let db = client.db(config.dbName);
+    collection = db.collection("user");
   });
 
   beforeEach(async function() {
@@ -22,7 +25,7 @@ describe("user service", async function() {
   });
 
   after(async function() {
-    await closeMongoClient();
+    await client.close();
   });
 
   // 能否新增用户

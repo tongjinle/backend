@@ -1,4 +1,4 @@
-import { getMongoClient } from "../getMongoClient";
+import { getMongoClient, usingMongoEnv } from "../getMongoClient";
 import config from "../config";
 
 // 是否已经点赞
@@ -6,15 +6,13 @@ export async function isUpvoted(
   userId: string,
   diaryId: string
 ): Promise<boolean> {
-  let rst: boolean;
+  return await usingMongoEnv(async function({ getCollection }) {
+    let rst: boolean;
 
-  let mongo = await getMongoClient();
-  rst = !!(await mongo
-    .db(config.dbName)
-    .collection("upvote")
-    .findOne({ diaryId, userId }));
-
-  return rst;
+    let coll = getCollection("upvote");
+    rst = !!(await coll.findOne({ diaryId, userId }));
+    return rst;
+  });
 }
 
 // 点赞

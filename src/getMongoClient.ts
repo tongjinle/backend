@@ -14,16 +14,16 @@ export async function getMongoClient(): Promise<mongodb.MongoClient> {
   return client;
 }
 
-type GetCollection = (name: string) => Promise<mongodb.Collection>;
-export async function getMongoEnv(
-  fn: ({ getCollection: GetCollection }) => any
+type GetCollection = (name: string) => mongodb.Collection;
+export async function usingMongoEnv(
+  fn: ({ getCollection }: { getCollection: GetCollection }) => any
 ) {
   let client = await getMongoClient();
-  let getCollection: GetCollection = async (name: string) =>
+  let getCollection: GetCollection = (name: string) =>
     client.db(config.dbName).collection(name);
 
   let rst = await fn({ getCollection });
-  await client.close();
+  client.close();
   console.log("release");
   return rst;
 }
