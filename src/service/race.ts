@@ -1,4 +1,4 @@
-import { getCollection } from "../getMongoClient";
+import { getCollection } from "../mongo";
 import utils from "../utils";
 import * as userService from "./user";
 

@@ -1,9 +1,5 @@
 import assert = require("assert");
-import {
-  getMongoClient,
-  closeMongoClient,
-  getCollection
-} from "../../getMongoClient";
+import { getMongoClient, closeMongoClient, getCollection } from "../../mongo";
 import { MongoClient, Collection } from "mongodb";
 import * as diaryService from "../../service/diary";
 import config from "../../config";

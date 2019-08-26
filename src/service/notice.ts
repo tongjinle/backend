@@ -1,6 +1,6 @@
 // 通知
 import config from "../config";
-import { getMongoClient, getCollection, getObjectId } from "../getMongoClient";
+import { getMongoClient, getCollection, getObjectId } from "../mongo";
 import utils from "../utils";
 
 export type NoticeType = "normal" | "sendCoin" | "back" | "shareReward";

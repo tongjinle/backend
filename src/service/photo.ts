@@ -1,4 +1,4 @@
-import { getMongoClient } from "../getMongoClient";
+import { getMongoClient } from "../mongo";
 import axios from "axios";
 import config from "../config";
 import md5 = require("md5");

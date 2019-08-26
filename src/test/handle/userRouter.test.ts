@@ -4,7 +4,7 @@ import { ChildProcess, fork } from "child_process";
 import { Collection, MongoClient } from "mongodb";
 import * as path from "path";
 import config from "../../config";
-import { closeMongoClient, getCollection } from "../../getMongoClient";
+import { closeMongoClient, getCollection } from "../../mongo";
 import utils from "../../utils";
 
 describe("user router", async function() {

@@ -1,4 +1,4 @@
-import { getMongoClient, getCollection } from "../getMongoClient";
+import { getMongoClient, getCollection } from "../mongo";
 import config from "../config";
 import { UserInfo } from "./user";
 

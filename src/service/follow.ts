@@ -1,5 +1,5 @@
 // 关注
-import { getMongoClient } from "../getMongoClient";
+import { getMongoClient } from "../mongo";
 import config from "../config";
 import * as userService from "./user";
 import { UserInfo } from "./user";

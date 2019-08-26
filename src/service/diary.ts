@@ -1,5 +1,5 @@
 // 颜值日记
-import { getMongoClient, getCollection, getObjectId } from "../getMongoClient";
+import { getMongoClient, getCollection, getObjectId } from "../mongo";
 import config from "../config";
 import { date, func } from "@hapi/joi";
 import * as userService from "./user";

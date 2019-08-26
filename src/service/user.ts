@@ -1,4 +1,4 @@
-import { getCollection } from "../getMongoClient";
+import { getCollection } from "../mongo";
 export type Gender = "male" | "female" | "unknow";
 
 // 基本用户信息

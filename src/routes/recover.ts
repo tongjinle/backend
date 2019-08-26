@@ -1,4 +1,4 @@
-import { getCollection } from "../getMongoClient";
+import { getCollection } from "../mongo";
 import { func } from "@hapi/joi";
 import { Collection } from "mongodb";
 import { upvote } from "../service/race";

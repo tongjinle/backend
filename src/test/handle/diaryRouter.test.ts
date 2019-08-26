@@ -4,7 +4,7 @@ import { ChildProcess, fork } from "child_process";
 import { Collection, MongoClient } from "mongodb";
 import * as path from "path";
 import config from "../../config";
-import { closeMongoClient, getCollection } from "../../getMongoClient";
+import { closeMongoClient, getCollection } from "../../mongo";
 import * as diaryService from "../../service/diary";
 import * as userService from "../../service/user";
 import * as raceService from "../../service/race";

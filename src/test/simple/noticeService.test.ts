@@ -5,7 +5,7 @@ import {
   getCollection,
   getMongoClient,
   getObjectId
-} from "../../getMongoClient";
+} from "../../mongo";
 import * as noticeService from "../../service/notice";
 
 describe("notice service", async function() {

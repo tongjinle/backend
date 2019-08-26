@@ -8,7 +8,7 @@ import * as bodyParser from "body-parser";
 
 import loger from "./logIns";
 import config from "./config";
-import { getMongoClient } from "./getMongoClient";
+import { getMongoClient } from "./mongo";
 
 import httpRouteHandle from "./routes/httpRoute";
 import * as mongodb from "mongodb";

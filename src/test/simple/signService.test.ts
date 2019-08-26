@@ -1,10 +1,6 @@
 import assert = require("assert");
 import { Collection, MongoClient } from "mongodb";
-import {
-  closeMongoClient,
-  getCollection,
-  getMongoClient
-} from "../../getMongoClient";
+import { closeMongoClient, getCollection, getMongoClient } from "../../mongo";
 import * as signService from "../../service/sign";
 
 describe("sign service", async function() {

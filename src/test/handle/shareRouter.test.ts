@@ -3,7 +3,7 @@ import {
   getMongoClient,
   closeMongoClient,
   getCollection
-} from "../../getMongoClient";
+} from "../../mongo";
 import { MongoClient, Collection } from "mongodb";
 import config from "../../config";
 import axios, { AxiosInstance } from "axios";

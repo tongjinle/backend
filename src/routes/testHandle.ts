@@ -1,6 +1,6 @@
 import * as express from "express";
 import config from "../config";
-import { getCollection, getMongoClient } from "../getMongoClient";
+import { getCollection, getMongoClient } from "../mongo";
 import recover from "./recover";
 
 export default function handle(app: express.Express) {

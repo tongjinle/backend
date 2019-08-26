@@ -1,8 +1,4 @@
-import {
-  getCollection,
-  getMongoClient,
-  closeMongoClient
-} from "./getMongoClient";
+import { getCollection, getMongoClient, closeMongoClient } from "./mongo";
 /**
  * 为数据库建立索引
  */

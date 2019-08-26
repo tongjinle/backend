@@ -4,7 +4,7 @@ import {
   closeMongoClient,
   getCollection,
   getMongoClient
-} from "../../getMongoClient";
+} from "../../mongo";
 import * as userService from "../../service/user";
 
 describe("user service", async function() {

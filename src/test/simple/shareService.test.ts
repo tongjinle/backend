@@ -1,10 +1,6 @@
 import assert = require("assert");
 import { Collection, MongoClient } from "mongodb";
-import {
-  closeMongoClient,
-  getCollection,
-  getMongoClient
-} from "../../getMongoClient";
+import { closeMongoClient, getCollection, getMongoClient } from "../../mongo";
 import * as shareService from "../../service/share";
 import { accessSync } from "fs";
 

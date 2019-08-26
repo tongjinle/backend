@@ -1,5 +1,5 @@
 import config from "../config";
-import { getMongoClient, getCollection } from "../getMongoClient";
+import { getMongoClient, getCollection } from "../mongo";
 import utils from "../utils";
 
 /**

@@ -1,4 +1,4 @@
-import { getMongoClient } from "../getMongoClient";
+import { getMongoClient } from "../mongo";
 import config from "../config";
 
 // 是否已经点赞
