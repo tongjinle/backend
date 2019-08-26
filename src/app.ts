@@ -1,32 +1,40 @@
 import * as Http from "http";
-import * as Https from "https";
 import * as express from "express";
-import * as fs from "fs";
 import * as path from "path";
 // https://www.jianshu.com/p/cd3de110b4b6
 import * as bodyParser from "body-parser";
 
 import loger from "./logIns";
 import config from "./config";
-import { getMongoClient } from "./mongo";
 
 import httpRouteHandle from "./routes/httpRoute";
+import * as redis from "handy-redis";
 import * as mongodb from "mongodb";
+import { getRedisClient } from "./redis";
+import { getMongoClient } from "./mongo";
 
 class Main {
   app: express.Express;
   server: Http.Server;
-  client: mongodb.MongoClient;
-  constructor() {
-    let app = (this.app = express());
+  mongoClient: mongodb.MongoClient;
+  redisClient: redis.IHandyRedis;
 
+  constructor() {
+    this.app = express();
     this.initRoute();
     this.bindMongo();
+    this.bindRedis();
   }
 
-  bindMongo() {
+  private bindMongo() {
     getMongoClient().then(client => {
-      this.client = client;
+      this.mongoClient = client;
+    });
+  }
+
+  private bindRedis() {
+    getRedisClient().then(client => {
+      this.redisClient = client;
     });
   }
 

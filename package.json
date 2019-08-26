@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=dev node ./dist/app.js",
+    "tsc": "tsc -w",
     "clear": "rm -rf dist/*",
     "build": "npm run clean  && tsc  &&  cp -r src/public dist/public",
     "initdb": "cross-env NODE_ENV=dev node ./dist/createMongoIndex",

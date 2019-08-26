@@ -6,6 +6,9 @@ import * as diaryService from "../service/diary";
 import * as noticeService from "../service/notice";
 import userCheck from "./userCheck";
 import * as joi from "@hapi/joi";
+import { getRedisClient } from "../redis";
+import * as redisKey from "../redisKey";
+import { MIN, SEC } from "../constant";
 
 let router = express.Router();
 
@@ -30,6 +33,14 @@ router.post("/add", async (req, res) => {
   }
 
   await diaryService.add(userId, text, url, type, score);
+
+  // redis
+  {
+    let client = await getRedisClient();
+    let key = redisKey.userDiaryList(userId);
+    await client.del(key);
+  }
+
   resData = { code: 0 };
   res.json(resData);
 });
@@ -70,6 +81,15 @@ router.post("/remove", async (req, res) => {
 
   await diaryService.remove(id);
 
+  // redis
+  {
+    let client = await getRedisClient();
+    await client.del(redisKey.freshDiaryList(id));
+    await client.del(redisKey.topDiaryList(id));
+
+    await client.del(redisKey.userDiaryList(userId));
+  }
+
   resData = { code: 0 };
   res.json(resData);
 });
@@ -103,6 +123,7 @@ router.post("/upvote", async (req, res) => {
   await diaryService.upvote(id, userId, coin);
   // 被打榜者的打榜次数和打榜金币的处理
   await userService.updateUpvote(diary.userId, userId, coin);
+  // 官方消息
   noticeService.add(
     diary.userId,
     `${user.nickname}为你投币了${coin}个金币`,
@@ -117,6 +138,20 @@ router.post("/upvote", async (req, res) => {
   let race = await raceService.findInRace();
   if (race) {
     await raceService.upvote(userId, diary.userId, race.name, coin);
+  }
+
+  // redis
+  {
+    let client = await getRedisClient();
+    let update = async (key: string) => {
+      if (await client.exists(key)) {
+        let diary: diaryService.Diary = JSON.parse(await client.get(key));
+        diary.coin += coin;
+        await client.set(key, JSON.stringify(diary));
+      }
+    };
+    await update(redisKey.freshDiaryList(id));
+    await update(redisKey.topDiaryList(id));
   }
 
   resData = { code: 0 };
@@ -136,7 +171,20 @@ router.get("/list", async (req, res) => {
   let diaryUserId: string = reqData.userId;
   console.log({ diaryUserId });
 
-  let list = await diaryService.list(diaryUserId);
+  let list: diaryService.Diary[] = [];
+  // redis
+  {
+    let client = await getRedisClient();
+    let key = redisKey.userDiaryList(diaryUserId);
+    let expire = 5 * MIN;
+    if (!(await client.exists(key))) {
+      let list = await diaryService.list(diaryUserId);
+      await client.set(key, JSON.stringify(list));
+      await client.expire(key, expire);
+    }
+    list = JSON.parse(await client.get(key));
+  }
+
   resData = { code: 0, list };
   res.json(resData);
 });
@@ -147,11 +195,80 @@ router.get("/recommend", async (req, res) => {
   let reqData: protocol.IReqDiaryRecommendList = req.query;
 
   const topLimit = 100;
-  const topCount = 2;
-  const freshLimit = 1000;
+  const topCount = 3;
+  const topExpire = 5 * MIN;
+  const freshLimit = 100;
   const freshCount = 8;
-  let freshes = await diaryService.freshList(freshLimit);
-  let tops = await diaryService.topList(topLimit);
+  const freshExpire = 5 * MIN;
+  let freshes: diaryService.Diary[];
+  let tops: diaryService.Diary[];
+
+  let client = await getRedisClient();
+  let writeToCache = async (key: "fresh" | "top") => {
+    let flagKey = redisKey.flag(key);
+    let isFlag = await client.exists(flagKey);
+    if (isFlag) {
+      return;
+    }
+
+    let getLimit: () => Promise<diaryService.Diary[]>;
+    let getKey: (id: string) => string;
+    let expire: number;
+    if (key === "fresh") {
+      getLimit = () => diaryService.freshList(freshLimit);
+      expire = freshExpire;
+      getKey = id => redisKey.freshDiaryList(id);
+    } else {
+      getLimit = () => diaryService.topList(topLimit);
+      expire = topExpire;
+      getKey = id => redisKey.topDiaryList(id);
+    }
+
+    let list = await getLimit();
+    await Promise.all(
+      list.map(async diary => {
+        let user = await userService.find(diary.userId);
+        if (user) {
+          let key = getKey(diary.id);
+          let value = JSON.stringify({
+            ...diary,
+            nickname: user.nickname,
+            logoUrl: user.logoUrl
+          });
+          await client.set(key, value);
+        }
+      })
+    );
+
+    await client.set(flagKey, "1");
+    await client.expire(flagKey, expire);
+  };
+
+  let readFromCache = async (name: "fresh" | "top") => {
+    let pattern: string;
+    if (name === "fresh") {
+      pattern = redisKey.freshDiaryList("*");
+    } else {
+      pattern = redisKey.topDiaryList("*");
+    }
+    let keys = await client.keys(pattern);
+    let list = [];
+    await Promise.all(
+      keys.map(async key => {
+        let value = await client.get(key);
+        if (value) {
+          list.push(JSON.parse(value));
+        }
+      })
+    );
+    return list;
+  };
+
+  await writeToCache("fresh");
+  await writeToCache("top");
+
+  freshes = await readFromCache("fresh");
+  tops = await readFromCache("top");
 
   let fetch = (arr, count) => {
     return arr
@@ -161,15 +278,6 @@ router.get("/recommend", async (req, res) => {
   };
 
   let list = [...fetch(tops, topCount), ...fetch(freshes, freshCount)];
-
-  list = await Promise.all(
-    list.map(async n => {
-      let user = await userService.find(n.userId);
-      n.nickname = user.nickname;
-      n.logoUrl = user.logoUrl;
-      return n;
-    })
-  );
 
   resData = { code: 0, list };
   res.json(resData);
