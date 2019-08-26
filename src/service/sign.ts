@@ -1,5 +1,4 @@
-import config from "../config";
-import { getMongoClient, getCollection } from "../mongo";
+import { getCollection } from "../mongo";
 import utils from "../utils";
 
 /**
@@ -67,10 +66,9 @@ export async function signList(
   month: number
 ): Promise<SignInfo[]> {
   let rst: SignInfo[] = [];
-  let mongo = await getMongoClient();
-  let data = await mongo
-    .db(config.dbName)
-    .collection("sign")
+  let coll = await getCollection("sign");
+
+  let data = await coll
     .find({
       userId,
       year,

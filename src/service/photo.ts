@@ -1,6 +1,4 @@
-import { getMongoClient } from "../mongo";
-import axios from "axios";
-import config from "../config";
+import { getMongoClient, getCollection } from "../mongo";
 import md5 = require("md5");
 import * as request from "request";
 
@@ -16,12 +14,9 @@ export type Photo = {
 // 获取排行榜
 export async function sort(): Promise<Photo[]> {
   let rst: Photo[] = [];
-  let client = await getMongoClient();
-
+  let collPhoto = await getCollection("photo");
   const limit = 10;
-  let data = await client
-    .db(config.dbName)
-    .collection("photo")
+  let data = await collPhoto
     .find({})
     .sort({ score: -1 })
     .limit(limit)
@@ -42,12 +37,9 @@ export async function sort(): Promise<Photo[]> {
 // 查找照片
 export async function search(id: string): Promise<Photo> {
   let rst: Photo;
-  let client = await getMongoClient();
+  let collPhoto = await getCollection("photo");
 
-  let data = await client
-    .db(config.dbName)
-    .collection("photo")
-    .findOne({ id });
+  let data = await collPhoto.findOne({ id });
 
   if (data) {
     rst = {
@@ -98,13 +90,10 @@ export async function save(
   console.log({ aiUrl, url, score });
 
   // 保存
-  let client = await getMongoClient();
+  let collPhoto = await getCollection("photo");
 
   let id: string = md5(url);
-  await client
-    .db(config.dbName)
-    .collection("photo")
-    .insertOne({ id, userId, url, score, nickname, logoUrl });
+  await collPhoto.insertOne({ id, userId, url, score, nickname, logoUrl });
 
   rst = { id, userId, nickname, url, score, logoUrl };
   return rst;
@@ -114,13 +103,9 @@ export async function save(
 export async function history(userId: string): Promise<Photo[]> {
   let rst: Photo[] = [];
 
-  let client = await getMongoClient();
+  let collPhoto = await getCollection("photo");
 
-  let data = await client
-    .db(config.dbName)
-    .collection("photo")
-    .find({ userId })
-    .toArray();
+  let data = await collPhoto.find({ userId }).toArray();
 
   rst = data.map(n => {
     return {
@@ -138,12 +123,9 @@ export async function history(userId: string): Promise<Photo[]> {
 
 // 删除照片
 export async function remove(id: string): Promise<void> {
-  let client = await getMongoClient();
+  let collPhoto = await getCollection("photo");
 
-  await client
-    .db(config.dbName)
-    .collection("photo")
-    .deleteOne({ id });
+  await collPhoto.deleteOne({ id });
 }
 
 // 照片id和userId是否匹配
@@ -151,12 +133,9 @@ export async function remove(id: string): Promise<void> {
 export async function checkOwner(userId: string, id: string): Promise<boolean> {
   let rst: boolean;
 
-  let client = await getMongoClient();
+  let collPhoto = await getCollection("photo");
 
-  let flag = !!(await client
-    .db(config.dbName)
-    .collection("photo")
-    .findOne({ userId, id }));
+  let flag = !!(await collPhoto.findOne({ userId, id }));
 
   rst = flag;
   return rst;

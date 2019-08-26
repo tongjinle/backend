@@ -3,10 +3,19 @@ import { HOUR } from "../constant";
 const config: IConfig = {
   protocol: "http",
   host: "localhost",
-  port: 8003,
-  connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
-  dbName: "zst",
-
+  port: 3000,
+  // mongo
+  mongo: {
+    connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
+    dbName: "zst"
+  },
+  // redis
+  redis: {
+    host: "118.31.11.29",
+    port: 6379,
+    pass: "sannian",
+    dbName: 1
+  },
   wx: {
     appId: "wx09bbbd445c8b772f",
     appSecret: "10dbfe2215c799c60bd113f69a3f6ebc",

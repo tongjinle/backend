@@ -2,9 +2,10 @@ import * as mongodb from "mongodb";
 import config from "./config/index";
 
 let client: mongodb.MongoClient;
+let { connectStr, dbName } = config.mongo;
 export async function getMongoClient(): Promise<mongodb.MongoClient> {
   if (!client) {
-    client = new mongodb.MongoClient(config.connectStr, {
+    client = new mongodb.MongoClient(connectStr, {
       useNewUrlParser: true,
       reconnectTries: Number.MAX_VALUE,
       reconnectInterval: 1000,
@@ -26,7 +27,7 @@ export async function closeMongoClient(): Promise<void> {
 
 export async function getCollection(name: string): Promise<mongodb.Collection> {
   let client = await getMongoClient();
-  return client.db(config.dbName).collection(name);
+  return client.db(dbName).collection(name);
 }
 
 export function getObjectId(id: string) {

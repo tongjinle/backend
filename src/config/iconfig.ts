@@ -5,11 +5,20 @@ interface IConfigBase {
   host: string;
   // 端口
   port: number;
-  // 数据库名字
-  dbName: string;
-  // 数据库连接字符串
-  connectStr: string;
-
+  // mongo
+  mongo: {
+    // 数据库连接字符串
+    connectStr: string;
+    // 数据库名字
+    dbName: string;
+  };
+  // redis
+  redis: {
+    host: string;
+    port: number;
+    pass: string;
+    dbName: number;
+  };
   // 微信
   wx: {
     appId: string;

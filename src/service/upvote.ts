@@ -1,4 +1,4 @@
-import { getMongoClient } from "../mongo";
+import { getMongoClient, getCollection } from "../mongo";
 import config from "../config";
 
 // 是否已经点赞
@@ -9,10 +9,8 @@ export async function isUpvoted(
   let rst: boolean;
 
   let mongo = await getMongoClient();
-  rst = !!(await mongo
-    .db(config.dbName)
-    .collection("upvote")
-    .findOne({ diaryId, userId }));
+  let collUpvote = await getCollection("upvote");
+  rst = !!(await collUpvote.findOne({ diaryId, userId }));
 
   return rst;
 }
@@ -20,16 +18,12 @@ export async function isUpvoted(
 // 点赞
 export async function upvote(userId: string, diaryId: string): Promise<void> {
   let mongo = await getMongoClient();
+  let collUpvote = await getCollection("upvote");
+  let collDiary = await getCollection("diary");
 
   // upvote的记录
-  await mongo
-    .db(config.dbName)
-    .collection("upvote")
-    .insertOne({ diaryId, userId });
+  await collUpvote.insertOne({ diaryId, userId });
 
   // 给日记加1
-  await mongo
-    .db(config.dbName)
-    .collection("diary")
-    .updateOne({ diaryId }, { $inc: { upvote: 1 } });
+  await collDiary.updateOne({ diaryId }, { $inc: { upvote: 1 } });
 }

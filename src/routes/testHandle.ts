@@ -19,11 +19,11 @@ export default function handle(app: express.Express) {
     let mongo = await getMongoClient();
     let ts = Date.now();
     await mongo
-      .db(config.dbName)
+      .db(config.mongo.dbName)
       .collection("test")
       .insertOne({ ts });
     let data = await mongo
-      .db(config.dbName)
+      .db(config.mongo.dbName)
       .collection("test")
       .findOne({ ts });
     res.end("db test:" + data.ts);
