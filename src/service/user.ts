@@ -100,6 +100,7 @@ export async function updateCoin(userId: string, coin: number): Promise<void> {
 /**
  * 更新用户打榜信息(打榜总信息)
  * @param userId 用户id
+ * @param upvoterId 打榜者id
  * @param coin 代币增量
  */
 export async function updateUpvote(

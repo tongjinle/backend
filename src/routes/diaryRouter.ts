@@ -103,11 +103,26 @@ router.post("/upvote", async (req, res) => {
   let coin = reqData.coin;
   let userId: string = req.header("userId");
 
-  //
-  if (!(await diaryService.canUpvote(id, userId))) {
-    res.json({ code: -1, message: "重复打榜" });
-    return;
+  {
+    let result = joi.validate(reqData, {
+      id: joi.string().required(),
+      coin: joi
+        .number()
+        .positive()
+        .required()
+    });
+
+    if (result.error) {
+      res.json({ code: -1, message: "参数不符合规则" });
+      return;
+    }
   }
+
+  // 暂时允许重复打榜
+  // if (!(await diaryService.canUpvote(id, userId))) {
+  //   res.json({ code: -1, message: "重复打榜" });
+  //   return;
+  // }
 
   // coin检测
   let user = await userService.find(userId);
@@ -118,6 +133,11 @@ router.post("/upvote", async (req, res) => {
   }
 
   let diary = await diaryService.find(id);
+  if (!diary) {
+    console.log({ id });
+    res.json({ code: -3, message: "不存在日记" });
+    return;
+  }
 
   // 日记打榜
   await diaryService.upvote(id, userId, coin);
