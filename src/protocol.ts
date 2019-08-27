@@ -361,7 +361,7 @@ export interface IResRaceUpvoterList extends IResBase {
     /**
      * 昵称
      */
-    nickName: string;
+    nickname: string;
     /**
      * 头像url
      */
@@ -371,6 +371,17 @@ export interface IResRaceUpvoterList extends IResBase {
      */
     coin: number;
   }[];
+}
+
+// 比赛中选手信息
+export interface IReqRacePlayer {
+  playerId: string;
+}
+export interface IResRacePlayer extends IResBase {
+  /**
+   * 打榜热度
+   */
+  hot: number;
 }
 
 export interface IReqRacePlayerList {
@@ -390,7 +401,7 @@ export interface IResRacePlayerList extends IResBase {
     /**
      * 昵称
      */
-    nickName: string;
+    nickname: string;
     /**
      * 头像url
      */

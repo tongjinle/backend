@@ -4,6 +4,8 @@ import * as protocol from "../protocol";
 import * as raceService from "../service/race";
 import * as userService from "../service/user";
 import userCheck from "./userCheck";
+import { getRedisClient } from "../redis";
+import * as redisKey from "../redisKey";
 
 let router = express.Router();
 
@@ -27,6 +29,34 @@ router.get("/current", async (req, res) => {
     startTimestamp: race.startTime.getTime(),
     endTimestamp: race.endTime.getTime()
   };
+  res.json(resData);
+});
+
+// 某个选手的热度
+router.get("/hot", async (req, res) => {
+  let reqData: protocol.IReqRacePlayer = req.query;
+  let resData: protocol.IResRacePlayer;
+  let { playerId } = reqData;
+
+  let hot = -1;
+  {
+    let client = await getRedisClient();
+    let key = redisKey.hot(playerId);
+    if (!(await client.get(key))) {
+      let race = await raceService.findInRace();
+      if (race) {
+        let raceName = race.name;
+        let player = await raceService.findPlayer(raceName, playerId);
+        if (player) {
+          hot = player.upvote;
+          await client.set(key, hot.toString());
+        }
+      }
+    } else {
+      hot = parseInt(await client.get(key));
+    }
+  }
+  resData = { code: 0, hot };
   res.json(resData);
 });
 

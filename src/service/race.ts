@@ -292,7 +292,6 @@ export async function canUpvote(raceName: string): Promise<boolean> {
   let rst: boolean;
 
   let collRace = await getCollection(RACE);
-  let collPlayer = await getCollection(RACE_PLAYER);
   // 1 是否存在比赛,并且比赛处于race状态
   if (!(await collRace.findOne({ name: raceName, status: RaceStatus.race }))) {
     return false;
@@ -409,16 +408,20 @@ export async function upvoterList(
   return rst;
 }
 
-// let coll = await getCollection(RACE);
-// ** 设置比赛(开始时间,结束时间,参赛人数,海报介绍)
-// ** 开启比赛
-// 用户报名
-// 查看报名用户
-// ** 新增参赛用户(需要微信,qq)
-// ** 删除参赛用户
-// 比赛积分榜
-// 金主积分榜
-// 给参赛用户打榜(点赞)
-// 比赛现况统计(多少人参与,多少点赞,已经在第几天)
-// !! 用户购买代币
-// ?? 参赛用户上传媒体(目前是图片)
+export async function findPlayer(
+  raceName: string,
+  playerId: string
+): Promise<IPlayer> {
+  let rst: IPlayer;
+  let collPlayer = await getCollection(RACE_PLAYER);
+  let data = await collPlayer.findOne({ raceName, userId: playerId });
+  if (data) {
+    rst = {
+      userId: data.userId,
+      nickname: data.nickname,
+      logoUrl: data.logoUrl,
+      upvote: data.upvote
+    };
+  }
+  return rst;
+}

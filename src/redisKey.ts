@@ -9,3 +9,6 @@ export let topDiaryList = (diaryId: string) => `topDiaryList#${diaryId}`;
 
 // userDiaryList
 export let userDiaryList = (userId: string) => `userDiaryList#${userId}`;
+
+// 用户热度
+export let hot = (playerId: string) => `hot#${playerId}`;

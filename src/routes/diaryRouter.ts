@@ -183,6 +183,12 @@ router.post("/upvote", async (req, res) => {
     let key = redisKey.userDiaryList(diary.userId);
     await client.del(key);
   }
+  // player hot
+  {
+    let client = await getRedisClient();
+    let key = redisKey.hot(diary.userId);
+    await client.del(key);
+  }
 
   resData = { code: 0 };
   res.json(resData);
