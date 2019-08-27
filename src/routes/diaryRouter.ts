@@ -163,15 +163,25 @@ router.post("/upvote", async (req, res) => {
   // redis
   {
     let client = await getRedisClient();
-    let update = async (key: string) => {
+    let update = async (key: string, diaryId: string) => {
       if (await client.exists(key)) {
-        let diary: diaryService.Diary = JSON.parse(await client.get(key));
-        diary.coin += coin;
-        await client.set(key, JSON.stringify(diary));
+        // let diary: diaryService.Diary = JSON.parse(await client.get(key));
+        let diary: diaryService.Diary = await diaryService.find(diaryId);
+        if (diary) {
+          await client.set(key, JSON.stringify(diary));
+        } else {
+          await client.del(key);
+        }
       }
     };
-    await update(redisKey.freshDiaryList(id));
-    await update(redisKey.topDiaryList(id));
+    await update(redisKey.freshDiaryList(id), id);
+    await update(redisKey.topDiaryList(id), id);
+  }
+  // userDiaryList
+  {
+    let client = await getRedisClient();
+    let key = redisKey.userDiaryList(diary.userId);
+    await client.del(key);
   }
 
   resData = { code: 0 };
