@@ -173,7 +173,7 @@ router.post("/upvote", async (req, res) => {
             let fullDiary = {
               ...diary,
               nickname: user.nickname,
-              logoUrl: user.nickname
+              logoUrl: user.logoUrl
             };
             console.log({ fullDiary });
             await client.set(key, JSON.stringify(fullDiary));

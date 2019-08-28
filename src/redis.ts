@@ -22,6 +22,7 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
 
       client.redis.on("error", error => {
         console.log(error);
+        client = undefined;
       });
     });
   }

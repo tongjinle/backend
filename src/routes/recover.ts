@@ -1,4 +1,5 @@
 import { getCollection } from "../mongo";
+import { getRedisClient } from "../redis";
 import { func } from "@hapi/joi";
 import { Collection } from "mongodb";
 import { upvote } from "../service/race";
@@ -11,6 +12,7 @@ let collRaceUpvoter: Collection;
 let collRaceUpvoteLog: Collection;
 let collNotice: Collection;
 let collSign: Collection;
+let collPost: Collection;
 
 export default async function recover() {
   collUser = await getCollection("user");
@@ -21,6 +23,7 @@ export default async function recover() {
   collRaceUpvoteLog = await getCollection("raceUpvoteLog");
   collNotice = await getCollection("notice");
   collSign = await getCollection("sign");
+  collPost = await getCollection("post");
 
   await Promise.all(
     [
@@ -31,7 +34,8 @@ export default async function recover() {
       collRaceUpvoter,
       collRaceUpvoteLog,
       collNotice,
-      collSign
+      collSign,
+      collPost
     ].map(coll => coll.deleteMany({}))
   );
 
@@ -39,6 +43,12 @@ export default async function recover() {
   await recoverDiary();
   await recoverRace();
   await recoverNotice();
+  await recoverPost();
+
+  {
+    let client = await getRedisClient();
+    await client.flushdb();
+  }
 }
 
 // 用户数据
@@ -256,4 +266,29 @@ async function recoverNotice() {
       }
     ]);
   }
+}
+
+// 海报
+async function recoverPost() {
+  collPost.insertMany([
+    {
+      name: "海报1",
+      postUrlList: [
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/3.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/4.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/5.jpg"
+      ],
+      timestamp: new Date(2018, 0, 1).getTime(),
+      status: "using"
+    },
+    {
+      name: "海报2",
+      postUrlList: [
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/1.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/post/2.jpg"
+      ],
+      timestamp: new Date(2019, 0, 1).getTime(),
+      status: "prepare"
+    }
+  ]);
 }

@@ -10,8 +10,9 @@ import shareRouter from "./shareRouter";
 import noticeRouter from "./noticeRouter";
 import diaryRouter from "./diaryRouter";
 import raceRouter from "./raceRouter";
-import raceAdminRouter from "./raceAdminRouter";
 import guestRouter from "./guestRouter";
+import raceAdminRouter from "./raceAdminRouter";
+import postAdminRouter from "./postAdminRouter";
 
 // 错误
 
@@ -43,9 +44,12 @@ export default function handler(app: express.Express) {
   // 比赛
   app.use("/race", raceRouter);
 
-  // 比赛管理
-  app.use("/admin/race", raceAdminRouter);
-
   // guest
   app.use("/guest", guestRouter);
+
+  // 管理-比赛
+  app.use("/admin/race", raceAdminRouter);
+
+  // 管理-海报
+  app.use("/admin/post", postAdminRouter);
 }
