@@ -44,7 +44,7 @@ export default function handler(app: express.Express) {
   app.use("/race", raceRouter);
 
   // 比赛管理
-  app.use("/race/admin", raceAdminRouter);
+  app.use("/admin/race", raceAdminRouter);
 
   // guest
   app.use("/guest", guestRouter);

@@ -7,11 +7,14 @@ let router = express.Router();
 
 // check user role
 router.use(function(req, res, next) {
+  console.log("no check");
   next();
 });
 
 // 新增比赛
 router.post("/add", async (req, res) => {
+  console.log("in add");
+
   let reqData: protocol.IReqAddRace = req.body;
   let resData: protocol.IResAddRace;
 

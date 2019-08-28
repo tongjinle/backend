@@ -55,7 +55,7 @@ describe("race admin router", async function() {
   // 2 第二次请求记录的时候,会通知已经记录过了
   it("add", async function() {
     {
-      let { data } = await request.post("/race/admin/add", {
+      let { data } = await bareRequest.post("/race/admin/add", {
         name: "seed",
         days: 7,
         postUrls: []
@@ -74,13 +74,15 @@ describe("race admin router", async function() {
   // 删除比赛
   it("remove", async function() {
     {
-      await request.post("/race/admin/add", {
+      await bareRequest.post("/race/admin/add", {
         name: "seed",
         days: 7,
         postUrls: []
       });
       await collRace.updateOne({ name: "seed" }, { $set: { status: "race" } });
-      let { data } = await request.post("/race/admin/remove", { name: "seed" });
+      let { data } = await bareRequest.post("/race/admin/remove", {
+        name: "seed"
+      });
       assert(data.code !== 0);
     }
 
@@ -89,7 +91,9 @@ describe("race admin router", async function() {
         { name: "seed" },
         { $set: { status: "prepare" } }
       );
-      let { data } = await request.post("/race/admin/remove", { name: "seed" });
+      let { data } = await bareRequest.post("/race/admin/remove", {
+        name: "seed"
+      });
       assert(data.code === 0);
       {
         let data = await collRace.findOne({ name: "seed" });
@@ -101,13 +105,15 @@ describe("race admin router", async function() {
   it("start", async function() {
     // 不存在的比赛不能start
     {
-      let { data } = await request.post("/race/admin/start", { name: "seed2" });
+      let { data } = await bareRequest.post("/race/admin/start", {
+        name: "seed2"
+      });
       assert(data.code !== 0);
     }
 
     // 比赛状态已经为gameover
     {
-      await request.post("/race/admin/add", {
+      await bareRequest.post("/race/admin/add", {
         name: "seed",
         days: 7,
         postUrls: []
@@ -118,7 +124,9 @@ describe("race admin router", async function() {
         { $set: { status: "gameover" } }
       );
 
-      let { data } = await request.post("/race/admin/start", { name: "seed" });
+      let { data } = await bareRequest.post("/race/admin/start", {
+        name: "seed"
+      });
       assert(data.code !== 0);
     }
     {
@@ -126,7 +134,9 @@ describe("race admin router", async function() {
         { name: "seed" },
         { $set: { status: "prepare" } }
       );
-      let { data } = await request.post("/race/admin/start", { name: "seed" });
+      let { data } = await bareRequest.post("/race/admin/start", {
+        name: "seed"
+      });
       assert(data.code === 0);
 
       {

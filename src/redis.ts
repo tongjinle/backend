@@ -19,6 +19,10 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
         client.select(dbName);
         resolve(client);
       });
+
+      client.redis.on("error", error => {
+        console.log(error);
+      });
     });
   }
   return client;

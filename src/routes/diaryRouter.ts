@@ -168,7 +168,16 @@ router.post("/upvote", async (req, res) => {
         // let diary: diaryService.Diary = JSON.parse(await client.get(key));
         let diary: diaryService.Diary = await diaryService.find(diaryId);
         if (diary) {
-          await client.set(key, JSON.stringify(diary));
+          let user = await userService.find(diary.userId);
+          if (user) {
+            let fullDiary = {
+              ...diary,
+              nickname: user.nickname,
+              logoUrl: user.nickname
+            };
+            console.log({ fullDiary });
+            await client.set(key, JSON.stringify(fullDiary));
+          }
         } else {
           await client.del(key);
         }
