@@ -101,3 +101,13 @@ class Main {
 }
 
 new Main();
+
+function uncaughtExceptionHandler(err) {
+  console.error("uncaughtException", err);
+  // if (err && err.code == "ECONNREFUSED") {
+  //do someting
+  // } else {
+  // process.exit(1);
+  // }
+}
+process.on("uncaughtException", uncaughtExceptionHandler);

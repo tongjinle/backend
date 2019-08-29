@@ -15,15 +15,20 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
   if (!client) {
     return new Promise(resolve => {
       client = redis.createHandyClient(port, host, { password: pass });
-      client.redis.on("connect", () => {
-        client.select(dbName);
+      client.redis.on("connect", async () => {
+        console.log("connect success");
+        await client.select(dbName);
         resolve(client);
       });
 
       client.redis.on("error", error => {
-        console.log(error);
-        client = undefined;
+        console.log("occur error");
       });
+      // setTimeout(async () => {
+      //   console.log("quit...");
+      //   await client.quit();
+      //   client = undefined;
+      // }, 60 * 1000);
     });
   }
   return client;
