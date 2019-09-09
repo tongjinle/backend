@@ -1,5 +1,6 @@
 import * as Http from "http";
 import * as express from "express";
+import * as cors from "cors";
 import * as path from "path";
 // https://www.jianshu.com/p/cd3de110b4b6
 import * as bodyParser from "body-parser";
@@ -50,27 +51,28 @@ class Main {
     app.use("/static", express.static(path.join(__dirname, "./public")));
 
     // 过滤掉option
-    app.use((req, res, next) => {
-      loger.info("req.path", req.path, req.method);
-      // 在跨域的请求发生的时候,post请求之前会产生一个option请求
-      if (req.method == "OPTIONS") {
-        next();
-        return;
-      }
+    // app.use((req, res, next) => {
+    //   loger.info("req.path", req.path, req.method);
+    //   // 在跨域的请求发生的时候,post请求之前会产生一个option请求
+    //   if (req.method == "OPTIONS") {
+    //     next();
+    //     return;
+    //   }
 
-      next();
-    });
+    //   next();
+    // });
 
     // cors
-    app.all("*", (req: express.Request, res: express.Response, next) => {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-      res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept"
-      );
-      next();
-    });
+    // app.all("*", (req: express.Request, res: express.Response, next) => {
+    //   res.header("Access-Control-Allow-Origin", "*");
+    //   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+    //   res.header(
+    //     "Access-Control-Allow-Headers",
+    //     "Origin, X-Requested-With, Content-Type, Accept"
+    //   );
+    //   next();
+    // });
+    app.use(cors());
 
     // 路由
     httpRouteHandle(app);
