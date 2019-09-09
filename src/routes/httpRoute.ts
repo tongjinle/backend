@@ -13,6 +13,7 @@ import raceRouter from "./raceRouter";
 import guestRouter from "./guestRouter";
 import raceAdminRouter from "./raceAdminRouter";
 import postAdminRouter from "./postAdminRouter";
+import adminCheck from "./role/adminCheck";
 
 // 错误
 
@@ -48,8 +49,8 @@ export default function handler(app: express.Express) {
   app.use("/guest", guestRouter);
 
   // 管理-比赛
-  app.use("/admin/race", raceAdminRouter);
+  app.use("/admin/race", adminCheck, raceAdminRouter);
 
   // 管理-海报
-  app.use("/admin/post", postAdminRouter);
+  app.use("/admin/post", adminCheck, postAdminRouter);
 }

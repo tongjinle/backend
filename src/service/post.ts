@@ -74,3 +74,20 @@ export async function changeStatus(
   let coll = await getCollection("post");
   await coll.updateOne({ name }, { $set: { status } });
 }
+
+/**
+ * 使用套餐
+ * @param name 套餐名字
+ */
+export async function using(name: string) {
+  let coll = await getCollection("post");
+  // 其他的改成
+  {
+    let status: PostStatus = "prepare";
+    await coll.updateMany({ name: { $not: name } }, { $set: { status } });
+  }
+  {
+    let status: PostStatus = "using";
+    await coll.updateOne({ name }, { $set: { status } });
+  }
+}

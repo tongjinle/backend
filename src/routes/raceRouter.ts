@@ -3,7 +3,7 @@ import * as express from "express";
 import * as protocol from "../protocol";
 import * as raceService from "../service/race";
 import * as userService from "../service/user";
-import userCheck from "./userCheck";
+import userCheck from "./role/userCheck";
 import { getRedisClient } from "../redis";
 import * as redisKey from "../redisKey";
 

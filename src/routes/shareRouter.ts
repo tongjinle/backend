@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as shareService from "../service/share";
-import userCheck from "./userCheck";
+import userCheck from "./role/userCheck";
 import * as noticeService from "../service/notice";
 import * as userService from "../service/user";
 import * as joi from "@hapi/joi";

@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as noticeService from "../service/notice";
-import userCheck from "./userCheck";
+import userCheck from "./role/userCheck";
 
 let router = express.Router();
 

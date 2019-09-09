@@ -2,7 +2,7 @@ import * as express from "express";
 import * as protocol from "../protocol";
 import * as signService from "../service/sign";
 import * as userService from "../service/user";
-import userCheck from "./userCheck";
+import userCheck from "./role/userCheck";
 import * as joi from "@hapi/joi";
 
 let router = express.Router();

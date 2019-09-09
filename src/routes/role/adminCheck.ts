@@ -1,9 +1,10 @@
 import express = require("express");
 import * as joi from "@hapi/joi";
-import errs from "../errCode";
-import utils from "../utils";
+import errs from "../../errCode";
 
-export default function userCheck(
+const TOKEN = "sanniantea";
+
+export default function adminCheck(
   req: express.Request,
   res: express.Response,
   next: Function
@@ -11,27 +12,26 @@ export default function userCheck(
   let flag: boolean;
   flag = true;
 
-  let userId: string = req.header("userId");
   let token: string = req.header("token");
-  console.log({ userId, token });
+  console.log({ token });
   let result = joi.validate(
-    { userId, token },
+    { token },
     {
-      userId: joi.string().required(),
       token: joi.string().required()
     }
   );
 
   if (result.error) {
+    console.error(result.error);
     res.json(errs.common.invalidParams);
     return;
   }
 
-  if (token !== utils.getUserToken(userId)) {
+  if (token !== TOKEN) {
     res.json(errs.common.wrongToken);
     return;
   }
 
-  console.log("check user role:", flag);
+  console.log("check admin role:", flag);
   next();
 }

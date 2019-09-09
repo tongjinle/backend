@@ -58,8 +58,7 @@ router.post("/remove", async (req, res) => {
 // 使用海报
 router.post("/using", async (req, res) => {
   let name: string = req.body.name;
-  let status: postService.PostStatus = req.body.status;
-  await postService.changeStatus(name, status);
+  await postService.using(name);
   res.json({ code: 0 });
 });
 
