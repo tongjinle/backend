@@ -50,28 +50,7 @@ class Main {
     // 静态文件
     app.use("/static", express.static(path.join(__dirname, "./public")));
 
-    // 过滤掉option
-    // app.use((req, res, next) => {
-    //   loger.info("req.path", req.path, req.method);
-    //   // 在跨域的请求发生的时候,post请求之前会产生一个option请求
-    //   if (req.method == "OPTIONS") {
-    //     next();
-    //     return;
-    //   }
-
-    //   next();
-    // });
-
     // cors
-    // app.all("*", (req: express.Request, res: express.Response, next) => {
-    //   res.header("Access-Control-Allow-Origin", "*");
-    //   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-    //   res.header(
-    //     "Access-Control-Allow-Headers",
-    //     "Origin, X-Requested-With, Content-Type, Accept"
-    //   );
-    //   next();
-    // });
     app.use(cors());
 
     // 路由
