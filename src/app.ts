@@ -4,6 +4,7 @@ import * as cors from "cors";
 import * as path from "path";
 // https://www.jianshu.com/p/cd3de110b4b6
 import * as bodyParser from "body-parser";
+import internalIp from "internal-ip";
 
 import loger from "./logIns";
 import config from "./config";
@@ -65,14 +66,15 @@ class Main {
       console.log("=======================================");
 
       if (process.env.NODE_ENV !== "product") {
+        let host = internalIp.v4.sync();
         console.log(
-          `visit TEST: ${config.protocol}://${config.host}:${config.port}/test`
+          `visit TEST: ${config.protocol}://${host}:${config.port}/test`
         );
         console.log(
-          `visit DB: ${config.protocol}://${config.host}:${config.port}/test/db`
+          `visit DB: ${config.protocol}://${host}:${config.port}/test/db`
         );
         console.log(
-          `visit STATIC: ${config.protocol}://${config.host}:${config.port}/static/test.jpg`
+          `visit STATIC: ${config.protocol}://${host}:${config.port}/static/test.jpg`
         );
       }
     };
