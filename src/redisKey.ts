@@ -12,3 +12,6 @@ export let userDiaryList = (userId: string) => `userDiaryList#${userId}`;
 
 // 用户热度
 export let hot = (playerId: string) => `hot#${playerId}`;
+
+// 用户状态
+export let isUserFrozen = (userId: string) => `isUserFrozen#${userId}`;

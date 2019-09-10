@@ -2,8 +2,13 @@ import express = require("express");
 import * as joi from "@hapi/joi";
 import errs from "../../errCode";
 import utils from "../../utils";
+import * as userService from "../../service/user";
+import { getRedisClient } from "../../redis";
+import * as redisKey from "../../redisKey";
+import { MIN } from "../../constant";
+import { min } from "moment";
 
-export default function userCheck(
+export default async function userCheck(
   req: express.Request,
   res: express.Response,
   next: Function
@@ -31,6 +36,25 @@ export default function userCheck(
   if (token !== utils.getUserToken(userId)) {
     res.json(errs.common.wrongToken);
     return;
+  }
+
+  // 用户是否被冻结
+  // '1'表示冻结,'0'表示正常状态
+  {
+    let client = await getRedisClient();
+    let key = redisKey.isUserFrozen(userId);
+    if (!(await client.exists(key))) {
+      let user = await userService.find(userId);
+      if (user) {
+        await client.set(key, user.status === "normal" ? "0" : "1");
+        await client.expire(key, 30 * MIN);
+      }
+    }
+    let data = await client.get(key);
+    if (data === "1") {
+      res.json(errs.common.frozen);
+      return;
+    }
   }
 
   console.log("check user role:", flag);

@@ -9,6 +9,10 @@ let errs = {
     wrongToken: {
       code: 2,
       message: "用户没有权限"
+    },
+    frozen: {
+      code: 3,
+      message: "用户被冻结"
     }
   },
   photo: {

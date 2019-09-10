@@ -2,8 +2,8 @@ import * as express from "express";
 import * as protocol from "../protocol";
 import * as userService from "../service/user";
 import * as joi from "@hapi/joi";
-import { stat } from "fs";
-import { read } from "../service/notice";
+import { getRedisClient } from "../redis";
+import * as redisKey from "../redisKey";
 
 let router = express.Router();
 
@@ -55,6 +55,16 @@ router.post("/setStatus", async (req, res) => {
   let status: userService.Status = reqData.status as userService.Status;
 
   await userService.setStatus(userId, status);
+
+  // redis
+  {
+    let client = await getRedisClient();
+    let key = redisKey.isUserFrozen(userId);
+    if (status === "normal") {
+      await client.del(key);
+    }
+  }
+
   resData = { code: 0 };
   res.json(resData);
 });
