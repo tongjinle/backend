@@ -44,12 +44,11 @@ class Main {
   initRoute(): void {
     let app = this.app;
 
+    // 静态文件
+    app.use("/static", express.static(path.join(__dirname, "./public")));
     // 中间件
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
-
-    // 静态文件
-    app.use("/static", express.static(path.join(__dirname, "./public")));
 
     // cors
     app.use(cors());
@@ -76,6 +75,11 @@ class Main {
         console.log(
           `visit STATIC: ${config.protocol}://${host}:${config.port}/static/test.jpg`
         );
+        if (process.env.NODE_ENV === "dev") {
+          console.log(
+            `recover DATA: ${config.protocol}://${host}:${config.port}/test/recover`
+          );
+        }
       }
     };
 
