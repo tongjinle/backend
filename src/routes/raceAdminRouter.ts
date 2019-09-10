@@ -1,7 +1,6 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as raceService from "../service/race";
-import { json } from "body-parser";
 
 let router = express.Router();
 

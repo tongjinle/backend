@@ -58,6 +58,7 @@ async function recoverUser() {
       userId: "tongyan",
       nickname: "童颜",
       gender: "female",
+      status: "normal",
       bgUrl:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E7%AB%A5%E9%A2%9C/080942a0fee28fa6bbc1be6790718757.jpg",
       logoUrl:
@@ -74,6 +75,7 @@ async function recoverUser() {
       userId: "wangyun",
       nickname: "王云",
       gender: "female",
+      status: "normal",
       logoUrl:
         "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/pacong/twitter/%E6%B5%85%E6%B5%85/0bafca06466c9de2c366ed21f10d8b44.jpg",
       city: "北京",

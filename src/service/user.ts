@@ -1,5 +1,7 @@
 import { getCollection } from "../mongo";
+import { func } from "@hapi/joi";
 export type Gender = "male" | "female" | "unknow";
+export type Status = "normal" | "frozen";
 
 // 基本用户信息
 // 确认了不能修改
@@ -12,6 +14,7 @@ export type BasicInfo = {
 };
 // 扩展用户信息(可以修改)
 export type ExtendInfo = {
+  status: Status;
   birthYear: number;
   bgUrl: string;
   /**
@@ -49,6 +52,7 @@ export async function canAdd(userId: string): Promise<boolean> {
 export async function add(user: BasicInfo): Promise<void> {
   let collection = await getCollection("user");
   let ext: ExtendInfo = {
+    status: "normal",
     birthYear: -1,
     bgUrl: undefined,
     coin: 0,
@@ -123,4 +127,16 @@ export async function updateUpvote(
       }
     }
   );
+}
+
+// 通过用户名模糊搜索
+export async function findByName(name: string): Promise<UserInfo[]> {
+  let coll = await getCollection("user");
+  return await coll.find({ name: new RegExp("^" + name) }).toArray();
+}
+
+// 改变用户状态
+export async function setStatus(userId: string, status: Status): Promise<void> {
+  let coll = await getCollection("user");
+  await coll.updateOne({ userId }, { $set: { status } });
 }
