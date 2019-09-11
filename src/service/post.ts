@@ -82,10 +82,11 @@ export async function changeStatus(
  */
 export async function using(name: string) {
   let coll = await getCollection("post");
+  console.log({ name });
   // 其他的改成
   {
     let status: PostStatus = "prepare";
-    await coll.updateMany({ name: { $not: name } }, { $set: { status } });
+    await coll.updateMany({ name: { $ne: name } }, { $set: { status } });
   }
   {
     let status: PostStatus = "using";
