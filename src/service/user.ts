@@ -132,7 +132,7 @@ export async function updateUpvote(
 // 通过用户名模糊搜索
 export async function findByName(name: string): Promise<UserInfo[]> {
   let coll = await getCollection("user");
-  return await coll.find({ name: new RegExp("^" + name) }).toArray();
+  return await coll.find({ nickname: new RegExp("^" + name) }).toArray();
 }
 
 // 改变用户状态
