@@ -6,12 +6,6 @@ import * as joi from "@hapi/joi";
 
 let router = express.Router();
 
-// check user role
-router.use(function(req, res, next) {
-  console.log("no check");
-  next();
-});
-
 // 新增海报
 router.post("/add", async (req, res) => {
   console.log("in add");
@@ -42,8 +36,8 @@ router.post("/add", async (req, res) => {
 // 海报列表
 router.get("/list", async (req, res) => {
   let data = req.query;
-
-  let list = await postService.list(data.status);
+  let status = data.status;
+  let list = await postService.list(status);
   res.json({ code: 0, list });
 });
 

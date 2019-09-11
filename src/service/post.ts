@@ -52,7 +52,8 @@ export async function remove(name: string): Promise<void> {
 export async function list(status?: PostStatus): Promise<IPOST[]> {
   let rst: IPOST[];
   let coll = await getCollection("post");
-  let data = await coll.find(status ? {} : { status }).toArray();
+  let query = status ? { status } : {};
+  let data = await coll.find(query).toArray();
   rst = data.map(n => ({
     name: n.name,
     postUrlList: n.postUrlList,
