@@ -27,6 +27,7 @@ router.post("/recover", async (req, res) => {
     }
   }
 
+  let name = reqData.name;
   await databaseService.recover(name);
   resData = { code: 0 };
   res.json(resData);
