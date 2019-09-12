@@ -225,7 +225,7 @@ router.get("/list", async (req, res) => {
     if (!(await client.exists(key))) {
       let list = await diaryService.list(diaryUserId);
       await client.set(key, JSON.stringify(list));
-      await client.expire(key, expire);
+      await client.pexpire(key, expire);
     }
     list = JSON.parse(await client.get(key));
   }
@@ -286,7 +286,7 @@ router.get("/recommend", async (req, res) => {
     );
 
     await client.set(flagKey, "1");
-    await client.expire(flagKey, expire);
+    await client.pexpire(flagKey, expire);
   };
 
   let readFromCache = async (name: "fresh" | "top") => {

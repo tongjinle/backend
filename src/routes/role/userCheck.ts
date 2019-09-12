@@ -47,7 +47,7 @@ export default async function userCheck(
       let user = await userService.find(userId);
       if (user) {
         await client.set(key, user.status === "normal" ? "0" : "1");
-        await client.expire(key, 30 * MIN);
+        await client.pexpire(key, 30 * MIN);
       } else {
         // 用户存在才有"冻结"一说,否则必须让它通过
         // 否则会组织新用户的注册
