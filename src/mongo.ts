@@ -33,3 +33,8 @@ export async function getCollection(name: string): Promise<mongodb.Collection> {
 export function getObjectId(id: string) {
   return new mongodb.ObjectId(id);
 }
+
+export async function dropDatabase(): Promise<void> {
+  let client = await getMongoClient();
+  client.db(dbName).dropDatabase();
+}

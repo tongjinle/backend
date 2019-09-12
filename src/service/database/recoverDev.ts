@@ -1,6 +1,6 @@
+import clean from "./clean";
 import { Collection } from "mongodb";
-import { getCollection } from "../mongo";
-import { getRedisClient } from "../redis";
+import { getCollection } from "../../mongo";
 
 let collUser: Collection;
 let collDiary: Collection;
@@ -12,7 +12,9 @@ let collNotice: Collection;
 let collSign: Collection;
 let collPost: Collection;
 
-export default async function recover() {
+export async function recoverDev() {
+  await clean();
+
   collUser = await getCollection("user");
   collDiary = await getCollection("diary");
   collRace = await getCollection("race");
@@ -23,32 +25,12 @@ export default async function recover() {
   collSign = await getCollection("sign");
   collPost = await getCollection("post");
 
-  await Promise.all(
-    [
-      collUser,
-      collDiary,
-      collRace,
-      collRacePlayer,
-      collRaceUpvoter,
-      collRaceUpvoteLog,
-      collNotice,
-      collSign,
-      collPost
-    ].map(coll => coll.deleteMany({}))
-  );
-
   await recoverUser();
   await recoverDiary();
   await recoverRace();
   await recoverNotice();
   await recoverPost();
-
-  {
-    let client = await getRedisClient();
-    await client.flushdb();
-  }
 }
-
 // 用户数据
 async function recoverUser() {
   await collUser.insertMany([
