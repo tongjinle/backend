@@ -14,6 +14,7 @@ import guestRouter from "./guestRouter";
 import raceAdminRouter from "./raceAdminRouter";
 import postAdminRouter from "./postAdminRouter";
 import userAdminRouter from "./userAdminRouter";
+import databaseAdminRouter from "./databaseAdminRouter";
 import adminCheck from "./role/adminCheck";
 
 // 错误
@@ -57,4 +58,7 @@ export default function handler(app: express.Express) {
 
   // 管理-用户
   app.use("/admin/user", adminCheck, userAdminRouter);
+
+  // 管理-数据
+  app.use("/admin/database", adminCheck, databaseAdminRouter);
 }

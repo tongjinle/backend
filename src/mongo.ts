@@ -12,7 +12,6 @@ export async function getMongoClient(): Promise<mongodb.MongoClient> {
       autoReconnect: true,
       poolSize: 10
     });
-    // await client.
     await client.connect();
   }
   return client;
