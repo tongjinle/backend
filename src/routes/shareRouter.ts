@@ -5,6 +5,8 @@ import userCheck from "./role/userCheck";
 import * as noticeService from "../service/notice";
 import * as userService from "../service/user";
 import * as joi from "@hapi/joi";
+import { getRedisClient } from "../redis";
+import * as redisKey from "../redisKey";
 
 let router = express.Router();
 
@@ -88,7 +90,16 @@ router.post("/reward", async (req, res) => {
     return;
   }
 
+  if (await userService.find(userId)) {
+    res.json({ code: -4, message: "该用户已经存在,不是新用户" });
+  }
+
   let coin: number = await shareService.reward(userId, sharerId);
+
+  // 这里需要update用户的coin
+  // 因为reward方法只是返回应该奖励多少金币,但是并不会去操作数据库
+  await userService.updateCoin(sharerId, coin);
+
   resData = { code: 0, coin };
   res.json(resData);
 
