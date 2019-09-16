@@ -77,7 +77,7 @@ async function recoverDiary() {
       userId: "tongyan",
       text: "无聊的日子,在家撸猫......",
       url:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/1.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/k1.jpg",
       type: "image",
       time: new Date(2019, 7, 1),
       score: 98,
@@ -86,9 +86,9 @@ async function recoverDiary() {
     },
     {
       userId: "tongyan",
-      text: "我叫江户川柯南,我是个侦探",
+      text: "我是可爱的鹿酱~",
       url:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/1.mp4",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/lujiang.mp4",
       type: "video",
       time: new Date(2018, 7, 2),
       score: -1,
@@ -97,9 +97,9 @@ async function recoverDiary() {
     },
     {
       userId: "wangyun",
-      text: "四川人在太原",
+      text: "我是不是胖了?",
       url:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/2.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/k2.jpg",
       type: "image",
       time: new Date(1546272000000),
       score: -1,
@@ -108,9 +108,9 @@ async function recoverDiary() {
     },
     {
       userId: "wangyun",
-      text: "云南人在吹牛",
+      text: "自己练习简笔画的蜗牛",
       url:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/3.jpg",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/k3.jpg",
       type: "image",
       time: new Date(1546272000000),
       score: -1,
@@ -120,7 +120,7 @@ async function recoverDiary() {
     {
       userId: "wangyun",
       url:
-        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/music.mp3",
+        "https://mucheng2020.oss-cn-hangzhou.aliyuncs.com/test/yanzhiyouli/medias/swzao.mp3",
       type: "audio",
       time: new Date(1546272000000),
       score: -1,
