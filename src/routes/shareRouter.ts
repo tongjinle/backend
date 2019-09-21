@@ -92,6 +92,7 @@ router.post("/reward", async (req, res) => {
 
   if (await userService.find(userId)) {
     res.json({ code: -4, message: "该用户已经存在,不是新用户" });
+    return;
   }
 
   let coin: number = await shareService.reward(userId, sharerId);
