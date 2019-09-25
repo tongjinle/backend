@@ -6,12 +6,12 @@ const config: IConfig = {
   port: 3000,
   // mongo
   mongo: {
-    connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
+    connectStr: "mongodb://tea:sannian@120.27.27.50:27017",
     dbName: "zst"
   },
   // redis
   redis: {
-    host: "118.31.11.29",
+    host: "120.27.27.50",
     port: 6379,
     pass: "sannian",
     dbName: 1
@@ -22,14 +22,14 @@ const config: IConfig = {
     // 信息模版Id
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },
-
+  wxOpenIdUrl: "https://api.sanriyue.xyz/commonApi/wx/openId",
   qq: {
     appId: "1109682478",
     appSecret: "re79cmI7cYwqGZzE",
     // 信息模版Id
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },
-
+  qqOpenIdUrl: "https://api.sanriyue.xyz/commonApi/qq/openId",
   // token过期时间
   tokenExpires: 2 * HOUR,
 

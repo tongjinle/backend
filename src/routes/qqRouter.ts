@@ -11,14 +11,14 @@ let router = express.Router();
 let appId: string = config.qq.appId;
 let appSecret: string = config.qq.appSecret;
 
-let wxUrl = "https://api.puman.xyz/commonApi/qq/openId";
+let openIdUrl = config.qqOpenIdUrl;
 // 登录
 router.get("/login/", async (req, res) => {
   let resData: protocol.IResLogin;
   let query: protocol.IReqLogin = req.query;
   let { code } = query;
   let url =
-    wxUrl +
+    openIdUrl +
     "?" +
     "appId=" +
     appId +

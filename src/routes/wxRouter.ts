@@ -10,14 +10,14 @@ let router = express.Router();
 let appId: string = config.wx.appId;
 let appSecret: string = config.wx.appSecret;
 
-let wxUrl = "https://api.puman.xyz/commonApi/wx/openId";
+let openIdUrl = config.wxOpenIdUrl;
 // 登录
 router.get("/login/", async (req, res) => {
   let resData: protocol.IResLogin;
   let query: protocol.IReqLogin = req.query;
   let { code } = query;
   let url =
-    wxUrl +
+    openIdUrl +
     "?" +
     "appId=" +
     appId +

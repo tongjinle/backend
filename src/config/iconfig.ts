@@ -25,14 +25,14 @@ interface IConfigBase {
     appSecret: string;
     templateId: string;
   };
-
+  wxOpenIdUrl: string;
   // qq
   qq: {
     appId: string;
     appSecret: string;
     templateId: string;
   };
-
+  qqOpenIdUrl: string;
   // token过期时间
   tokenExpires: number;
 
