@@ -17,8 +17,18 @@ router.use(userCheck);
 
 // 新增日记
 router.post("/add", async (req, res) => {
-  let resData: protocol.IResDiaryAdd;
-  let reqData: protocol.IReqDiaryAdd = req.body;
+  let resData: {} & protocol.IResBase;
+  let reqData: {
+    // 简单文本
+    text: string;
+    // 日记地址
+    url: string;
+    // 类型
+    type: "image" | "video" | "audio";
+    // 得分(仅为image的时候存在)
+    score?: number;
+  } =
+    req.body;
 
   let userId: string = req.header("userId");
 
