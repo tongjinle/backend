@@ -1,8 +1,9 @@
 import express = require("express");
 import * as joi from "@hapi/joi";
 import errs from "../../errCode";
+import utils from "../../utils";
 
-const TOKEN = "sanniantea";
+const TOKEN = utils.getUserToken("sanniantea");
 
 export default function adminCheck(
   req: express.Request,

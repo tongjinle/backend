@@ -1,5 +1,10 @@
 import assert = require("assert");
-import { getMongoClient, closeMongoClient, getCollection } from "../../mongo";
+import {
+  getMongoClient,
+  closeMongoClient,
+  getCollection,
+  dropDatabase
+} from "../../mongo";
 import { MongoClient, Collection } from "mongodb";
 import config from "../../config";
 import axios, { AxiosInstance } from "axios";
@@ -9,10 +14,10 @@ import { fork, ChildProcess } from "child_process";
 import * as path from "path";
 import utils from "../../utils";
 import * as protocol from "../../protocol";
+import * as helper from "../helper";
 
 describe("race admin router", async function() {
   let request: AxiosInstance;
-  let bareRequest: AxiosInstance;
   let client: MongoClient;
   let photos: Collection;
   let collRace: Collection;
@@ -20,23 +25,10 @@ describe("race admin router", async function() {
 
   before(async function() {
     this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
+    worker = await helper.startApp();
 
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    await dropDatabase();
+    request = await helper.createAdminRequest();
 
     collRace = await getCollection("race");
   });
@@ -46,7 +38,7 @@ describe("race admin router", async function() {
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
   });
 
@@ -55,7 +47,7 @@ describe("race admin router", async function() {
   // 2 第二次请求记录的时候,会通知已经记录过了
   it("add", async function() {
     {
-      let { data } = await bareRequest.post("/race/admin/add", {
+      let { data } = await request.post("/admin/race/add", {
         name: "seed",
         days: 7,
         postUrls: []
@@ -74,13 +66,13 @@ describe("race admin router", async function() {
   // 删除比赛
   it("remove", async function() {
     {
-      await bareRequest.post("/race/admin/add", {
+      await request.post("/admin/race/add", {
         name: "seed",
         days: 7,
         postUrls: []
       });
       await collRace.updateOne({ name: "seed" }, { $set: { status: "race" } });
-      let { data } = await bareRequest.post("/race/admin/remove", {
+      let { data } = await request.post("/admin/race/remove", {
         name: "seed"
       });
       assert(data.code !== 0);
@@ -91,7 +83,7 @@ describe("race admin router", async function() {
         { name: "seed" },
         { $set: { status: "prepare" } }
       );
-      let { data } = await bareRequest.post("/race/admin/remove", {
+      let { data } = await request.post("/admin/race/remove", {
         name: "seed"
       });
       assert(data.code === 0);
@@ -105,7 +97,7 @@ describe("race admin router", async function() {
   it("start", async function() {
     // 不存在的比赛不能start
     {
-      let { data } = await bareRequest.post("/race/admin/start", {
+      let { data } = await request.post("/admin/race/start", {
         name: "seed2"
       });
       assert(data.code !== 0);
@@ -113,7 +105,7 @@ describe("race admin router", async function() {
 
     // 比赛状态已经为gameover
     {
-      await bareRequest.post("/race/admin/add", {
+      await request.post("/admin/race/add", {
         name: "seed",
         days: 7,
         postUrls: []
@@ -124,7 +116,7 @@ describe("race admin router", async function() {
         { $set: { status: "gameover" } }
       );
 
-      let { data } = await bareRequest.post("/race/admin/start", {
+      let { data } = await request.post("/admin/race/start", {
         name: "seed"
       });
       assert(data.code !== 0);
@@ -134,7 +126,7 @@ describe("race admin router", async function() {
         { name: "seed" },
         { $set: { status: "prepare" } }
       );
-      let { data } = await bareRequest.post("/race/admin/start", {
+      let { data } = await request.post("/admin/race/start", {
         name: "seed"
       });
       assert(data.code === 0);
