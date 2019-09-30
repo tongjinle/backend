@@ -1,6 +1,11 @@
 import assert = require("assert");
 import { Collection, MongoClient } from "mongodb";
-import { closeMongoClient, getCollection, getMongoClient } from "../../mongo";
+import {
+  closeMongoClient,
+  getCollection,
+  getMongoClient,
+  dropDatabase
+} from "../../mongo";
 import * as userService from "../../service/user";
 import * as coinService from "../../service/coin";
 import * as raceService from "../../service/race";
@@ -38,12 +43,7 @@ describe("race service", async function() {
     collUpvoteLog = await getCollection(RACE_UPVOTE_LOG);
 
     // 清理所有数据
-    await Promise.all([
-      collRace.deleteMany({}),
-      collPlayer.deleteMany({}),
-      collUpvoter.deleteMany({}),
-      collUpvoteLog.deleteMany({})
-    ]);
+    await dropDatabase();
 
     let tong: userService.BasicInfo = {
       userId: "tong",
@@ -55,10 +55,16 @@ describe("race service", async function() {
       nickname: "金",
       gender: "male"
     } as userService.BasicInfo;
+    let sannian: userService.BasicInfo = {
+      userId: "sannian",
+      nickname: "三年",
+      gender: "female"
+    } as userService.BasicInfo;
     await userService.add(tong);
     coinService.update("tong", 10000);
     await userService.add(jin);
     coinService.update("jin", 10);
+    await userService.add(sannian);
   });
 
   after(async function() {

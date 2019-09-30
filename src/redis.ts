@@ -10,7 +10,14 @@ enum eStatus {
 }
 let { port, host, pass, dbName } = config.redis;
 
+/**
+ * redis单例
+ */
 let client: redis.IHandyRedis;
+
+/**
+ * 获取redis单例
+ */
 export async function getRedisClient(): Promise<redis.IHandyRedis> {
   if (!client) {
     return new Promise(resolve => {
@@ -34,6 +41,17 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
   return client;
 }
 
+/**
+ * 清空数据库
+ */
+export async function flushDb(): Promise<void> {
+  let client = await getRedisClient();
+  await client.flushdb();
+}
+
+/**
+ * 关闭redis
+ */
 export async function closeRedisClient() {
   if (client) {
     return new Promise(resolve => {
