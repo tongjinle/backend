@@ -1,19 +1,8 @@
 import assert = require("assert");
-import {
-  getMongoClient,
-  closeMongoClient,
-  getCollection,
-  dropDatabase
-} from "../../mongo";
-import { MongoClient, Collection } from "mongodb";
-import config from "../../config";
-import axios, { AxiosInstance } from "axios";
-import errs from "../../errCode";
-import * as userService from "../../service/user";
-import { fork, ChildProcess } from "child_process";
-import * as path from "path";
-import utils from "../../utils";
-import * as protocol from "../../protocol";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
+import { Collection, MongoClient } from "mongodb";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
 import * as helper from "../helper";
 
 describe("race admin router", async function() {
