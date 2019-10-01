@@ -1,14 +1,10 @@
 import assert = require("assert");
-import axios, { AxiosInstance } from "axios";
-import { ChildProcess, fork } from "child_process";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
 import { Collection, MongoClient } from "mongodb";
-import * as path from "path";
-import config from "../../config";
-import { closeMongoClient, getCollection, dropDatabase } from "../../mongo";
-import * as raceService from "../../service/race";
-import utils from "../../utils";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
+import { closeRedisClient, flushDb } from "../../redis";
 import * as helper from "../helper";
-import { flushDb, closeRedisClient } from "../../redis";
 
 describe("race router", async function() {
   let request: AxiosInstance;
