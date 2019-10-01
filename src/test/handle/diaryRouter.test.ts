@@ -26,8 +26,8 @@ describe("diary router", async function() {
   let collUpvoteLog: Collection;
   let worker: ChildProcess;
 
+  this.timeout(30 * 1000);
   before(async function() {
-    this.timeout(30 * 1000);
     worker = await helper.startApp();
 
     collDiary = await getCollection("diary");
@@ -192,7 +192,6 @@ describe("diary router", async function() {
     }
   });
   it("upvote-race", async function() {
-    this.timeout(30 * 1000);
     await userService.add({
       userId: "bitch",
       nickname: "婊子",
