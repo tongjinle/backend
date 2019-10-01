@@ -81,6 +81,8 @@ class Main {
           );
         }
       }
+
+      process.send("server start");
     };
 
     app.listen(port, cb);

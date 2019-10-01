@@ -8,7 +8,6 @@ let router = express.Router();
 
 // 新增海报
 router.post("/add", async (req, res) => {
-  console.log("in add");
   let data = req.body;
 
   {

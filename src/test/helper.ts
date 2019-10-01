@@ -23,7 +23,13 @@ export async function startApp(): Promise<ChildProcess> {
   let file = path.resolve(__dirname, "../app.js");
   // console.log(file);
   let worker = fork(file);
-  await delay(5000);
+  await new Promise(resolve => {
+    worker.on("message", message => {
+      console.log("message");
+      resolve();
+    });
+  });
+  // await delay(5000);
 
   return worker;
 }

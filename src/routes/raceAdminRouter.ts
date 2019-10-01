@@ -6,8 +6,6 @@ let router = express.Router();
 
 // 新增比赛
 router.post("/add", async (req, res) => {
-  console.log("in add");
-
   let reqData: protocol.IReqAddRace = req.body;
   let resData: protocol.IResAddRace;
 

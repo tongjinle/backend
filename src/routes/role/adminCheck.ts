@@ -14,7 +14,7 @@ export default function adminCheck(
   flag = true;
 
   let token: string = req.header("token");
-  console.log({ token });
+  // console.log({ token });
   let result = joi.validate(
     { token },
     {
@@ -33,6 +33,6 @@ export default function adminCheck(
     return;
   }
 
-  console.log("check admin role:", flag);
+  // console.log("check admin role:", flag);
   next();
 }

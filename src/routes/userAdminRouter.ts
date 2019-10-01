@@ -9,8 +9,6 @@ let router = express.Router();
 
 // 模糊查找用户
 router.get("/find", async (req, res) => {
-  console.log("in add");
-
   let reqData: { name: string } = req.query;
   let resData: { code: number; list: userService.UserInfo[] };
 

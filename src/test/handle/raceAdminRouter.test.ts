@@ -12,8 +12,8 @@ describe("race admin router", async function() {
   let collRace: Collection;
   let worker: ChildProcess;
 
+  this.timeout(30 * 1000);
   before(async function() {
-    this.timeout(30 * 1000);
     worker = await helper.startApp();
 
     collRace = await getCollection("race");
