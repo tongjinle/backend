@@ -16,14 +16,13 @@ describe("race admin router", async function() {
     this.timeout(30 * 1000);
     worker = await helper.startApp();
 
-    await dropDatabase();
-    request = await helper.createAdminRequest();
-
     collRace = await getCollection("race");
   });
 
   beforeEach(async function() {
-    await Promise.all([collRace.deleteMany({})]);
+    await dropDatabase();
+    request = await helper.createAdminRequest();
+    // await Promise.all([collRace.deleteMany({})]);
   });
 
   after(async function() {

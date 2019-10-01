@@ -18,7 +18,7 @@ export default async function userCheck(
 
   let userId: string = req.header("userId");
   let token: string = req.header("token");
-  console.log({ userId, token });
+  // console.log({ userId, token });
   let result = joi.validate(
     { userId, token },
     {
@@ -51,7 +51,6 @@ export default async function userCheck(
       } else {
         // 用户存在才有"冻结"一说,否则必须让它通过
         // 否则会组织新用户的注册
-        console.log("addUser");
         next();
         return;
       }
@@ -63,6 +62,6 @@ export default async function userCheck(
     }
   }
 
-  console.log("check user role:", flag);
+  // console.log("check user role:", flag);
   next();
 }

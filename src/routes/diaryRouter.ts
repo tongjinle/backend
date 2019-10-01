@@ -27,8 +27,7 @@ router.post("/add", async (req, res) => {
     type: "image" | "video" | "audio";
     // 得分(仅为image的时候存在)
     score?: number;
-  } =
-    req.body;
+  } = req.body;
 
   let userId: string = req.header("userId");
 
@@ -136,7 +135,7 @@ router.post("/upvote", async (req, res) => {
 
   // coin检测
   let user = await userService.find(userId);
-  console.log({ usercoin: user.coin, coin });
+  // console.log({ usercoin: user.coin, coin });
   if (!(user && user.coin >= coin)) {
     res.json({ code: -2, message: "代币不足" });
     return;

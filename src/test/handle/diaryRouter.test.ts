@@ -4,11 +4,13 @@ import { ChildProcess, fork } from "child_process";
 import { Collection, MongoClient } from "mongodb";
 import * as path from "path";
 import config from "../../config";
-import { closeMongoClient, getCollection } from "../../mongo";
+import { closeMongoClient, getCollection, dropDatabase } from "../../mongo";
 import * as diaryService from "../../service/diary";
 import * as userService from "../../service/user";
 import * as raceService from "../../service/race";
 import utils from "../../utils";
+import * as helper from "../helper";
+import { closeRedisClient, flushDb } from "../../redis";
 
 describe("diary router", async function() {
   let request: AxiosInstance;
@@ -26,23 +28,7 @@ describe("diary router", async function() {
 
   before(async function() {
     this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
-
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    worker = await helper.startApp();
 
     collDiary = await getCollection("diary");
     collDiaryUpvote = await getCollection("diaryUpvote");
@@ -54,30 +40,28 @@ describe("diary router", async function() {
   });
 
   beforeEach(async function() {
-    await Promise.all([
-      collDiary.deleteMany({}),
-      collDiaryUpvote.deleteMany({}),
-      collUser.deleteMany({}),
-      collRace.deleteMany({}),
-      collPlayer.deleteMany({}),
-      collUpvoter.deleteMany({}),
-      collUpvoteLog.deleteMany({})
-    ]);
+    await dropDatabase();
+    await flushDb();
+    request = await helper.createRequest("sannian");
+    bareRequest = await helper.createBareRequest();
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   // 新增一个日记
   it("add", async function() {
-    await request.post("/diary/add", {
+    let res = await request.post("/diary/add", {
       text: "abc",
       url: "1.jpg",
       type: "image",
       score: 90
     });
+
+    assert(res.data.code === 0);
 
     let data = await collDiary.findOne({ text: "abc" });
     assert(data);
@@ -85,11 +69,6 @@ describe("diary router", async function() {
 
   // 查找一个日记
   it("find", async function() {
-    await collUser.insertOne({
-      userId: "sannian",
-      nickname: "puman",
-      logoUrl: ""
-    });
     await request.post("/diary/add", {
       text: "abc",
       url: "1.jpg",
@@ -213,6 +192,7 @@ describe("diary router", async function() {
     }
   });
   it("upvote-race", async function() {
+    this.timeout(30 * 1000);
     await userService.add({
       userId: "bitch",
       nickname: "婊子",
@@ -220,13 +200,13 @@ describe("diary router", async function() {
       gender: "female",
       city: ""
     });
-    await userService.add({
-      userId: "sannian",
-      nickname: "三年",
-      logoUrl: "",
-      gender: "female",
-      city: ""
-    });
+    // await userService.add({
+    //   userId: "sannian",
+    //   nickname: "三年",
+    //   logoUrl: "",
+    //   gender: "female",
+    //   city: ""
+    // });
     await diaryService.add(
       "bitch",
       "abc",

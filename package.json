@@ -16,6 +16,7 @@
     "test:race": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/raceService.test.js",
     "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js",
     "test-handle:raceAdmin": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/raceAdminRouter.test.js",
+    "test-handle:diary": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/diaryRouter.test.js",
     "test-handle:db": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/db.test.js"
   },
   "keywords": [],

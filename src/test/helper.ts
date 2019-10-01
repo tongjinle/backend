@@ -3,6 +3,8 @@ import { fork, ChildProcess } from "child_process";
 import axios, { AxiosInstance } from "axios";
 import utils from "../utils";
 import config from "../config";
+import { getCollection } from "../mongo";
+import * as userService from "../service/user";
 
 /**
  * 延迟函数
@@ -19,7 +21,7 @@ export async function delay(ms: number): Promise<void> {
  */
 export async function startApp(): Promise<ChildProcess> {
   let file = path.resolve(__dirname, "../app.js");
-  console.log(file);
+  // console.log(file);
   let worker = fork(file);
   await delay(5000);
 
@@ -39,6 +41,13 @@ export async function closeApp(worker: ChildProcess): Promise<void> {
  */
 export async function createRequest(userId: string): Promise<AxiosInstance> {
   let token = await utils.getUserToken(userId);
+
+  let info: userService.BasicInfo = {
+    userId,
+    nickname: userId
+  } as userService.BasicInfo;
+  await userService.add(info);
+
   return axios.create({
     baseURL: `${config.protocol}://${config.host}:${config.port}`,
     headers: { userId, token }
