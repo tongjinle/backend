@@ -4,9 +4,11 @@ import { ChildProcess, fork } from "child_process";
 import { Collection, MongoClient } from "mongodb";
 import * as path from "path";
 import config from "../../config";
-import { closeMongoClient, getCollection } from "../../mongo";
+import { closeMongoClient, getCollection, dropDatabase } from "../../mongo";
 import * as raceService from "../../service/race";
 import utils from "../../utils";
+import * as helper from "../helper";
+import { flushDb, closeRedisClient } from "../../redis";
 
 describe("race router", async function() {
   let request: AxiosInstance;
@@ -19,25 +21,9 @@ describe("race router", async function() {
   let collRaceUpvoterLog: Collection;
   let worker: ChildProcess;
 
+  this.timeout(30 * 1000);
   before(async function() {
-    this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
-
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    worker = await helper.startApp();
 
     collRace = await getCollection("race");
     collRacePlayer = await getCollection("racePlayer");
@@ -46,17 +32,16 @@ describe("race router", async function() {
   });
 
   beforeEach(async function() {
-    await Promise.all([
-      collRace.deleteMany({}),
-      collRacePlayer.deleteMany({}),
-      collRaceUpvoter.deleteMany({}),
-      collRaceUpvoterLog.deleteMany({})
-    ]);
+    await dropDatabase();
+    await flushDb();
+
+    request = await helper.createRequest("sannian");
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   it("player", async function() {

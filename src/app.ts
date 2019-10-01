@@ -21,27 +21,36 @@ class Main {
   mongoClient: mongodb.MongoClient;
   redisClient: redis.IHandyRedis;
 
-  constructor() {
+  async start(): Promise<void> {
     this.app = express();
-    this.initRoute();
-    this.bindMongo();
-    this.bindRedis();
+
+    Promise.all([this.initRoute(), this.bindMongo(), this.bindRedis()]).then(
+      () => {
+        process.send && process.send("server start");
+      }
+    );
   }
 
   private bindMongo() {
-    getMongoClient().then(client => {
-      this.mongoClient = client;
+    return new Promise(resolve => {
+      getMongoClient().then(client => {
+        this.mongoClient = client;
+        resolve();
+      });
     });
   }
 
   private bindRedis() {
-    getRedisClient().then(client => {
-      this.redisClient = client;
+    return new Promise(resolve => {
+      getRedisClient().then(client => {
+        this.redisClient = client;
+        resolve();
+      });
     });
   }
 
   // 挂载路由
-  initRoute(): void {
+  initRoute(): Promise<void> {
     let app = this.app;
 
     // 静态文件
@@ -81,15 +90,27 @@ class Main {
           );
         }
       }
-
-      process.send("server start");
     };
 
+    // return new Promise(resolve => {
+    //   console.log("on pre launch...");
+    //   app.listen(port, () => {
+    //     console.log("on launch...");
+    //     cb();
+    //     resolve();
+    //   });
+    // });
     app.listen(port, cb);
+    return;
   }
 }
 
-new Main();
+try {
+  let serv = new Main();
+  serv.start();
+} catch (e) {
+  console.log(e);
+}
 
 function uncaughtExceptionHandler(err) {
   console.error("uncaughtException", err);

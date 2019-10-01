@@ -23,7 +23,7 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
     return new Promise(resolve => {
       client = redis.createHandyClient(port, host, { password: pass });
       client.redis.on("connect", async () => {
-        console.log("connect success");
+        console.log("redis connect success");
         await client.select(dbName);
         resolve(client);
       });
@@ -45,7 +45,8 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
  * 清空数据库
  */
 export async function flushDb(): Promise<void> {
-  let client = await getRedisClient();
+  console.log(!!client);
+  client = await getRedisClient();
   await client.flushdb();
 }
 
@@ -55,6 +56,7 @@ export async function flushDb(): Promise<void> {
 export async function closeRedisClient() {
   if (client) {
     return new Promise(resolve => {
+      console.log("close redis");
       client.redis.quit(resolve);
     });
   }

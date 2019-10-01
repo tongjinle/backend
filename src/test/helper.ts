@@ -25,11 +25,11 @@ export async function startApp(): Promise<ChildProcess> {
   let worker = fork(file);
   await new Promise(resolve => {
     worker.on("message", message => {
-      console.log("message");
+      console.log("message:", message);
       resolve();
+      // delay(15000).then(resolve);
     });
   });
-  // await delay(5000);
 
   return worker;
 }

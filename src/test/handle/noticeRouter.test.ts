@@ -1,53 +1,33 @@
 import assert = require("assert");
-import { getMongoClient, closeMongoClient, getCollection } from "../../mongo";
-import { MongoClient, Collection } from "mongodb";
-import config from "../../config";
-import axios, { AxiosInstance } from "axios";
-import errs from "../../errCode";
-import * as noticeService from "../../service/notice";
-import { fork, ChildProcess } from "child_process";
-import * as path from "path";
-import utils from "../../utils";
-import * as protocol from "../../protocol";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
+import { Collection } from "mongodb";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
+import { closeRedisClient, flushDb } from "../../redis";
+import * as helper from "../helper";
 
 describe("notice router", async function() {
   let request: AxiosInstance;
-  let bareRequest: AxiosInstance;
-  let client: MongoClient;
-  let photos: Collection;
   let collNotice: Collection;
   let worker: ChildProcess;
 
+  this.timeout(30 * 1000);
   before(async function() {
-    this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
-
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    worker = await helper.startApp();
 
     collNotice = await getCollection("notice");
   });
 
   beforeEach(async function() {
-    await Promise.all([collNotice.deleteMany({})]);
+    await dropDatabase();
+    await flushDb();
+    request = await helper.createRequest("sannian");
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   // 查看官方通知
