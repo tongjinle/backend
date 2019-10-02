@@ -5,7 +5,6 @@ import { Collection, MongoClient } from "mongodb";
 import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
 import { closeRedisClient, flushDb } from "../../redis";
 import * as helper from "../helper";
-import assert = require("assert");
 
 describe("user router", async function() {
   let request: AxiosInstance;
