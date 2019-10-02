@@ -1,14 +1,10 @@
 import assert = require("assert");
-import { getMongoClient, closeMongoClient, getCollection } from "../../mongo";
-import { MongoClient, Collection } from "mongodb";
-import config from "../../config";
-import axios, { AxiosInstance } from "axios";
-import errs from "../../errCode";
-import * as userService from "../../service/user";
-import { fork, ChildProcess } from "child_process";
-import * as path from "path";
-import utils from "../../utils";
-import * as protocol from "../../protocol";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
+import { Collection, MongoClient } from "mongodb";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
+import { closeRedisClient, flushDb } from "../../redis";
+import * as helper from "../helper";
 
 describe("sign router", async function() {
   let request: AxiosInstance;
@@ -17,37 +13,25 @@ describe("sign router", async function() {
   let photos: Collection;
   let collSign: Collection;
   let worker: ChildProcess;
+  this.timeout(30 * 1000);
 
   before(async function() {
-    this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
-
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    worker = await helper.startApp();
 
     collSign = await getCollection("sign");
   });
 
   beforeEach(async function() {
-    await Promise.all([collSign.deleteMany({})]);
+    await dropDatabase();
+    await flushDb();
+
+    request = await helper.createRequest("sannian");
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   it("isSign", async function() {

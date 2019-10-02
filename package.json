@@ -20,6 +20,7 @@
     "test-handle:notice": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/noticeRouter.test.js",
     "test-handle:race": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/raceRouter.test.js",
     "test-handle:share": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/shareRouter.test.js",
+    "test-handle:sign": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/signRouter.test.js",
     "test-handle:db": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/db.test.js"
   },
   "keywords": [],
