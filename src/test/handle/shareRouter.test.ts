@@ -1,22 +1,14 @@
 import assert = require("assert");
-import {
-  getMongoClient,
-  closeMongoClient,
-  getCollection
-} from "../../mongo";
-import { MongoClient, Collection } from "mongodb";
-import config from "../../config";
-import axios, { AxiosInstance } from "axios";
-import errs from "../../errCode";
-import * as userService from "../../service/user";
-import { fork, ChildProcess } from "child_process";
-import * as path from "path";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
+import { Collection, MongoClient } from "mongodb";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
+import { closeRedisClient, flushDb } from "../../redis";
 import utils from "../../utils";
-import * as protocol from "../../protocol";
+import * as helper from "../helper";
 
 describe("share router", async function() {
   let request: AxiosInstance;
-  let bareRequest: AxiosInstance;
   let client: MongoClient;
   let photos: Collection;
   let collUser: Collection;
@@ -24,25 +16,9 @@ describe("share router", async function() {
   let collShareLink: Collection;
   let worker: ChildProcess;
 
+  this.timeout(30 * 1000);
   before(async function() {
-    this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
-
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    worker = await helper.startApp();
 
     collShare = await getCollection("share");
     collUser = await getCollection("user");
@@ -50,16 +26,16 @@ describe("share router", async function() {
   });
 
   beforeEach(async function() {
-    await Promise.all([
-      collUser.deleteMany({}),
-      collShare.deleteMany({}),
-      collShareLink.deleteMany({})
-    ]);
+    await dropDatabase();
+    await flushDb();
+
+    request = await helper.createRequest("sannian");
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   // 分享记录
@@ -99,6 +75,7 @@ describe("share router", async function() {
   // 3 分享成功
   // 4 重复请求分享奖励会失败
   it("share reward", async function() {
+    let userId = "zhushuting";
     let today = new Date();
     let [year, month, day] = [
       today.getFullYear(),
@@ -107,8 +84,8 @@ describe("share router", async function() {
     ];
 
     let sharerId: string = "wangyun";
-    await collUser.insertOne({ userId: "sannian" });
     let shareCode: string = utils.getShareCode(sharerId);
+    // shareCode不能被篡改
     {
       let { data } = await request.post("/share/reward", {
         sharerId,
@@ -117,11 +94,13 @@ describe("share router", async function() {
       assert(data.code !== 0);
     }
 
+    // 必须带上shareId
     {
       let { data } = await request.post("/share/reward", { shareCode });
       assert(data.code !== 0);
     }
 
+    // 正确得到奖励
     {
       let { data } = await request.post("/share/reward", {
         sharerId,
@@ -129,14 +108,17 @@ describe("share router", async function() {
       });
       assert(data.code === 0);
     }
+    // 能在shareLink表中找到记录
     {
       let data = await collShareLink.findOne({
-        userId: "sannian",
+        userId,
+
         sharerId
       });
       assert(data);
     }
 
+    // 再次请求奖励不能成功
     {
       let { data } = await request.post("/share/reward", {
         sharerId,

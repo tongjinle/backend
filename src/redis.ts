@@ -45,7 +45,6 @@ export async function getRedisClient(): Promise<redis.IHandyRedis> {
  * 清空数据库
  */
 export async function flushDb(): Promise<void> {
-  console.log(!!client);
   client = await getRedisClient();
   await client.flushdb();
 }

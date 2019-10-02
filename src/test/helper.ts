@@ -61,6 +61,22 @@ export async function createRequest(userId: string): Promise<AxiosInstance> {
 }
 
 /**
+ * 生成一个带有userId的axios实例
+ * 但是不是已经注册的用户
+ * @param userId 用户id
+ */
+export async function createNotRegRequest(
+  userId: string
+): Promise<AxiosInstance> {
+  let token = await utils.getUserToken(userId);
+
+  return axios.create({
+    baseURL: `${config.protocol}://${config.host}:${config.port}`,
+    headers: { userId, token }
+  });
+}
+
+/**
  * 生成一个admin的axios实例
  * @param userId 用户id
  */
