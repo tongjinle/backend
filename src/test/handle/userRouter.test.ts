@@ -1,11 +1,11 @@
 import assert = require("assert");
-import axios, { AxiosInstance } from "axios";
-import { ChildProcess, fork } from "child_process";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
 import { Collection, MongoClient } from "mongodb";
-import * as path from "path";
-import config from "../../config";
-import { closeMongoClient, getCollection } from "../../mongo";
-import utils from "../../utils";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
+import { closeRedisClient, flushDb } from "../../redis";
+import * as helper from "../helper";
+import assert = require("assert");
 
 describe("user router", async function() {
   let request: AxiosInstance;
@@ -15,36 +15,24 @@ describe("user router", async function() {
   let collUser: Collection;
   let worker: ChildProcess;
 
+  this.timeout(30 * 1000);
   before(async function() {
-    this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
-
-    request = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`,
-      headers: {
-        userId: "sannian",
-        token: await utils.getUserToken("sannian")
-      }
-    });
-    bareRequest = axios.create({
-      baseURL: `${config.protocol}://${config.host}:${config.port}`
-    });
+    worker = await helper.startApp();
 
     collUser = await getCollection("user");
   });
 
   beforeEach(async function() {
-    await Promise.all([collUser.deleteMany({})]);
+    await dropDatabase();
+    await flushDb();
+
+    request = await helper.createRequest("sannian");
   });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   it("addUser", async function() {
@@ -54,11 +42,8 @@ describe("user router", async function() {
   });
 
   it("user info", async function() {
-    await request.post("/user/add", { nickname: "三年" });
     let { data } = await request.get("/user/info");
-    assert(
-      data.userId === "sannian" && data.nickname === "三年" && data.coin === 0
-    );
+    assert(data.userId === "sannian" && data.coin === 0);
   });
 
   it("update user", async function() {
