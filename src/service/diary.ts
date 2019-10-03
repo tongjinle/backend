@@ -4,12 +4,6 @@ import config from "../config";
 import { date, func } from "@hapi/joi";
 import * as userService from "./user";
 
-// 媒体类型
-export enum MediaType {
-  image = "image",
-  video = "video",
-  audio = "audio"
-}
 // 日记
 export type Diary = {
   id: string;
@@ -32,6 +26,11 @@ export type Diary = {
   // 打榜消耗的金币
   coin: number;
 };
+
+/**
+ * 日记类型
+ */
+export type MediaType = "image" | "video" | "audio";
 
 const DIARY: string = "diary";
 const DIARY_UPVOTE: string = "diaryUpvote";

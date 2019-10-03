@@ -30,26 +30,14 @@ describe("diary service", async function() {
 
   // 新增
   it("add", async function() {
-    await diaryService.add(
-      "sannian",
-      "abc",
-      "url",
-      diaryService.MediaType.image,
-      90
-    );
+    await diaryService.add("sannian", "abc", "url", "image", 90);
     let dairy = await collDairy.findOne({ userId: "sannian" });
     assert(dairy && dairy.score === 90);
   });
 
   // 删除
   it("remove", async function() {
-    await diaryService.add(
-      "sannian",
-      "abc",
-      "url",
-      diaryService.MediaType.image,
-      90
-    );
+    await diaryService.add("sannian", "abc", "url", "image", 90);
 
     let id = (await collDairy.findOne({ userId: "sannian" }))._id.toString();
 
@@ -61,13 +49,7 @@ describe("diary service", async function() {
 
   // 查找日记
   it("find", async function() {
-    await diaryService.add(
-      "sannian",
-      "abc",
-      "url",
-      diaryService.MediaType.image,
-      90
-    );
+    await diaryService.add("sannian", "abc", "url", "image", 90);
     let id = (await collDairy.findOne({ userId: "sannian" }))._id.toString();
 
     let data = await diaryService.find(id);
@@ -79,13 +61,7 @@ describe("diary service", async function() {
 
   // 打榜
   it("upvote", async function() {
-    await diaryService.add(
-      "sannian",
-      "abc",
-      "url",
-      diaryService.MediaType.image,
-      90
-    );
+    await diaryService.add("sannian", "abc", "url", "image", 90);
     let id = (await collDairy.findOne({ userId: "sannian" }))._id.toString();
     await diaryService.upvote(id, "tong", 100);
     await diaryService.upvote(id, "jin", 10);

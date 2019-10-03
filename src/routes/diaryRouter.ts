@@ -24,19 +24,36 @@ router.post("/add", async (req, res) => {
     // 日记地址
     url: string;
     // 类型
-    type: "image" | "video" | "audio";
+    type: diaryService.MediaType;
     // 得分(仅为image的时候存在)
     score?: number;
   } = req.body;
 
   let userId: string = req.header("userId");
 
+  {
+    let result = joi.validate(reqData, {
+      text: joi.string().required(),
+      url: joi.string().required(),
+      type: joi
+        .string()
+        .required()
+        .allow("image", "video", "audio"),
+      score: joi.number()
+    });
+    if (result.error) {
+      res.json({ code: -1, message: "参数格式不正确" });
+      console.error(result.error);
+      return;
+    }
+  }
+
   let text = reqData.text || "";
   let url = reqData.url;
   let type: diaryService.MediaType = reqData.type as diaryService.MediaType;
 
   let score = -1;
-  if (type === diaryService.MediaType.image) {
+  if (type === "image") {
     score = 80;
     // todo
   }
@@ -56,8 +73,22 @@ router.post("/add", async (req, res) => {
 
 // 查询日记
 router.get("/query", async (req, res) => {
-  let resData: protocol.IResDiaryQuery;
-  let reqData: protocol.IReqDiaryQuery = req.query;
+  let resData: { nickname: string; logoUrl: string } & diaryService.Diary &
+    protocol.IResBase;
+  let reqData: {
+    id: string;
+  } = req.query;
+
+  {
+    let result = joi.validate(reqData, {
+      id: joi.string().required()
+    });
+    if (result.error) {
+      res.json({ code: -1, message: "参数格式不正确" });
+      console.error(result.error);
+      return;
+    }
+  }
 
   let data = await diaryService.find(reqData.id);
   if (!data) {
@@ -78,8 +109,8 @@ router.get("/query", async (req, res) => {
 
 // 删除日记
 router.post("/remove", async (req, res) => {
-  let resData: protocol.IResDiaryRemove;
-  let reqData: protocol.IReqDiaryRemove = req.body;
+  let resData: {} & protocol.IResBase;
+  let reqData: { id: string } = req.body;
 
   let id = reqData.id;
   let userId: string = req.header("userId");
@@ -105,11 +136,9 @@ router.post("/remove", async (req, res) => {
 
 // 打榜日记
 router.post("/upvote", async (req, res) => {
-  let resData: protocol.IResDiaryUpvote;
-  let reqData: protocol.IReqDiaryUpvote = req.body;
+  let resData: {} & protocol.IResBase;
+  let reqData: { id: string; coin: number } = req.body;
 
-  let id = reqData.id;
-  let coin = reqData.coin;
   let userId: string = req.header("userId");
 
   {
@@ -126,6 +155,8 @@ router.post("/upvote", async (req, res) => {
       return;
     }
   }
+  let id = reqData.id;
+  let coin = reqData.coin;
 
   // 暂时允许重复打榜
   // if (!(await diaryService.canUpvote(id, userId))) {
@@ -214,13 +245,15 @@ router.post("/upvote", async (req, res) => {
 
 // 获取用户的日记列表
 router.get("/list", async (req, res) => {
-  let resData: protocol.IResDiaryList;
-  let reqData: protocol.IReqDiaryList = req.query;
+  let reqData: { userId: string } = req.query;
+  let resData: { list: diaryService.Diary[] } & protocol.IResBase;
 
-  let result = joi.validate(reqData, { userId: joi.string().required() });
-  if (result.error) {
-    res.json({ code: -1, message: "缺少userId参数" });
-    return;
+  {
+    let result = joi.validate(reqData, { userId: joi.string().required() });
+    if (result.error) {
+      res.json({ code: -1, message: "缺少userId参数" });
+      return;
+    }
   }
   let diaryUserId: string = reqData.userId;
   console.log({ diaryUserId });
@@ -245,8 +278,8 @@ router.get("/list", async (req, res) => {
 
 // 获取推荐日记列表
 router.get("/recommend", async (req, res) => {
-  let resData: protocol.IResDiaryRecommendList;
-  let reqData: protocol.IReqDiaryRecommendList = req.query;
+  let resData: { list: diaryService.Diary[] } & protocol.IResBase;
+  let reqData: {};
 
   const topLimit = 100;
   const topCount = 3;

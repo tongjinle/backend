@@ -113,20 +113,8 @@ describe("diary router", async function() {
       gender: "female",
       city: ""
     });
-    await diaryService.add(
-      "bitch",
-      "abc",
-      "1.jpg",
-      diaryService.MediaType.image,
-      90
-    );
-    await diaryService.add(
-      "bitch",
-      "def",
-      "1.jpg",
-      diaryService.MediaType.image,
-      80
-    );
+    await diaryService.add("bitch", "abc", "1.jpg", "image", 90);
+    await diaryService.add("bitch", "def", "1.jpg", "image", 80);
 
     let id = (await collDiary.findOne({ text: "abc" }))._id.toString();
     {
@@ -155,20 +143,8 @@ describe("diary router", async function() {
       gender: "female",
       city: ""
     });
-    await diaryService.add(
-      "bitch",
-      "abc",
-      "1.jpg",
-      diaryService.MediaType.image,
-      90
-    );
-    await diaryService.add(
-      "bitch",
-      "def",
-      "1.jpg",
-      diaryService.MediaType.image,
-      80
-    );
+    await diaryService.add("bitch", "abc", "1.jpg", "image", 90);
+    await diaryService.add("bitch", "def", "1.jpg", "image", 80);
 
     let id = (await collDiary.findOne({ text: "abc" }))._id.toString();
 
@@ -206,13 +182,7 @@ describe("diary router", async function() {
     //   gender: "female",
     //   city: ""
     // });
-    await diaryService.add(
-      "bitch",
-      "abc",
-      "1.jpg",
-      diaryService.MediaType.image,
-      90
-    );
+    await diaryService.add("bitch", "abc", "1.jpg", "image", 90);
     let id = (await collDiary.findOne({ text: "abc" }))._id.toString();
 
     // 准备race
@@ -250,27 +220,9 @@ describe("diary router", async function() {
 
   // 日记列表
   it("list", async function() {
-    await diaryService.add(
-      "bitch",
-      "abc",
-      "1.jpg",
-      diaryService.MediaType.image,
-      90
-    );
-    await diaryService.add(
-      "bitch",
-      "abc",
-      "1.jpg",
-      diaryService.MediaType.image,
-      90
-    );
-    await diaryService.add(
-      "bitch2",
-      "abc",
-      "1.jpg",
-      diaryService.MediaType.image,
-      90
-    );
+    await diaryService.add("bitch", "abc", "1.jpg", "image", 90);
+    await diaryService.add("bitch", "abc", "1.jpg", "image", 90);
+    await diaryService.add("bitch2", "abc", "1.jpg", "image", 90);
 
     let { data } = await request.get("/diary/list", {
       params: { userId: "bitch" }
