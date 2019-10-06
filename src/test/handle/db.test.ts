@@ -1,21 +1,17 @@
 import assert = require("assert");
 import axios, { AxiosInstance } from "axios";
-import { ChildProcess, fork } from "child_process";
-import { Collection, MongoClient } from "mongodb";
-import * as path from "path";
+import { ChildProcess } from "child_process";
 import config from "../../config";
-import { closeMongoClient, getCollection } from "../../mongo";
-import * as diaryService from "../../service/diary";
-import * as userService from "../../service/user";
-import * as raceService from "../../service/race";
+import { closeMongoClient, dropDatabase } from "../../mongo";
+import { closeRedisClient, flushDb } from "../../redis";
 import utils from "../../utils";
-import { resolve } from "url";
+import * as helper from "../helper";
 
 describe("diary router", async function() {
   let request: AxiosInstance;
 
   let worker: ChildProcess;
-
+  this.timeout(30 * 1000);
   async function createRequest(userId: string) {
     request = axios.create({
       baseURL: `${config.protocol}://${config.host}:${config.port}`,
@@ -27,27 +23,19 @@ describe("diary router", async function() {
     return request;
   }
 
-  async function delay(ms: number) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms);
-    });
-  }
-
   before(async function() {
-    this.timeout(30 * 1000);
-    let file = path.resolve(__dirname, "../../app.js");
-    console.log(file);
-    worker = fork(file);
-    await new Promise(resolve => {
-      setTimeout(resolve, 3 * 1000);
-    });
+    worker = await helper.startApp();
   });
 
-  beforeEach(async function() {});
+  beforeEach(async function() {
+    await dropDatabase();
+    await flushDb();
+  });
 
   after(async function() {
-    worker.kill();
+    await helper.closeApp(worker);
     await closeMongoClient();
+    await closeRedisClient();
   });
 
   // 新增一个日记
@@ -58,11 +46,9 @@ describe("diary router", async function() {
       let arr = [];
       while (count--) {
         let userId: string = "user" + Math.floor(1e8 * Math.random());
-        let req = await createRequest(userId);
+        let req = await helper.createNotRegRequest(userId);
         let pr = req.post("/user/add", { nickname: userId, sex: "female" });
         arr.push(pr);
-        // await delay(200);
-        // await req.post("/user/add", { nickname: userId, sex: "female" });
       }
       await Promise.all(arr);
     } catch (error) {

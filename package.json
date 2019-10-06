@@ -15,6 +15,7 @@
     "test:one": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/raceService.test.js",
     "test:race": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/simple/**/raceService.test.js",
     "test-handle": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/**/*.test.js",
+    "test-handle:all": "npm run test-handle:raceAdmin && npm run test-handle:diary && npm run test-handle:notice && npm run test-handle:race && npm run test-handle:share && npm run test-handle:sign && npm run test-handle:user && npm run test-handle:db",
     "test-handle:raceAdmin": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/raceAdminRouter.test.js",
     "test-handle:diary": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/diaryRouter.test.js",
     "test-handle:notice": "cross-env NODE_ENV=test npx mocha --require intelli-espower-loader dist/test/handle/noticeRouter.test.js",

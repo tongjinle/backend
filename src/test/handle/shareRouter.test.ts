@@ -75,7 +75,6 @@ describe("share router", async function() {
   // 3 分享成功
   // 4 重复请求分享奖励会失败
   it("share reward", async function() {
-    let userId = "zhushuting";
     let today = new Date();
     let [year, month, day] = [
       today.getFullYear(),
@@ -111,8 +110,7 @@ describe("share router", async function() {
     // 能在shareLink表中找到记录
     {
       let data = await collShareLink.findOne({
-        userId,
-
+        userId: "sannian",
         sharerId
       });
       assert(data);

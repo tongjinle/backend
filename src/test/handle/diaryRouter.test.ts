@@ -1,29 +1,18 @@
 import assert = require("assert");
-import axios, { AxiosInstance } from "axios";
-import { ChildProcess, fork } from "child_process";
+import { AxiosInstance } from "axios";
+import { ChildProcess } from "child_process";
 import { Collection, MongoClient } from "mongodb";
-import * as path from "path";
-import config from "../../config";
-import { closeMongoClient, getCollection, dropDatabase } from "../../mongo";
-import * as diaryService from "../../service/diary";
-import * as userService from "../../service/user";
-import * as raceService from "../../service/race";
-import utils from "../../utils";
-import * as helper from "../helper";
+import { closeMongoClient, dropDatabase, getCollection } from "../../mongo";
 import { closeRedisClient, flushDb } from "../../redis";
+import * as diaryService from "../../service/diary";
+import * as raceService from "../../service/race";
+import * as userService from "../../service/user";
+import * as helper from "../helper";
 
 describe("diary router", async function() {
   let request: AxiosInstance;
   let bareRequest: AxiosInstance;
-  let client: MongoClient;
-  let photos: Collection;
-  let collUser: Collection;
   let collDiary: Collection;
-  let collDiaryUpvote: Collection;
-  let collRace: Collection;
-  let collPlayer: Collection;
-  let collUpvoter: Collection;
-  let collUpvoteLog: Collection;
   let worker: ChildProcess;
 
   this.timeout(30 * 1000);
@@ -31,12 +20,6 @@ describe("diary router", async function() {
     worker = await helper.startApp();
 
     collDiary = await getCollection("diary");
-    collDiaryUpvote = await getCollection("diaryUpvote");
-    collUser = await getCollection("user");
-    collRace = await getCollection("race");
-    collPlayer = await getCollection("racePlayer");
-    collUpvoter = await getCollection("raceUpvote");
-    collUpvoteLog = await getCollection("raceUpvoteLog");
   });
 
   beforeEach(async function() {
@@ -187,8 +170,6 @@ describe("diary router", async function() {
 
     // 准备race
     let collPlayer = await getCollection("racePlayer");
-    let collUpvoter = await getCollection("raceUpvote");
-    let collUpvoteLog = await getCollection("raceUpvoteLog");
     {
       await raceService.add("seed", 7, []);
     }
