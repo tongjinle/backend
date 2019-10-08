@@ -1,6 +1,7 @@
 import base from "./base";
 import IConfig from "./iconfig";
 const config: IConfig = {
+  port: 3000,
   // mongo
   mongo: Object.assign({}, base.mongo, { dbName: "dev-cute2" }),
   // redis
