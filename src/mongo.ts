@@ -35,5 +35,5 @@ export function getObjectId(id: string) {
 
 export async function dropDatabase(): Promise<void> {
   let client = await getMongoClient();
-  client.db(dbName).dropDatabase();
+  await client.db(dbName).dropDatabase();
 }
