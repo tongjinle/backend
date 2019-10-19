@@ -33,7 +33,7 @@ router.post("/add", async (req, res) => {
 
   {
     let result = joi.validate(reqData, {
-      text: joi.string().required(),
+      text: joi.string(),
       url: joi.string().required(),
       type: joi
         .string()
