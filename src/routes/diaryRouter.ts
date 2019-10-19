@@ -298,6 +298,8 @@ router.get("/recommend", async (req, res) => {
       return;
     }
 
+    await clearCache(key);
+
     let getLimit: () => Promise<diaryService.Diary[]>;
     let getKey: (id: string) => string;
     let expire: number;
@@ -349,6 +351,17 @@ router.get("/recommend", async (req, res) => {
       })
     );
     return list;
+  };
+
+  let clearCache = async (name: "fresh" | "top") => {
+    let pattern: string;
+    if (name === "fresh") {
+      pattern = redisKey.freshDiaryList("*");
+    } else {
+      pattern = redisKey.topDiaryList("*");
+    }
+    let keys = await client.keys(pattern);
+    await client.del(...keys);
   };
 
   await writeToCache("fresh");
