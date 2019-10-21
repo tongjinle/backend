@@ -3,7 +3,8 @@ import * as joi from "@hapi/joi";
 import errs from "../../errCode";
 import utils from "../../utils";
 
-const TOKEN = utils.getUserToken("sanniantea");
+// const TOKEN = utils.getUserToken("sanniantea");
+const TOKEN = "sanniantea";
 
 export default function adminCheck(
   req: express.Request,
