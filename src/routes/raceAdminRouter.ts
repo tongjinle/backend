@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as protocol from "../protocol";
 import * as raceService from "../service/race";
+import * as joi from "@hapi/joi";
 
 let router = express.Router();
 
@@ -11,8 +12,21 @@ router.post("/add", async (req, res) => {
 
   let { name, days, postUrls } = reqData;
 
+  {
+    let result = joi.validate(reqData, {
+      name: joi.string().required(),
+      days: joi.number().required(),
+      postUrls: joi.array().required()
+    });
+    if (result.error) {
+      res.json({ code: -1, message: "参数不正确", detail: result.error });
+      return;
+    }
+  }
+  days -= 0;
+
   if (!(await raceService.canAdd(name))) {
-    res.json({ code: -1, message: "比赛新增失败" });
+    res.json({ code: -2, message: "比赛新增失败" });
     return;
   }
 
@@ -63,6 +77,23 @@ router.post("/start", async (req, res) => {
   }
 
   await raceService.start(name);
+  resData = { code: 0 };
+  res.json(resData);
+});
+
+// 结束比赛
+router.post("/end", async (req, res) => {
+  let reqData: { name: string } = req.body;
+  let resData: {} & protocol.IResBase;
+
+  let name: string = reqData.name;
+
+  if (!(await raceService.canGameOver(name))) {
+    res.json({ code: -1, message: "不能结束活动" });
+    return;
+  }
+
+  await raceService.gameover(name);
   resData = { code: 0 };
   res.json(resData);
 });

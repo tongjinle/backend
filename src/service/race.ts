@@ -262,7 +262,7 @@ export async function start(name: string): Promise<void> {
   let endTime: Date = new Date(
     startTime.getFullYear(),
     startTime.getMonth(),
-    startTime.getDate() + race.days
+    startTime.getDate() + (race.days - 0)
   );
 
   let coll = await getCollection(RACE);
@@ -270,6 +270,19 @@ export async function start(name: string): Promise<void> {
     { name },
     { $set: { status: RaceStatus.race, startTime, endTime } }
   );
+}
+
+export async function canGameOver(name: string): Promise<boolean> {
+  let rst: boolean;
+  // 1 比赛存在,而且比赛的状态为race
+  let coll = await getCollection(RACE);
+  let race = await find(name);
+  if (!(race && race.status === RaceStatus.race)) {
+    return false;
+  }
+
+  rst = true;
+  return rst;
 }
 
 /**
