@@ -21,9 +21,9 @@ export default router;
 router.get("/posts", async (req, res) => {
   let list = await postService.list("using");
   let posts = list && list.length ? list[0] : undefined;
-  if (!posts) {
-    res.json({ code: -1, message: "没有找到海报套餐" });
-    return;
-  }
+  // if (!posts) {
+  //   res.json({ code: -1, message: "没有找到海报套餐" });
+  //   return;
+  // }
   res.json({ code: 0, ...posts });
 });
