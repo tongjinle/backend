@@ -364,7 +364,9 @@ router.get("/recommend", async (req, res) => {
       pattern = redisKey.topDiaryList("*");
     }
     let keys = await client.keys(pattern);
-    await client.del(...keys);
+    if (keys.length) {
+      await client.del(...keys);
+    }
   };
 
   await writeToCache("fresh");
