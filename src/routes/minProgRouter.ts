@@ -12,6 +12,7 @@ import * as redisKey from "../redisKey";
 import { getRedisClient } from "../redis";
 import { HOUR } from "../constant";
 import * as minProg from "../service/minProg";
+import { platform } from "os";
 
 let router = express.Router();
 
@@ -19,10 +20,13 @@ let appId: string = config.qq.appId;
 let appSecret: string = config.qq.appSecret;
 
 let openIdUrl = config.qqOpenIdUrl;
+
+type PlatformName = minProg.PlatformName;
+
 // 登录
-router.get("/openId/", async (req, res) => {
+router.get("/login/", async (req, res) => {
   let resData: { userId: string; token: string } & protocol.IResBase;
-  let reqData: { code: string; platformName: "wx" | "qq" } = req.query;
+  let reqData: { code: string; platformName: PlatformName } = req.query;
   let { platformName, code } = reqData;
   try {
     let { openId, token } = await minProg.getOpenId(platformName, code);
@@ -37,8 +41,8 @@ router.get("/openId/", async (req, res) => {
 // accessToken
 router.get("/accessToken", async (req, res) => {
   let resData: { accessToken: string } & protocol.IResBase;
-  let reqData: {} = req.query;
-  let accessToken = await getCacheAccessToken();
+  let reqData: { platformName: PlatformName } = req.query;
+  let accessToken = await minProg.getCacheAccessToken(reqData.platformName);
   resData = { code: 0, accessToken };
   res.json(resData);
 });
@@ -46,54 +50,35 @@ router.get("/accessToken", async (req, res) => {
 // 检测图片
 router.get("/imgSecCheck", async (req, res) => {
   let resData: { check: boolean } & protocol.IResBase;
-  let reqData: { url: string } = req.query;
-  let accessToken = await getCacheAccessToken();
+  let reqData: { platformName: PlatformName; url: string } = req.query;
+
   let check: boolean = false;
 
-  {
-    let imageUrl = reqData.url;
-    let res = await axios.get(
-      "https://api.sanriyue.xyz/commonApi/qq/imgSecCheck",
-      {
-        params: {
-          appId,
-          accessToken,
-          imageUrl
-        }
-      }
-    );
-    check = res.data.check;
+  try {
+    let { platformName, url } = reqData;
+    check = await minProg.imgSecCheck(platformName, url);
+    resData = { code: 0, check };
+  } catch (e) {
+    resData = { code: 0, check: false };
   }
-  resData = { code: 0, check };
   res.json(resData);
 });
 
 //检测文本
+router.get("/msgSecCheck", async (req, res) => {
+  let resData: { check: boolean } & protocol.IResBase;
+  let reqData: { platformName: PlatformName; content: string } = req.query;
 
-// 获取本地的accessToken
-// 将其保存在redis中
-async function getCacheAccessToken(): Promise<string> {
-  let rst: string;
-  let key = redisKey.accessToken("qq");
+  let check: boolean = false;
 
-  let client = await getRedisClient();
-  if (await client.exists(key)) {
-    rst = await client.get(key);
-  } else {
-    let accessTokenUrl = config.qqAccessTokenUrl;
-    let appId = config.qq.appId;
-    let appSecret = config.qq.appSecret;
-    let res = await axios.get(accessTokenUrl, {
-      params: {
-        appId,
-        appSecret
-      }
-    });
-    rst = res.data.accessToken;
-    await client.set(key, rst);
-    await client.pexpire(key, 1.5 * HOUR);
+  try {
+    let { platformName, content } = reqData;
+    check = await minProg.msgSecCheck(platformName, content);
+    resData = { code: 0, check };
+  } catch (e) {
+    resData = { code: 0, check: false };
   }
-  return rst;
-}
+  res.json(resData);
+});
 
 export default router;

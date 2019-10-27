@@ -1,5 +1,11 @@
+import { platform } from "os";
+
 // flag
 export let flag = (key: string) => `flag#${key}`;
+
+// accessToken
+export let accessToken = (platformName: "qq" | "wx") =>
+  `accessToken#${platformName}`;
 
 // freshDiaryList
 export let freshDiaryList = (diaryId: string) => `freshDiaryList#${diaryId}`;

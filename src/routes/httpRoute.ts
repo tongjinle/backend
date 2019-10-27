@@ -2,6 +2,7 @@ import * as express from "express";
 
 // 路由
 import testHandle from "./testHandle";
+import minProgRouter from "./minProgRouter";
 import wxRouter from "./wxRouter";
 import qqRouter from "./qqRouter";
 import userRouter from "./userRouter";
@@ -22,6 +23,9 @@ import adminCheck from "./role/adminCheck";
 export default function handler(app: express.Express) {
   // 测试
   testHandle(app);
+
+  // 小程序通用相关
+  app.use("/minProg", minProgRouter);
 
   // 微信登录
   app.use("/wx", wxRouter);

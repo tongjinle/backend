@@ -25,6 +25,7 @@ const config: IConfig = {
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },
   wxOpenIdUrl: "https://api.sanriyue.xyz/commonApi/wx/openId",
+  wxAccessTokenUrl: "https://api.sanriyue.xyz/commonApi/wx/accessToken",
   qq: {
     appId: "1109682478",
     appSecret: "re79cmI7cYwqGZzE",
@@ -32,6 +33,7 @@ const config: IConfig = {
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },
   qqOpenIdUrl: "https://api.sanriyue.xyz/commonApi/qq/openId",
+  qqAccessTokenUrl: "https://api.sanriyue.xyz/commonApi/qq/accessToken",
   // token过期时间
   tokenExpires: 2 * HOUR,
 

@@ -26,6 +26,7 @@ interface IConfigBase {
     templateId: string;
   };
   wxOpenIdUrl: string;
+  wxAccessTokenUrl: string;
   // qq
   qq: {
     appId: string;
@@ -33,6 +34,7 @@ interface IConfigBase {
     templateId: string;
   };
   qqOpenIdUrl: string;
+  qqAccessTokenUrl: string;
   // token过期时间
   tokenExpires: number;
 
