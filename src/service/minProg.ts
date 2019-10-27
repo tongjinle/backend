@@ -33,6 +33,8 @@ function getSetting(platformName: PlatformName): Setting {
     accessTokenUrl = config.qqAccessTokenUrl;
     imgSecCheckUrl = accessToken =>
       `https://api.q.qq.com/api/json/security/ImgSecCheck?access_token=${accessToken}`;
+    msgSecCheckUrl = accessToken =>
+      `https://api.q.qq.com/api/json/security/MsgSecCheck?access_token=${accessToken}`;
   } else {
     appId = config.wx.appId;
     appSecret = config.wx.appSecret;
@@ -149,9 +151,9 @@ export async function msgSecCheck(
   let url = msgSecCheckUrl(accessToken);
 
   let res = await axios.post(url, {
+    appId,
     content
   });
-
   rst = res.data.errCode === 0;
 
   return rst;

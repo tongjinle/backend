@@ -32,7 +32,7 @@ router.get("/login/", async (req, res) => {
     let { openId, token } = await minProg.getOpenId(platformName, code);
     resData = { code: 0, userId: openId, token };
   } catch (e) {
-    res.json({ code: 900 });
+    res.json({ code: 900, message: "获取openId失败" });
     return;
   }
   res.json(resData);
@@ -70,13 +70,13 @@ router.get("/msgSecCheck", async (req, res) => {
   let reqData: { platformName: PlatformName; content: string } = req.query;
 
   let check: boolean = false;
-
   try {
     let { platformName, content } = reqData;
     check = await minProg.msgSecCheck(platformName, content);
     resData = { code: 0, check };
   } catch (e) {
     resData = { code: 0, check: false };
+    console.log(e);
   }
   res.json(resData);
 });

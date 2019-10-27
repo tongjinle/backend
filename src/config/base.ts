@@ -6,14 +6,14 @@ const config: IConfig = {
   port: 3000,
   // mongo
   mongo: {
-    connectStr: "mongodb://tea:sannian@api.puman.xyz:27017",
-    // connectStr: "mongodb://tea:sannian@120.27.27.50:27017",
+    // connectStr: "mongodb://tea:sannian@api.puman.xyz:27017",
+    connectStr: "mongodb://tea:sannian@120.27.27.50:27017",
     dbName: "zst"
   },
   // redis
   redis: {
-    // host: "120.27.27.50",
-    host: "api.puman.xyz",
+    host: "120.27.27.50",
+    // host: "api.puman.xyz",
     port: 6379,
     pass: "sannian",
     dbName: 1
