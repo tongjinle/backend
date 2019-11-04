@@ -77,7 +77,7 @@ export async function save(
   let rst: Photo;
 
   // 评分
-  let aiUrl = "https://api.puman.xyz/commonApi/ai/faceScore";
+  let aiUrl = "https://api.sanriyue.xyz/commonApi/ai/faceScore";
   let score: number = 0;
   score = await new Promise(resolve => {
     request.post(aiUrl, { json: { url } }, (err, res) => {

@@ -10,7 +10,7 @@ let router = express.Router();
 let appId: string = config.qq.appId;
 let appSecret: string = config.qq.appSecret;
 
-let wxUrl = "https://api.puman.xyz/commonApi/qq/openId";
+let wxUrl = "https://api.sanriyue.xyz/commonApi/qq/openId";
 // 登录
 router.get("/login/", async (req, res) => {
   let resData: protocol.IResLogin;

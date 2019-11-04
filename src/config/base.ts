@@ -5,8 +5,8 @@ const config: IConfig = {
   host: "localhost",
   port: 3000,
 
-  connectStr: "mongodb://tea:sannian@118.31.11.29:27017",
-  dbName: "zst",
+  connectStr: "mongodb://tea:sannian@api.sanriyue.xyz:27017",
+  dbName: "dev-cute",
 
   wx: {
     appId: "wx09bbbd445c8b772f",
@@ -16,8 +16,8 @@ const config: IConfig = {
   },
 
   qq: {
-    appId: "1109682478",
-    appSecret: "re79cmI7cYwqGZzE",
+    appId: "1110007460",
+    appSecret: "d6rPr1tWiP3Po6l7",
     // 信息模版Id
     templateId: "rbrtfn6Qt0UYaI3G6hnBUjr6Vikoz5Q9B1Wdvk4q82E"
   },

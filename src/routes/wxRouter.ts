@@ -10,7 +10,7 @@ let router = express.Router();
 let appId: string = config.wx.appId;
 let appSecret: string = config.wx.appSecret;
 
-let wxUrl = "https://api.puman.xyz/commonApi/wx/openId";
+let wxUrl = "https://api.sanriyue.xyz/commonApi/wx/openId";
 // 登录
 router.get("/login/", async (req, res) => {
   let resData: protocol.IResLogin;
